@@ -1,0 +1,1542 @@
+[
+  {
+    "season": 2021,
+    "round": 1,
+    "grand_prix": "Bahrain Grand Prix",
+    "circuit": "Sakhir",
+    "total_laps": 56,
+    "status": "OK",
+    "leakage_passed": true,
+    "data_source": "REAL_FASTF1",
+    "snapshot_leakage_ok": true,
+    "exact": {
+      "pit_lap": 19,
+      "compound": "MEDIUM\u2192HARD",
+      "race_time_s": 4656.87,
+      "runtime_s": 0.0002
+    },
+    "monte_carlo": {
+      "recommended_strategy": "1-Stop Medium -> Hard",
+      "race_time_s": 4708.55,
+      "pit_lap": 19,
+      "runtime_s": 1.4905
+    },
+    "baseline": {
+      "never_pit_time_s": 4711.7,
+      "1stop_lap22_time_s": 4657.275
+    },
+    "actual": {
+      "pit_lap": 18,
+      "race_time_s_estimated": 4656.965
+    },
+    "rl_experimental": {
+      "status": "OK",
+      "race_time_s": 4748.943,
+      "pits": 0,
+      "final_position": 20
+    },
+    "regret": {
+      "mc_vs_exact_s": 51.68,
+      "baseline_vs_exact_s": 0.405,
+      "rl_vs_exact_s": 92.073,
+      "actual_vs_mc_s": -51.585
+    },
+    "load_time_s": 2.768
+  },
+  {
+    "season": 2021,
+    "round": 2,
+    "grand_prix": "Emilia Romagna Grand Prix",
+    "circuit": "Imola",
+    "total_laps": 63,
+    "status": "OK",
+    "leakage_passed": true,
+    "data_source": "REAL_FASTF1",
+    "snapshot_leakage_ok": true,
+    "exact": {
+      "pit_lap": 22,
+      "compound": "MEDIUM\u2192HARD",
+      "race_time_s": 5241.915,
+      "runtime_s": 0.0002
+    },
+    "monte_carlo": {
+      "recommended_strategy": "1-Stop Medium -> Hard",
+      "race_time_s": 5286.23,
+      "pit_lap": 22,
+      "runtime_s": 1.6676
+    },
+    "baseline": {
+      "never_pit_time_s": 5317.2,
+      "1stop_lap22_time_s": 5241.915
+    },
+    "actual": {
+      "pit_lap": 28,
+      "race_time_s_estimated": 5244.15
+    },
+    "rl_experimental": {
+      "status": "OK",
+      "race_time_s": 5316.648,
+      "pits": 0,
+      "final_position": 20
+    },
+    "regret": {
+      "mc_vs_exact_s": 44.315,
+      "baseline_vs_exact_s": 0.0,
+      "rl_vs_exact_s": 74.733,
+      "actual_vs_mc_s": -42.08
+    },
+    "load_time_s": 2.672
+  },
+  {
+    "season": 2021,
+    "round": 3,
+    "grand_prix": "Portuguese Grand Prix",
+    "circuit": "Portim\u00e3o",
+    "total_laps": 66,
+    "status": "OK",
+    "leakage_passed": true,
+    "data_source": "REAL_FASTF1",
+    "snapshot_leakage_ok": true,
+    "exact": {
+      "pit_lap": 23,
+      "compound": "MEDIUM\u2192HARD",
+      "race_time_s": 5493.04,
+      "runtime_s": 0.0002
+    },
+    "monte_carlo": {
+      "recommended_strategy": "1-Stop Medium -> Hard",
+      "race_time_s": 5533.62,
+      "pit_lap": 23,
+      "runtime_s": 1.7667
+    },
+    "baseline": {
+      "never_pit_time_s": 5577.825,
+      "1stop_lap22_time_s": 5493.075
+    },
+    "actual": {
+      "pit_lap": 3,
+      "race_time_s_estimated": 5515.59
+    },
+    "rl_experimental": {
+      "status": "OK",
+      "race_time_s": 5600.7,
+      "pits": 0,
+      "final_position": 20
+    },
+    "regret": {
+      "mc_vs_exact_s": 40.58,
+      "baseline_vs_exact_s": 0.035,
+      "rl_vs_exact_s": 107.66,
+      "actual_vs_mc_s": -18.03
+    },
+    "load_time_s": 2.71
+  },
+  {
+    "season": 2021,
+    "round": 4,
+    "grand_prix": "Spanish Grand Prix",
+    "circuit": "Barcelona",
+    "total_laps": 66,
+    "status": "OK",
+    "leakage_passed": true,
+    "data_source": "REAL_FASTF1",
+    "snapshot_leakage_ok": true,
+    "exact": {
+      "pit_lap": 23,
+      "compound": "MEDIUM\u2192HARD",
+      "race_time_s": 5493.04,
+      "runtime_s": 0.0002
+    },
+    "monte_carlo": {
+      "recommended_strategy": "1-Stop Medium -> Hard",
+      "race_time_s": 5538.19,
+      "pit_lap": 23,
+      "runtime_s": 1.7261
+    },
+    "baseline": {
+      "never_pit_time_s": 5577.825,
+      "1stop_lap22_time_s": 5493.075
+    },
+    "actual": {
+      "pit_lap": 25,
+      "race_time_s_estimated": 5493.315
+    },
+    "rl_experimental": {
+      "status": "OK",
+      "race_time_s": 5661.297,
+      "pits": 0,
+      "final_position": 20
+    },
+    "regret": {
+      "mc_vs_exact_s": 45.15,
+      "baseline_vs_exact_s": 0.035,
+      "rl_vs_exact_s": 168.257,
+      "actual_vs_mc_s": -44.875
+    },
+    "load_time_s": 2.632
+  },
+  {
+    "season": 2021,
+    "round": 5,
+    "grand_prix": "Monaco Grand Prix",
+    "circuit": "Monte Carlo",
+    "total_laps": 78,
+    "status": "OK",
+    "leakage_passed": true,
+    "data_source": "REAL_FASTF1",
+    "snapshot_leakage_ok": true,
+    "exact": {
+      "pit_lap": 27,
+      "compound": "MEDIUM\u2192HARD",
+      "race_time_s": 6499.89,
+      "runtime_s": 0.0003
+    },
+    "monte_carlo": {
+      "recommended_strategy": "1-Stop Medium -> Hard",
+      "race_time_s": 6532.42,
+      "pit_lap": 27,
+      "runtime_s": 2.0789
+    },
+    "baseline": {
+      "never_pit_time_s": 6627.075,
+      "1stop_lap22_time_s": 6501.315
+    },
+    "actual": {
+      "pit_lap": 35,
+      "race_time_s_estimated": 6503.59
+    },
+    "rl_experimental": {
+      "status": "OK",
+      "race_time_s": 6682.672,
+      "pits": 1,
+      "final_position": 20
+    },
+    "regret": {
+      "mc_vs_exact_s": 32.53,
+      "baseline_vs_exact_s": 1.425,
+      "rl_vs_exact_s": 182.782,
+      "actual_vs_mc_s": -28.83
+    },
+    "load_time_s": 3.0
+  },
+  {
+    "season": 2021,
+    "round": 6,
+    "grand_prix": "Azerbaijan Grand Prix",
+    "circuit": "Baku",
+    "total_laps": 51,
+    "status": "OK",
+    "leakage_passed": true,
+    "data_source": "REAL_FASTF1",
+    "snapshot_leakage_ok": true,
+    "exact": {
+      "pit_lap": 18,
+      "compound": "MEDIUM\u2192HARD",
+      "race_time_s": 4239.765,
+      "runtime_s": 0.0001
+    },
+    "monte_carlo": {
+      "recommended_strategy": "1-Stop Medium -> Hard",
+      "race_time_s": 4290.81,
+      "pit_lap": 18,
+      "runtime_s": 1.3534
+    },
+    "baseline": {
+      "never_pit_time_s": 4281.45,
+      "1stop_lap22_time_s": 4240.875
+    },
+    "actual": {
+      "pit_lap": 13,
+      "race_time_s_estimated": 4240.965
+    },
+    "rl_experimental": {
+      "status": "OK",
+      "race_time_s": 4293.809,
+      "pits": 0,
+      "final_position": 20
+    },
+    "regret": {
+      "mc_vs_exact_s": 51.045,
+      "baseline_vs_exact_s": 1.11,
+      "rl_vs_exact_s": 54.044,
+      "actual_vs_mc_s": -49.845
+    },
+    "load_time_s": 2.208
+  },
+  {
+    "season": 2021,
+    "round": 7,
+    "grand_prix": "French Grand Prix",
+    "circuit": "Le Castellet",
+    "total_laps": 53,
+    "status": "OK",
+    "leakage_passed": true,
+    "data_source": "REAL_FASTF1",
+    "snapshot_leakage_ok": true,
+    "exact": {
+      "pit_lap": 18,
+      "compound": "MEDIUM\u2192HARD",
+      "race_time_s": 4406.525,
+      "runtime_s": 0.0002
+    },
+    "monte_carlo": {
+      "recommended_strategy": "1-Stop Medium -> Hard",
+      "race_time_s": 4459.78,
+      "pit_lap": 18,
+      "runtime_s": 1.3983
+    },
+    "baseline": {
+      "never_pit_time_s": 4453.325,
+      "1stop_lap22_time_s": 4407.315
+    },
+    "actual": {
+      "pit_lap": 19,
+      "race_time_s_estimated": 4406.55
+    },
+    "rl_experimental": {
+      "status": "OK",
+      "race_time_s": 4464.212,
+      "pits": 0,
+      "final_position": 20
+    },
+    "regret": {
+      "mc_vs_exact_s": 53.255,
+      "baseline_vs_exact_s": 0.79,
+      "rl_vs_exact_s": 57.687,
+      "actual_vs_mc_s": -53.23
+    },
+    "load_time_s": 2.154
+  },
+  {
+    "season": 2022,
+    "round": 1,
+    "grand_prix": "Bahrain Grand Prix",
+    "circuit": "Sakhir",
+    "total_laps": 57,
+    "status": "OK",
+    "leakage_passed": true,
+    "data_source": "REAL_FASTF1",
+    "snapshot_leakage_ok": true,
+    "exact": {
+      "pit_lap": 20,
+      "compound": "MEDIUM\u2192HARD",
+      "race_time_s": 4740.37,
+      "runtime_s": 0.0002
+    },
+    "monte_carlo": {
+      "recommended_strategy": "1-Stop Medium -> Hard",
+      "race_time_s": 4784.84,
+      "pit_lap": 20,
+      "runtime_s": 1.5449
+    },
+    "baseline": {
+      "never_pit_time_s": 4797.975,
+      "1stop_lap22_time_s": 4740.675
+    },
+    "actual": {
+      "pit_lap": 15,
+      "race_time_s_estimated": 4741.62
+    },
+    "rl_experimental": {
+      "status": "OK",
+      "race_time_s": 4863.905,
+      "pits": 0,
+      "final_position": 20
+    },
+    "regret": {
+      "mc_vs_exact_s": 44.47,
+      "baseline_vs_exact_s": 0.305,
+      "rl_vs_exact_s": 123.535,
+      "actual_vs_mc_s": -43.22
+    },
+    "load_time_s": 2.408
+  },
+  {
+    "season": 2022,
+    "round": 2,
+    "grand_prix": "Saudi Arabian Grand Prix",
+    "circuit": "Jeddah",
+    "total_laps": 50,
+    "status": "OK",
+    "leakage_passed": true,
+    "data_source": "REAL_FASTF1",
+    "snapshot_leakage_ok": true,
+    "exact": {
+      "pit_lap": 17,
+      "compound": "MEDIUM\u2192HARD",
+      "race_time_s": 4156.415,
+      "runtime_s": 0.0001
+    },
+    "monte_carlo": {
+      "recommended_strategy": "1-Stop Medium -> Hard",
+      "race_time_s": 4210.53,
+      "pit_lap": 17,
+      "runtime_s": 1.3358
+    },
+    "baseline": {
+      "never_pit_time_s": 4195.625,
+      "1stop_lap22_time_s": 4157.715
+    },
+    "actual": {
+      "pit_lap": 17,
+      "race_time_s_estimated": 4156.415
+    },
+    "rl_experimental": {
+      "status": "OK",
+      "race_time_s": 4238.874,
+      "pits": 1,
+      "final_position": 20
+    },
+    "regret": {
+      "mc_vs_exact_s": 54.115,
+      "baseline_vs_exact_s": 1.3,
+      "rl_vs_exact_s": 82.459,
+      "actual_vs_mc_s": -54.115
+    },
+    "load_time_s": 2.037
+  },
+  {
+    "season": 2022,
+    "round": 3,
+    "grand_prix": "Australian Grand Prix",
+    "circuit": "Melbourne",
+    "total_laps": 58,
+    "status": "OK",
+    "leakage_passed": true,
+    "data_source": "REAL_FASTF1",
+    "snapshot_leakage_ok": true,
+    "exact": {
+      "pit_lap": 20,
+      "compound": "MEDIUM\u2192HARD",
+      "race_time_s": 4823.89,
+      "runtime_s": 0.0002
+    },
+    "monte_carlo": {
+      "recommended_strategy": "1-Stop Medium -> Hard",
+      "race_time_s": 4871.32,
+      "pit_lap": 20,
+      "runtime_s": 1.5199
+    },
+    "baseline": {
+      "never_pit_time_s": 4884.325,
+      "1stop_lap22_time_s": 4824.115
+    },
+    "actual": {
+      "pit_lap": 19,
+      "race_time_s_estimated": 4823.95
+    },
+    "rl_experimental": {
+      "status": "OK",
+      "race_time_s": 4919.041,
+      "pits": 0,
+      "final_position": 20
+    },
+    "regret": {
+      "mc_vs_exact_s": 47.43,
+      "baseline_vs_exact_s": 0.225,
+      "rl_vs_exact_s": 95.151,
+      "actual_vs_mc_s": -47.37
+    },
+    "load_time_s": 2.355
+  },
+  {
+    "season": 2022,
+    "round": 4,
+    "grand_prix": "Emilia Romagna Grand Prix",
+    "circuit": "Imola",
+    "total_laps": 63,
+    "status": "OK",
+    "leakage_passed": true,
+    "data_source": "REAL_FASTF1",
+    "snapshot_leakage_ok": true,
+    "exact": {
+      "pit_lap": 22,
+      "compound": "MEDIUM\u2192HARD",
+      "race_time_s": 5241.915,
+      "runtime_s": 0.0002
+    },
+    "monte_carlo": {
+      "recommended_strategy": "1-Stop Medium -> Hard",
+      "race_time_s": 5287.83,
+      "pit_lap": 22,
+      "runtime_s": 1.6614
+    },
+    "baseline": {
+      "never_pit_time_s": 5317.2,
+      "1stop_lap22_time_s": 5241.915
+    },
+    "actual": {
+      "pit_lap": 20,
+      "race_time_s_estimated": 5242.09
+    },
+    "rl_experimental": {
+      "status": "OK",
+      "race_time_s": 5315.101,
+      "pits": 0,
+      "final_position": 20
+    },
+    "regret": {
+      "mc_vs_exact_s": 45.915,
+      "baseline_vs_exact_s": 0.0,
+      "rl_vs_exact_s": 73.186,
+      "actual_vs_mc_s": -45.74
+    },
+    "load_time_s": 2.445
+  },
+  {
+    "season": 2022,
+    "round": 5,
+    "grand_prix": "Miami Grand Prix",
+    "circuit": "Miami",
+    "total_laps": 57,
+    "status": "OK",
+    "leakage_passed": true,
+    "data_source": "REAL_FASTF1",
+    "snapshot_leakage_ok": true,
+    "exact": {
+      "pit_lap": 20,
+      "compound": "MEDIUM\u2192HARD",
+      "race_time_s": 4740.37,
+      "runtime_s": 0.0002
+    },
+    "monte_carlo": {
+      "recommended_strategy": "1-Stop Medium -> Hard",
+      "race_time_s": 4795.82,
+      "pit_lap": 20,
+      "runtime_s": 1.4855
+    },
+    "baseline": {
+      "never_pit_time_s": 4797.975,
+      "1stop_lap22_time_s": 4740.675
+    },
+    "actual": {
+      "pit_lap": 27,
+      "race_time_s_estimated": 4743.45
+    },
+    "rl_experimental": {
+      "status": "OK",
+      "race_time_s": 4863.154,
+      "pits": 0,
+      "final_position": 20
+    },
+    "regret": {
+      "mc_vs_exact_s": 55.45,
+      "baseline_vs_exact_s": 0.305,
+      "rl_vs_exact_s": 122.784,
+      "actual_vs_mc_s": -52.37
+    },
+    "load_time_s": 2.29
+  },
+  {
+    "season": 2022,
+    "round": 6,
+    "grand_prix": "Spanish Grand Prix",
+    "circuit": "Barcelona",
+    "total_laps": 66,
+    "status": "OK",
+    "leakage_passed": true,
+    "data_source": "REAL_FASTF1",
+    "snapshot_leakage_ok": true,
+    "exact": {
+      "pit_lap": 23,
+      "compound": "MEDIUM\u2192HARD",
+      "race_time_s": 5493.04,
+      "runtime_s": 0.0002
+    },
+    "monte_carlo": {
+      "recommended_strategy": "1-Stop Medium -> Hard",
+      "race_time_s": 5534.59,
+      "pit_lap": 23,
+      "runtime_s": 1.7541
+    },
+    "baseline": {
+      "never_pit_time_s": 5577.825,
+      "1stop_lap22_time_s": 5493.075
+    },
+    "actual": {
+      "pit_lap": 14,
+      "race_time_s_estimated": 5497.495
+    },
+    "rl_experimental": {
+      "status": "OK",
+      "race_time_s": 5601.704,
+      "pits": 0,
+      "final_position": 20
+    },
+    "regret": {
+      "mc_vs_exact_s": 41.55,
+      "baseline_vs_exact_s": 0.035,
+      "rl_vs_exact_s": 108.664,
+      "actual_vs_mc_s": -37.095
+    },
+    "load_time_s": 2.592
+  },
+  {
+    "season": 2022,
+    "round": 7,
+    "grand_prix": "Monaco Grand Prix",
+    "circuit": "Monaco",
+    "total_laps": 77,
+    "status": "OK",
+    "leakage_passed": true,
+    "data_source": "REAL_FASTF1",
+    "snapshot_leakage_ok": true,
+    "exact": {
+      "pit_lap": 27,
+      "compound": "MEDIUM\u2192HARD",
+      "race_time_s": 6415.85,
+      "runtime_s": 0.0003
+    },
+    "monte_carlo": {
+      "recommended_strategy": "1-Stop Medium -> Hard",
+      "race_time_s": 6449.38,
+      "pit_lap": 27,
+      "runtime_s": 2.0527
+    },
+    "baseline": {
+      "never_pit_time_s": 6539.225,
+      "1stop_lap22_time_s": 6417.075
+    },
+    "actual": {
+      "pit_lap": 1,
+      "race_time_s_estimated": 6453.615
+    },
+    "rl_experimental": {
+      "status": "OK",
+      "race_time_s": 6568.856,
+      "pits": 1,
+      "final_position": 20
+    },
+    "regret": {
+      "mc_vs_exact_s": 33.53,
+      "baseline_vs_exact_s": 1.225,
+      "rl_vs_exact_s": 153.006,
+      "actual_vs_mc_s": 4.235
+    },
+    "load_time_s": 3.045
+  },
+  {
+    "season": 2023,
+    "round": 1,
+    "grand_prix": "Bahrain Grand Prix",
+    "circuit": "Sakhir",
+    "total_laps": 57,
+    "status": "OK",
+    "leakage_passed": true,
+    "data_source": "REAL_FASTF1",
+    "snapshot_leakage_ok": true,
+    "exact": {
+      "pit_lap": 20,
+      "compound": "MEDIUM\u2192HARD",
+      "race_time_s": 4740.37,
+      "runtime_s": 0.0002
+    },
+    "monte_carlo": {
+      "recommended_strategy": "1-Stop Medium -> Hard",
+      "race_time_s": 4786.06,
+      "pit_lap": 20,
+      "runtime_s": 1.871
+    },
+    "baseline": {
+      "never_pit_time_s": 4797.975,
+      "1stop_lap22_time_s": 4740.675
+    },
+    "actual": {
+      "pit_lap": 15,
+      "race_time_s_estimated": 4741.62
+    },
+    "rl_experimental": {
+      "status": "OK",
+      "race_time_s": 4862.397,
+      "pits": 0,
+      "final_position": 20
+    },
+    "regret": {
+      "mc_vs_exact_s": 45.69,
+      "baseline_vs_exact_s": 0.305,
+      "rl_vs_exact_s": 122.027,
+      "actual_vs_mc_s": -44.44
+    },
+    "load_time_s": 3.338
+  },
+  {
+    "season": 2023,
+    "round": 2,
+    "grand_prix": "Saudi Arabian Grand Prix",
+    "circuit": "Jeddah",
+    "total_laps": 50,
+    "status": "OK",
+    "leakage_passed": true,
+    "data_source": "REAL_FASTF1",
+    "snapshot_leakage_ok": true,
+    "exact": {
+      "pit_lap": 17,
+      "compound": "MEDIUM\u2192HARD",
+      "race_time_s": 4156.415,
+      "runtime_s": 0.0001
+    },
+    "monte_carlo": {
+      "recommended_strategy": "1-Stop Medium -> Hard",
+      "race_time_s": 4202.9,
+      "pit_lap": 17,
+      "runtime_s": 1.5774
+    },
+    "baseline": {
+      "never_pit_time_s": 4195.625,
+      "1stop_lap22_time_s": 4157.715
+    },
+    "actual": {
+      "pit_lap": 19,
+      "race_time_s_estimated": 4156.59
+    },
+    "rl_experimental": {
+      "status": "OK",
+      "race_time_s": 4190.722,
+      "pits": 1,
+      "final_position": 20
+    },
+    "regret": {
+      "mc_vs_exact_s": 46.485,
+      "baseline_vs_exact_s": 1.3,
+      "rl_vs_exact_s": 34.307,
+      "actual_vs_mc_s": -46.31
+    },
+    "load_time_s": 42724.363
+  },
+  {
+    "season": 2023,
+    "round": 3,
+    "grand_prix": "Australian Grand Prix",
+    "circuit": "Melbourne",
+    "total_laps": 58,
+    "status": "OK",
+    "leakage_passed": true,
+    "data_source": "REAL_FASTF1",
+    "snapshot_leakage_ok": true,
+    "exact": {
+      "pit_lap": 20,
+      "compound": "MEDIUM\u2192HARD",
+      "race_time_s": 4823.89,
+      "runtime_s": 0.0002
+    },
+    "monte_carlo": {
+      "recommended_strategy": "1-Stop Medium -> Hard",
+      "race_time_s": 4880.46,
+      "pit_lap": 20,
+      "runtime_s": 1.4792
+    },
+    "baseline": {
+      "never_pit_time_s": 4884.325,
+      "1stop_lap22_time_s": 4824.115
+    },
+    "actual": {
+      "pit_lap": 9,
+      "race_time_s_estimated": 4830.875
+    },
+    "rl_experimental": {
+      "status": "OK",
+      "race_time_s": 4890.642,
+      "pits": 0,
+      "final_position": 20
+    },
+    "regret": {
+      "mc_vs_exact_s": 56.57,
+      "baseline_vs_exact_s": 0.225,
+      "rl_vs_exact_s": 66.752,
+      "actual_vs_mc_s": -49.585
+    },
+    "load_time_s": 5.342
+  },
+  {
+    "season": 2023,
+    "round": 4,
+    "grand_prix": "Azerbaijan Grand Prix",
+    "circuit": "Baku",
+    "total_laps": 51,
+    "status": "OK",
+    "leakage_passed": true,
+    "data_source": "REAL_FASTF1",
+    "snapshot_leakage_ok": true,
+    "exact": {
+      "pit_lap": 18,
+      "compound": "MEDIUM\u2192HARD",
+      "race_time_s": 4239.765,
+      "runtime_s": 0.0001
+    },
+    "monte_carlo": {
+      "recommended_strategy": "1-Stop Medium -> Hard",
+      "race_time_s": 4286.47,
+      "pit_lap": 18,
+      "runtime_s": 1.2221
+    },
+    "baseline": {
+      "never_pit_time_s": 4281.45,
+      "1stop_lap22_time_s": 4240.875
+    },
+    "actual": {
+      "pit_lap": 11,
+      "race_time_s_estimated": 4242.25
+    },
+    "rl_experimental": {
+      "status": "OK",
+      "race_time_s": 4353.799,
+      "pits": 0,
+      "final_position": 20
+    },
+    "regret": {
+      "mc_vs_exact_s": 46.705,
+      "baseline_vs_exact_s": 1.11,
+      "rl_vs_exact_s": 114.034,
+      "actual_vs_mc_s": -44.22
+    },
+    "load_time_s": 3.393
+  },
+  {
+    "season": 2023,
+    "round": 5,
+    "grand_prix": "Miami Grand Prix",
+    "circuit": "Miami",
+    "total_laps": 57,
+    "status": "OK",
+    "leakage_passed": true,
+    "data_source": "REAL_FASTF1",
+    "snapshot_leakage_ok": true,
+    "exact": {
+      "pit_lap": 20,
+      "compound": "MEDIUM\u2192HARD",
+      "race_time_s": 4740.37,
+      "runtime_s": 0.0001
+    },
+    "monte_carlo": {
+      "recommended_strategy": "1-Stop Medium -> Hard",
+      "race_time_s": 4784.95,
+      "pit_lap": 20,
+      "runtime_s": 1.3433
+    },
+    "baseline": {
+      "never_pit_time_s": 4797.975,
+      "1stop_lap22_time_s": 4740.675
+    },
+    "actual": {
+      "pit_lap": 46,
+      "race_time_s_estimated": 4780.215
+    },
+    "rl_experimental": {
+      "status": "OK",
+      "race_time_s": 4864.596,
+      "pits": 0,
+      "final_position": 20
+    },
+    "regret": {
+      "mc_vs_exact_s": 44.58,
+      "baseline_vs_exact_s": 0.305,
+      "rl_vs_exact_s": 124.226,
+      "actual_vs_mc_s": -4.735
+    },
+    "load_time_s": 3.714
+  },
+  {
+    "season": 2023,
+    "round": 6,
+    "grand_prix": "Monaco Grand Prix",
+    "circuit": "Monaco",
+    "total_laps": 78,
+    "status": "OK",
+    "leakage_passed": true,
+    "data_source": "REAL_FASTF1",
+    "snapshot_leakage_ok": true,
+    "exact": {
+      "pit_lap": 27,
+      "compound": "MEDIUM\u2192HARD",
+      "race_time_s": 6499.89,
+      "runtime_s": 0.0003
+    },
+    "monte_carlo": {
+      "recommended_strategy": "1-Stop Medium -> Hard",
+      "race_time_s": 6516.73,
+      "pit_lap": 27,
+      "runtime_s": 1.7746
+    },
+    "baseline": {
+      "never_pit_time_s": 6627.075,
+      "1stop_lap22_time_s": 6501.315
+    },
+    "actual": {
+      "pit_lap": 56,
+      "race_time_s_estimated": 6548.32
+    },
+    "rl_experimental": {
+      "status": "OK",
+      "race_time_s": 6742.947,
+      "pits": 1,
+      "final_position": 20
+    },
+    "regret": {
+      "mc_vs_exact_s": 16.84,
+      "baseline_vs_exact_s": 1.425,
+      "rl_vs_exact_s": 243.057,
+      "actual_vs_mc_s": 31.59
+    },
+    "load_time_s": 4.39
+  },
+  {
+    "season": 2023,
+    "round": 7,
+    "grand_prix": "Spanish Grand Prix",
+    "circuit": "Barcelona",
+    "total_laps": 66,
+    "status": "OK",
+    "leakage_passed": true,
+    "data_source": "REAL_FASTF1",
+    "snapshot_leakage_ok": true,
+    "exact": {
+      "pit_lap": 23,
+      "compound": "MEDIUM\u2192HARD",
+      "race_time_s": 5493.04,
+      "runtime_s": 0.0002
+    },
+    "monte_carlo": {
+      "recommended_strategy": "1-Stop Medium -> Hard",
+      "race_time_s": 5535.27,
+      "pit_lap": 23,
+      "runtime_s": 1.4849
+    },
+    "baseline": {
+      "never_pit_time_s": 5577.825,
+      "1stop_lap22_time_s": 5493.075
+    },
+    "actual": {
+      "pit_lap": 27,
+      "race_time_s_estimated": 5494.05
+    },
+    "rl_experimental": {
+      "status": "OK",
+      "race_time_s": 5602.081,
+      "pits": 0,
+      "final_position": 20
+    },
+    "regret": {
+      "mc_vs_exact_s": 42.23,
+      "baseline_vs_exact_s": 0.035,
+      "rl_vs_exact_s": 109.041,
+      "actual_vs_mc_s": -41.22
+    },
+    "load_time_s": 4.028
+  },
+  {
+    "season": 2024,
+    "round": 1,
+    "grand_prix": "Bahrain Grand Prix",
+    "circuit": "Sakhir",
+    "total_laps": 57,
+    "status": "OK",
+    "leakage_passed": true,
+    "data_source": "REAL_FASTF1",
+    "snapshot_leakage_ok": true,
+    "exact": {
+      "pit_lap": 20,
+      "compound": "MEDIUM\u2192HARD",
+      "race_time_s": 4740.37,
+      "runtime_s": 0.0001
+    },
+    "monte_carlo": {
+      "recommended_strategy": "1-Stop Medium -> Hard",
+      "race_time_s": 4791.78,
+      "pit_lap": 20,
+      "runtime_s": 1.2971
+    },
+    "baseline": {
+      "never_pit_time_s": 4797.975,
+      "1stop_lap22_time_s": 4740.675
+    },
+    "actual": {
+      "pit_lap": 18,
+      "race_time_s_estimated": 4740.525
+    },
+    "rl_experimental": {
+      "status": "OK",
+      "race_time_s": 4803.583,
+      "pits": 0,
+      "final_position": 20
+    },
+    "regret": {
+      "mc_vs_exact_s": 51.41,
+      "baseline_vs_exact_s": 0.305,
+      "rl_vs_exact_s": 63.213,
+      "actual_vs_mc_s": -51.255
+    },
+    "load_time_s": 4.281
+  },
+  {
+    "season": 2024,
+    "round": 2,
+    "grand_prix": "Saudi Arabian Grand Prix",
+    "circuit": "Jeddah",
+    "total_laps": 50,
+    "status": "OK",
+    "leakage_passed": true,
+    "data_source": "REAL_FASTF1",
+    "snapshot_leakage_ok": true,
+    "exact": {
+      "pit_lap": 17,
+      "compound": "MEDIUM\u2192HARD",
+      "race_time_s": 4156.415,
+      "runtime_s": 0.0001
+    },
+    "monte_carlo": {
+      "recommended_strategy": "1-Stop Medium -> Hard",
+      "race_time_s": 4206.62,
+      "pit_lap": 17,
+      "runtime_s": 1.1524
+    },
+    "baseline": {
+      "never_pit_time_s": 4195.625,
+      "1stop_lap22_time_s": 4157.715
+    },
+    "actual": {
+      "pit_lap": 8,
+      "race_time_s_estimated": 4161.32
+    },
+    "rl_experimental": {
+      "status": "OK",
+      "race_time_s": 4250.076,
+      "pits": 1,
+      "final_position": 20
+    },
+    "regret": {
+      "mc_vs_exact_s": 50.205,
+      "baseline_vs_exact_s": 1.3,
+      "rl_vs_exact_s": 93.661,
+      "actual_vs_mc_s": -45.3
+    },
+    "load_time_s": 3.274
+  },
+  {
+    "season": 2024,
+    "round": 3,
+    "grand_prix": "Australian Grand Prix",
+    "circuit": "Melbourne",
+    "total_laps": 58,
+    "status": "OK",
+    "leakage_passed": true,
+    "data_source": "REAL_FASTF1",
+    "snapshot_leakage_ok": true,
+    "exact": {
+      "pit_lap": 20,
+      "compound": "MEDIUM\u2192HARD",
+      "race_time_s": 4823.89,
+      "runtime_s": 0.0001
+    },
+    "monte_carlo": {
+      "recommended_strategy": "1-Stop Medium -> Hard",
+      "race_time_s": 4872.6,
+      "pit_lap": 20,
+      "runtime_s": 1.3157
+    },
+    "baseline": {
+      "never_pit_time_s": 4884.325,
+      "1stop_lap22_time_s": 4824.115
+    },
+    "actual": {
+      "pit_lap": null,
+      "race_time_s_estimated": 4884.325
+    },
+    "rl_experimental": {
+      "status": "OK",
+      "race_time_s": 4888.855,
+      "pits": 0,
+      "final_position": 20
+    },
+    "regret": {
+      "mc_vs_exact_s": 48.71,
+      "baseline_vs_exact_s": 0.225,
+      "rl_vs_exact_s": 64.965,
+      "actual_vs_mc_s": 11.725
+    },
+    "load_time_s": 3.616
+  },
+  {
+    "season": 2024,
+    "round": 4,
+    "grand_prix": "Japanese Grand Prix",
+    "circuit": "Suzuka",
+    "total_laps": 53,
+    "status": "OK",
+    "leakage_passed": true,
+    "data_source": "REAL_FASTF1",
+    "snapshot_leakage_ok": true,
+    "exact": {
+      "pit_lap": 18,
+      "compound": "MEDIUM\u2192HARD",
+      "race_time_s": 4406.525,
+      "runtime_s": 0.0001
+    },
+    "monte_carlo": {
+      "recommended_strategy": "1-Stop Medium -> Hard",
+      "race_time_s": 4447.66,
+      "pit_lap": 18,
+      "runtime_s": 1.1591
+    },
+    "baseline": {
+      "never_pit_time_s": 4453.325,
+      "1stop_lap22_time_s": 4407.315
+    },
+    "actual": {
+      "pit_lap": 2,
+      "race_time_s_estimated": 4421.765
+    },
+    "rl_experimental": {
+      "status": "OK",
+      "race_time_s": 4464.277,
+      "pits": 0,
+      "final_position": 20
+    },
+    "regret": {
+      "mc_vs_exact_s": 41.135,
+      "baseline_vs_exact_s": 0.79,
+      "rl_vs_exact_s": 57.752,
+      "actual_vs_mc_s": -25.895
+    },
+    "load_time_s": 3.485
+  },
+  {
+    "season": 2024,
+    "round": 5,
+    "grand_prix": "Chinese Grand Prix",
+    "circuit": "Shanghai",
+    "total_laps": 56,
+    "status": "OK",
+    "leakage_passed": true,
+    "data_source": "REAL_FASTF1",
+    "snapshot_leakage_ok": true,
+    "exact": {
+      "pit_lap": 19,
+      "compound": "MEDIUM\u2192HARD",
+      "race_time_s": 4656.87,
+      "runtime_s": 0.0001
+    },
+    "monte_carlo": {
+      "recommended_strategy": "1-Stop Medium -> Hard",
+      "race_time_s": 4708.68,
+      "pit_lap": 19,
+      "runtime_s": 1.3072
+    },
+    "baseline": {
+      "never_pit_time_s": 4711.7,
+      "1stop_lap22_time_s": 4657.275
+    },
+    "actual": {
+      "pit_lap": 14,
+      "race_time_s_estimated": 4658.495
+    },
+    "rl_experimental": {
+      "status": "OK",
+      "race_time_s": 4719.323,
+      "pits": 0,
+      "final_position": 20
+    },
+    "regret": {
+      "mc_vs_exact_s": 51.81,
+      "baseline_vs_exact_s": 0.405,
+      "rl_vs_exact_s": 62.453,
+      "actual_vs_mc_s": -50.185
+    },
+    "load_time_s": 3.615
+  },
+  {
+    "season": 2024,
+    "round": 6,
+    "grand_prix": "Miami Grand Prix",
+    "circuit": "Miami",
+    "total_laps": 57,
+    "status": "OK",
+    "leakage_passed": true,
+    "data_source": "REAL_FASTF1",
+    "snapshot_leakage_ok": true,
+    "exact": {
+      "pit_lap": 20,
+      "compound": "MEDIUM\u2192HARD",
+      "race_time_s": 4740.37,
+      "runtime_s": 0.0002
+    },
+    "monte_carlo": {
+      "recommended_strategy": "1-Stop Medium -> Hard",
+      "race_time_s": 4781.65,
+      "pit_lap": 20,
+      "runtime_s": 1.3319
+    },
+    "baseline": {
+      "never_pit_time_s": 4797.975,
+      "1stop_lap22_time_s": 4740.675
+    },
+    "actual": {
+      "pit_lap": 24,
+      "race_time_s_estimated": 4741.44
+    },
+    "rl_experimental": {
+      "status": "OK",
+      "race_time_s": 4805.318,
+      "pits": 0,
+      "final_position": 20
+    },
+    "regret": {
+      "mc_vs_exact_s": 41.28,
+      "baseline_vs_exact_s": 0.305,
+      "rl_vs_exact_s": 64.948,
+      "actual_vs_mc_s": -40.21
+    },
+    "load_time_s": 3.156
+  },
+  {
+    "season": 2024,
+    "round": 7,
+    "grand_prix": "Emilia Romagna Grand Prix",
+    "circuit": "Imola",
+    "total_laps": 63,
+    "status": "OK",
+    "leakage_passed": true,
+    "data_source": "REAL_FASTF1",
+    "snapshot_leakage_ok": true,
+    "exact": {
+      "pit_lap": 22,
+      "compound": "MEDIUM\u2192HARD",
+      "race_time_s": 5241.915,
+      "runtime_s": 0.0002
+    },
+    "monte_carlo": {
+      "recommended_strategy": "1-Stop Medium -> Hard",
+      "race_time_s": 5287.72,
+      "pit_lap": 22,
+      "runtime_s": 1.4411
+    },
+    "baseline": {
+      "never_pit_time_s": 5317.2,
+      "1stop_lap22_time_s": 5241.915
+    },
+    "actual": {
+      "pit_lap": 25,
+      "race_time_s_estimated": 5242.515
+    },
+    "rl_experimental": {
+      "status": "OK",
+      "race_time_s": 5345.768,
+      "pits": 0,
+      "final_position": 20
+    },
+    "regret": {
+      "mc_vs_exact_s": 45.805,
+      "baseline_vs_exact_s": 0.0,
+      "rl_vs_exact_s": 103.853,
+      "actual_vs_mc_s": -45.205
+    },
+    "load_time_s": 3.608
+  },
+  {
+    "season": 2025,
+    "round": 1,
+    "grand_prix": "Australian Grand Prix",
+    "circuit": "Melbourne",
+    "total_laps": 57,
+    "status": "OK",
+    "leakage_passed": true,
+    "data_source": "REAL_FASTF1",
+    "snapshot_leakage_ok": true,
+    "exact": {
+      "pit_lap": 20,
+      "compound": "MEDIUM\u2192HARD",
+      "race_time_s": 4740.37,
+      "runtime_s": 0.0002
+    },
+    "monte_carlo": {
+      "recommended_strategy": "1-Stop Medium -> Hard",
+      "race_time_s": 4784.36,
+      "pit_lap": 20,
+      "runtime_s": 1.3304
+    },
+    "baseline": {
+      "never_pit_time_s": 4797.975,
+      "1stop_lap22_time_s": 4740.675
+    },
+    "actual": {
+      "pit_lap": 3,
+      "race_time_s_estimated": 4756.35
+    },
+    "rl_experimental": {
+      "status": "OK",
+      "race_time_s": 4863.366,
+      "pits": 0,
+      "final_position": 20
+    },
+    "regret": {
+      "mc_vs_exact_s": 43.99,
+      "baseline_vs_exact_s": 0.305,
+      "rl_vs_exact_s": 122.996,
+      "actual_vs_mc_s": -28.01
+    },
+    "load_time_s": 4.148
+  },
+  {
+    "season": 2025,
+    "round": 2,
+    "grand_prix": "Chinese Grand Prix",
+    "circuit": "Shanghai",
+    "total_laps": 56,
+    "status": "OK",
+    "leakage_passed": true,
+    "data_source": "REAL_FASTF1",
+    "snapshot_leakage_ok": true,
+    "exact": {
+      "pit_lap": 19,
+      "compound": "MEDIUM\u2192HARD",
+      "race_time_s": 4656.87,
+      "runtime_s": 0.0001
+    },
+    "monte_carlo": {
+      "recommended_strategy": "1-Stop Medium -> Hard",
+      "race_time_s": 4706.96,
+      "pit_lap": 19,
+      "runtime_s": 1.3215
+    },
+    "baseline": {
+      "never_pit_time_s": 4711.7,
+      "1stop_lap22_time_s": 4657.275
+    },
+    "actual": {
+      "pit_lap": 14,
+      "race_time_s_estimated": 4658.495
+    },
+    "rl_experimental": {
+      "status": "OK",
+      "race_time_s": 4719.507,
+      "pits": 0,
+      "final_position": 20
+    },
+    "regret": {
+      "mc_vs_exact_s": 50.09,
+      "baseline_vs_exact_s": 0.405,
+      "rl_vs_exact_s": 62.637,
+      "actual_vs_mc_s": -48.465
+    },
+    "load_time_s": 3.52
+  },
+  {
+    "season": 2025,
+    "round": 3,
+    "grand_prix": "Japanese Grand Prix",
+    "circuit": "Suzuka",
+    "total_laps": 53,
+    "status": "OK",
+    "leakage_passed": true,
+    "data_source": "REAL_FASTF1",
+    "snapshot_leakage_ok": true,
+    "exact": {
+      "pit_lap": 18,
+      "compound": "MEDIUM\u2192HARD",
+      "race_time_s": 4406.525,
+      "runtime_s": 0.0001
+    },
+    "monte_carlo": {
+      "recommended_strategy": "1-Stop Medium -> Hard",
+      "race_time_s": 4458.2,
+      "pit_lap": 18,
+      "runtime_s": 1.2164
+    },
+    "baseline": {
+      "never_pit_time_s": 4453.325,
+      "1stop_lap22_time_s": 4407.315
+    },
+    "actual": {
+      "pit_lap": 22,
+      "race_time_s_estimated": 4407.315
+    },
+    "rl_experimental": {
+      "status": "OK",
+      "race_time_s": 4523.243,
+      "pits": 0,
+      "final_position": 20
+    },
+    "regret": {
+      "mc_vs_exact_s": 51.675,
+      "baseline_vs_exact_s": 0.79,
+      "rl_vs_exact_s": 116.718,
+      "actual_vs_mc_s": -50.885
+    },
+    "load_time_s": 3.376
+  },
+  {
+    "season": 2025,
+    "round": 4,
+    "grand_prix": "Bahrain Grand Prix",
+    "circuit": "Sakhir",
+    "total_laps": 57,
+    "status": "OK",
+    "leakage_passed": true,
+    "data_source": "REAL_FASTF1",
+    "snapshot_leakage_ok": true,
+    "exact": {
+      "pit_lap": 20,
+      "compound": "MEDIUM\u2192HARD",
+      "race_time_s": 4740.37,
+      "runtime_s": 0.0001
+    },
+    "monte_carlo": {
+      "recommended_strategy": "1-Stop Medium -> Hard",
+      "race_time_s": 4782.13,
+      "pit_lap": 20,
+      "runtime_s": 1.3228
+    },
+    "baseline": {
+      "never_pit_time_s": 4797.975,
+      "1stop_lap22_time_s": 4740.675
+    },
+    "actual": {
+      "pit_lap": 11,
+      "race_time_s_estimated": 4744.69
+    },
+    "rl_experimental": {
+      "status": "OK",
+      "race_time_s": 4834.117,
+      "pits": 0,
+      "final_position": 20
+    },
+    "regret": {
+      "mc_vs_exact_s": 41.76,
+      "baseline_vs_exact_s": 0.305,
+      "rl_vs_exact_s": 93.747,
+      "actual_vs_mc_s": -37.44
+    },
+    "load_time_s": 3.483
+  },
+  {
+    "season": 2025,
+    "round": 5,
+    "grand_prix": "Saudi Arabian Grand Prix",
+    "circuit": "Jeddah",
+    "total_laps": 50,
+    "status": "OK",
+    "leakage_passed": true,
+    "data_source": "REAL_FASTF1",
+    "snapshot_leakage_ok": true,
+    "exact": {
+      "pit_lap": 17,
+      "compound": "MEDIUM\u2192HARD",
+      "race_time_s": 4156.415,
+      "runtime_s": 0.0001
+    },
+    "monte_carlo": {
+      "recommended_strategy": "1-Stop Medium -> Hard",
+      "race_time_s": 4211.81,
+      "pit_lap": 17,
+      "runtime_s": 1.1977
+    },
+    "baseline": {
+      "never_pit_time_s": 4195.625,
+      "1stop_lap22_time_s": 4157.715
+    },
+    "actual": {
+      "pit_lap": 22,
+      "race_time_s_estimated": 4157.715
+    },
+    "rl_experimental": {
+      "status": "OK",
+      "race_time_s": 4220.145,
+      "pits": 1,
+      "final_position": 20
+    },
+    "regret": {
+      "mc_vs_exact_s": 55.395,
+      "baseline_vs_exact_s": 1.3,
+      "rl_vs_exact_s": 63.73,
+      "actual_vs_mc_s": -54.095
+    },
+    "load_time_s": 3.262
+  },
+  {
+    "season": 2025,
+    "round": 6,
+    "grand_prix": "Miami Grand Prix",
+    "circuit": "Miami Gardens",
+    "total_laps": 57,
+    "status": "OK",
+    "leakage_passed": true,
+    "data_source": "REAL_FASTF1",
+    "snapshot_leakage_ok": true,
+    "exact": {
+      "pit_lap": 20,
+      "compound": "MEDIUM\u2192HARD",
+      "race_time_s": 4740.37,
+      "runtime_s": 0.0001
+    },
+    "monte_carlo": {
+      "recommended_strategy": "1-Stop Medium -> Hard",
+      "race_time_s": 4791.79,
+      "pit_lap": 20,
+      "runtime_s": 1.272
+    },
+    "baseline": {
+      "never_pit_time_s": 4797.975,
+      "1stop_lap22_time_s": 4740.675
+    },
+    "actual": {
+      "pit_lap": 27,
+      "race_time_s_estimated": 4743.45
+    },
+    "rl_experimental": {
+      "status": "OK",
+      "race_time_s": 4804.892,
+      "pits": 0,
+      "final_position": 20
+    },
+    "regret": {
+      "mc_vs_exact_s": 51.42,
+      "baseline_vs_exact_s": 0.305,
+      "rl_vs_exact_s": 64.522,
+      "actual_vs_mc_s": -48.34
+    },
+    "load_time_s": 3.384
+  },
+  {
+    "season": 2025,
+    "round": 7,
+    "grand_prix": "Emilia Romagna Grand Prix",
+    "circuit": "Imola",
+    "total_laps": 63,
+    "status": "OK",
+    "leakage_passed": true,
+    "data_source": "REAL_FASTF1",
+    "snapshot_leakage_ok": true,
+    "exact": {
+      "pit_lap": 22,
+      "compound": "MEDIUM\u2192HARD",
+      "race_time_s": 5241.915,
+      "runtime_s": 0.0002
+    },
+    "monte_carlo": {
+      "recommended_strategy": "1-Stop Medium -> Hard",
+      "race_time_s": 5283.13,
+      "pit_lap": 22,
+      "runtime_s": 1.4456
+    },
+    "baseline": {
+      "never_pit_time_s": 5317.2,
+      "1stop_lap22_time_s": 5241.915
+    },
+    "actual": {
+      "pit_lap": 30,
+      "race_time_s_estimated": 5245.815
+    },
+    "rl_experimental": {
+      "status": "OK",
+      "race_time_s": 5315.545,
+      "pits": 0,
+      "final_position": 20
+    },
+    "regret": {
+      "mc_vs_exact_s": 41.215,
+      "baseline_vs_exact_s": 0.0,
+      "rl_vs_exact_s": 73.63,
+      "actual_vs_mc_s": -37.315
+    },
+    "load_time_s": 3.647
+  }
+]

@@ -1,0 +1,352 @@
+[
+  {
+    "season": 2021,
+    "round": 1,
+    "grand_prix": "Bahrain Grand Prix",
+    "date": "2021-03-28",
+    "session": "R",
+    "circuit": "Sakhir",
+    "total_laps": 56,
+    "status": "AVAILABLE"
+  },
+  {
+    "season": 2021,
+    "round": 2,
+    "grand_prix": "Emilia Romagna Grand Prix",
+    "date": "2021-04-18",
+    "session": "R",
+    "circuit": "Imola",
+    "total_laps": 63,
+    "status": "AVAILABLE"
+  },
+  {
+    "season": 2021,
+    "round": 3,
+    "grand_prix": "Portuguese Grand Prix",
+    "date": "2021-05-02",
+    "session": "R",
+    "circuit": "Portim\u00e3o",
+    "total_laps": 66,
+    "status": "AVAILABLE"
+  },
+  {
+    "season": 2021,
+    "round": 4,
+    "grand_prix": "Spanish Grand Prix",
+    "date": "2021-05-09",
+    "session": "R",
+    "circuit": "Barcelona",
+    "total_laps": 66,
+    "status": "AVAILABLE"
+  },
+  {
+    "season": 2021,
+    "round": 5,
+    "grand_prix": "Monaco Grand Prix",
+    "date": "2021-05-23",
+    "session": "R",
+    "circuit": "Monte Carlo",
+    "total_laps": 78,
+    "status": "AVAILABLE"
+  },
+  {
+    "season": 2021,
+    "round": 6,
+    "grand_prix": "Azerbaijan Grand Prix",
+    "date": "2021-06-06",
+    "session": "R",
+    "circuit": "Baku",
+    "total_laps": 51,
+    "status": "AVAILABLE"
+  },
+  {
+    "season": 2021,
+    "round": 7,
+    "grand_prix": "French Grand Prix",
+    "date": "2021-06-20",
+    "session": "R",
+    "circuit": "Le Castellet",
+    "total_laps": 53,
+    "status": "AVAILABLE"
+  },
+  {
+    "season": 2022,
+    "round": 1,
+    "grand_prix": "Bahrain Grand Prix",
+    "date": "2022-03-20",
+    "session": "R",
+    "circuit": "Sakhir",
+    "total_laps": 57,
+    "status": "AVAILABLE"
+  },
+  {
+    "season": 2022,
+    "round": 2,
+    "grand_prix": "Saudi Arabian Grand Prix",
+    "date": "2022-03-27",
+    "session": "R",
+    "circuit": "Jeddah",
+    "total_laps": 50,
+    "status": "AVAILABLE"
+  },
+  {
+    "season": 2022,
+    "round": 3,
+    "grand_prix": "Australian Grand Prix",
+    "date": "2022-04-10",
+    "session": "R",
+    "circuit": "Melbourne",
+    "total_laps": 58,
+    "status": "AVAILABLE"
+  },
+  {
+    "season": 2022,
+    "round": 4,
+    "grand_prix": "Emilia Romagna Grand Prix",
+    "date": "2022-04-24",
+    "session": "R",
+    "circuit": "Imola",
+    "total_laps": 63,
+    "status": "AVAILABLE"
+  },
+  {
+    "season": 2022,
+    "round": 5,
+    "grand_prix": "Miami Grand Prix",
+    "date": "2022-05-08",
+    "session": "R",
+    "circuit": "Miami",
+    "total_laps": 57,
+    "status": "AVAILABLE"
+  },
+  {
+    "season": 2022,
+    "round": 6,
+    "grand_prix": "Spanish Grand Prix",
+    "date": "2022-05-22",
+    "session": "R",
+    "circuit": "Barcelona",
+    "total_laps": 66,
+    "status": "AVAILABLE"
+  },
+  {
+    "season": 2022,
+    "round": 7,
+    "grand_prix": "Monaco Grand Prix",
+    "date": "2022-05-29",
+    "session": "R",
+    "circuit": "Monaco",
+    "total_laps": 77,
+    "status": "AVAILABLE"
+  },
+  {
+    "season": 2023,
+    "round": 1,
+    "grand_prix": "Bahrain Grand Prix",
+    "date": "2023-03-05",
+    "session": "R",
+    "circuit": "Sakhir",
+    "total_laps": 57,
+    "status": "AVAILABLE"
+  },
+  {
+    "season": 2023,
+    "round": 2,
+    "grand_prix": "Saudi Arabian Grand Prix",
+    "date": "2023-03-19",
+    "session": "R",
+    "circuit": "Jeddah",
+    "total_laps": 50,
+    "status": "AVAILABLE"
+  },
+  {
+    "season": 2023,
+    "round": 3,
+    "grand_prix": "Australian Grand Prix",
+    "date": "2023-04-02",
+    "session": "R",
+    "circuit": "Melbourne",
+    "total_laps": 58,
+    "status": "AVAILABLE"
+  },
+  {
+    "season": 2023,
+    "round": 4,
+    "grand_prix": "Azerbaijan Grand Prix",
+    "date": "2023-04-30",
+    "session": "R",
+    "circuit": "Baku",
+    "total_laps": 51,
+    "status": "AVAILABLE"
+  },
+  {
+    "season": 2023,
+    "round": 5,
+    "grand_prix": "Miami Grand Prix",
+    "date": "2023-05-07",
+    "session": "R",
+    "circuit": "Miami",
+    "total_laps": 57,
+    "status": "AVAILABLE"
+  },
+  {
+    "season": 2023,
+    "round": 6,
+    "grand_prix": "Monaco Grand Prix",
+    "date": "2023-05-28",
+    "session": "R",
+    "circuit": "Monaco",
+    "total_laps": 78,
+    "status": "AVAILABLE"
+  },
+  {
+    "season": 2023,
+    "round": 7,
+    "grand_prix": "Spanish Grand Prix",
+    "date": "2023-06-04",
+    "session": "R",
+    "circuit": "Barcelona",
+    "total_laps": 66,
+    "status": "AVAILABLE"
+  },
+  {
+    "season": 2024,
+    "round": 1,
+    "grand_prix": "Bahrain Grand Prix",
+    "date": "2024-03-02",
+    "session": "R",
+    "circuit": "Sakhir",
+    "total_laps": 57,
+    "status": "AVAILABLE"
+  },
+  {
+    "season": 2024,
+    "round": 2,
+    "grand_prix": "Saudi Arabian Grand Prix",
+    "date": "2024-03-09",
+    "session": "R",
+    "circuit": "Jeddah",
+    "total_laps": 50,
+    "status": "AVAILABLE"
+  },
+  {
+    "season": 2024,
+    "round": 3,
+    "grand_prix": "Australian Grand Prix",
+    "date": "2024-03-24",
+    "session": "R",
+    "circuit": "Melbourne",
+    "total_laps": 58,
+    "status": "AVAILABLE"
+  },
+  {
+    "season": 2024,
+    "round": 4,
+    "grand_prix": "Japanese Grand Prix",
+    "date": "2024-04-07",
+    "session": "R",
+    "circuit": "Suzuka",
+    "total_laps": 53,
+    "status": "AVAILABLE"
+  },
+  {
+    "season": 2024,
+    "round": 5,
+    "grand_prix": "Chinese Grand Prix",
+    "date": "2024-04-21",
+    "session": "R",
+    "circuit": "Shanghai",
+    "total_laps": 56,
+    "status": "AVAILABLE"
+  },
+  {
+    "season": 2024,
+    "round": 6,
+    "grand_prix": "Miami Grand Prix",
+    "date": "2024-05-05",
+    "session": "R",
+    "circuit": "Miami",
+    "total_laps": 57,
+    "status": "AVAILABLE"
+  },
+  {
+    "season": 2024,
+    "round": 7,
+    "grand_prix": "Emilia Romagna Grand Prix",
+    "date": "2024-05-19",
+    "session": "R",
+    "circuit": "Imola",
+    "total_laps": 63,
+    "status": "AVAILABLE"
+  },
+  {
+    "season": 2025,
+    "round": 1,
+    "grand_prix": "Australian Grand Prix",
+    "date": "2025-03-16",
+    "session": "R",
+    "circuit": "Melbourne",
+    "total_laps": 57,
+    "status": "AVAILABLE"
+  },
+  {
+    "season": 2025,
+    "round": 2,
+    "grand_prix": "Chinese Grand Prix",
+    "date": "2025-03-23",
+    "session": "R",
+    "circuit": "Shanghai",
+    "total_laps": 56,
+    "status": "AVAILABLE"
+  },
+  {
+    "season": 2025,
+    "round": 3,
+    "grand_prix": "Japanese Grand Prix",
+    "date": "2025-04-06",
+    "session": "R",
+    "circuit": "Suzuka",
+    "total_laps": 53,
+    "status": "AVAILABLE"
+  },
+  {
+    "season": 2025,
+    "round": 4,
+    "grand_prix": "Bahrain Grand Prix",
+    "date": "2025-04-13",
+    "session": "R",
+    "circuit": "Sakhir",
+    "total_laps": 57,
+    "status": "AVAILABLE"
+  },
+  {
+    "season": 2025,
+    "round": 5,
+    "grand_prix": "Saudi Arabian Grand Prix",
+    "date": "2025-04-20",
+    "session": "R",
+    "circuit": "Jeddah",
+    "total_laps": 50,
+    "status": "AVAILABLE"
+  },
+  {
+    "season": 2025,
+    "round": 6,
+    "grand_prix": "Miami Grand Prix",
+    "date": "2025-05-04",
+    "session": "R",
+    "circuit": "Miami Gardens",
+    "total_laps": 57,
+    "status": "AVAILABLE"
+  },
+  {
+    "season": 2025,
+    "round": 7,
+    "grand_prix": "Emilia Romagna Grand Prix",
+    "date": "2025-05-18",
+    "session": "R",
+    "circuit": "Imola",
+    "total_laps": 63,
+    "status": "AVAILABLE"
+  }
+]

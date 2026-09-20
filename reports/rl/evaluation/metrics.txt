@@ -1,0 +1,7 @@
+RND:{'reward': np.float64(-152.97274), 'position': np.float64(20.0), 'time': np.float64(5809.727399999999), 'pits': np.float64(43.0), 'actions': {0: 70, 1: 64, 2: 67, 3: 84}}
+SO:{'reward': np.float64(-56.53588), 'position': np.float64(20.0), 'time': np.float64(4845.3588), 'pits': np.float64(0.0), 'actions': {0: 285, 1: 0, 2: 0, 3: 0}}
+1S:{'reward': np.float64(90.39962000000001), 'position': np.float64(8.2), 'time': np.float64(4792.003799999999), 'pits': np.float64(1.0), 'actions': {0: 280, 1: 0, 2: 0, 3: 5}}
+EXACT:{'reward': np.float64(90.38878), 'position': np.float64(8.2), 'time': np.float64(4792.1122000000005), 'pits': np.float64(1.0), 'actions': {0: 280, 1: 0, 2: 0, 3: 5}}
+PPO:{'reward': np.float64(-56.53588), 'position': np.float64(20.0), 'time': np.float64(4845.3588), 'pits': np.float64(0.0), 'actions': {0: 285, 1: 0, 2: 0, 3: 0}}
+DQN:{'reward': np.float64(-56.53588), 'position': np.float64(20.0), 'time': np.float64(4845.3588), 'pits': np.float64(0.0), 'actions': {0: 285, 1: 0, 2: 0, 3: 0}}
+REGRET:53.24659999999949

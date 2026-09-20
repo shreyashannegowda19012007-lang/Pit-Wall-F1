@@ -1,0 +1,21 @@
+{
+  "races_attempted": 35,
+  "races_ok": 35,
+  "races_failed": 0,
+  "leakage_guard_passes": 35,
+  "mc_regret_mean_s": 45.886,
+  "mc_regret_median_s": 45.915,
+  "mc_regret_p95_s": 55.412,
+  "actual_vs_mc_mean_s": -37.541,
+  "rl_regret_mean_s": 97.665,
+  "rl_regret_median_s": 93.661,
+  "baseline_regret_mean_s": 0.533,
+  "seasons": [
+    2021,
+    2022,
+    2023,
+    2024,
+    2025
+  ],
+  "rl_available": true
+}

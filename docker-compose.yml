@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  pitwall_app:
+    build: .
+    container_name: pitwall_app
+    environment:
+      APP_ENV: production
+    ports:
+      - "8501:8501"
+    command: streamlit run src/app.py --server.port 8501 --server.address 0.0.0.0

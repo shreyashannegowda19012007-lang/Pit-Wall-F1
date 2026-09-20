@@ -1,0 +1,7 @@
+PPO_TRAIN_TIME: 62.22947859764099
+DQN_TRAIN_TIME: 17.612732410430908
+PPO_RES: {'reward': np.float64(-56.53588), 'position': np.float64(20.0), 'time': np.float64(4845.3588), 'pits': np.float64(0.0), 'actions': {0: 285, 1: 0, 2: 0, 3: 0}, 'inference_latency': 0.00042718000579298587}
+DQN_RES: {'reward': np.float64(-56.53588), 'position': np.float64(20.0), 'time': np.float64(4845.3588), 'pits': np.float64(0.0), 'actions': {0: 285, 1: 0, 2: 0, 3: 0}, 'inference_latency': 0.000304731569792095}
+BASE_RND: {'reward': np.float64(-147.91566000000003), 'position': np.float64(20.0), 'time': np.float64(5759.1566), 'pits': np.float64(40.8)}
+BASE_SO: {'reward': np.float64(-56.53588), 'position': np.float64(20.0), 'time': np.float64(4845.3588), 'pits': np.float64(0.0)}
+BASE_1S: {'reward': np.float64(90.39962000000001), 'position': np.float64(8.2), 'time': np.float64(4792.003799999999), 'pits': np.float64(1.0)}
