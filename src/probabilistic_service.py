@@ -42,19 +42,19 @@ class ProbabilisticService:
     ) -> Dict[str, Any]:
         """Runs Monte Carlo simulation and returns finishing position discrete probability distribution."""
         from advanced_monte_carlo import AdvancedMonteCarloStrategyEngine
-        
+
         mc_analysis = AdvancedMonteCarloStrategyEngine.evaluate_strategy_candidates(
             target_driver_id=driver_state.driver_id,
             circuit_id=race_state.track.track_name,
             total_laps=race_state.total_laps,
             num_simulations_per_candidate=100
         )
-        
+
         cands = mc_analysis.get("candidate_evaluations", [])
         best = next((c for c in cands if c.get("name") == mc_analysis.get("recommended_strategy")), None)
         if not best and cands:
             best = cands[0]
-            
+
         if not best:
             return {"error": "Failed to run Monte Carlo strategy simulation."}
 
@@ -131,18 +131,18 @@ class ProbabilisticService:
                     else:
                         event = parts[2]
                         session_type = "Race"
-                    
+
                     import fastf1
                     from src import config
                     config.ensure_directories()
                     fastf1.Cache.enable_cache(config.CACHE_DIR)
-                    
+
                     try:
                         event_num = int(event)
                         session = fastf1.get_session(season, event_num, session_type)
                     except ValueError:
                         session = fastf1.get_session(season, event, session_type)
-                    
+
                     session.load(laps=True, telemetry=False, weather=False, messages=False)
                     laps_df = session.laps
                     results_df = session.results
@@ -223,7 +223,7 @@ class ProbabilisticService:
 
         stint_laps = []
         base_lap_time = 91.5
-        
+
         if not comp_laps.empty:
             comp_laps = comp_laps.head(total_laps)
             for i, (_, row) in enumerate(comp_laps.iterrows()):
@@ -282,18 +282,18 @@ class ProbabilisticService:
         """Runs historical backtest at decision lap T with zero future data leakage using actual telemetry."""
         from historical_replay_engine import HistoricalReplayEngine
         from data_providers import get_provider
-        
+
         # Parse session_id (e.g., "S-2024-SPAIN" -> 2024, "SPAIN")
         parts = session_id.split('-')
         year = int(parts[1]) if len(parts) > 1 else 2024
         event = parts[2] if len(parts) > 2 else "SPAIN"
-        
+
         provider = get_provider()
         data = provider.fetch_session_data(year, event, 'R')
-        
+
         if not data.get("success"):
             return {"error": data.get("error", "Failed to load historical session telemetry.")}
-            
+
         return HistoricalReplayEngine.run_full_race_replay(
             session=data.get("raw_session"),
             laps_df=data.get("laps", pd.DataFrame()),  # type: ignore
@@ -307,17 +307,17 @@ class ProbabilisticService:
         """Evaluates component ablation study matrix."""
         from historical_ablation import AblationStudyEngine
         from data_providers import get_provider
-        
+
         parts = session_id.split('-')
         year = int(parts[1]) if len(parts) > 1 else 2024
         event = parts[2] if len(parts) > 2 else "SPAIN"
-        
+
         provider = get_provider()
         data = provider.fetch_session_data(year, event, 'R')
-        
+
         if not data.get("success"):
             return {"error": data.get("error", "Failed to load historical session telemetry.")}
-            
+
         return AblationStudyEngine.run_ablation_study(
             session=data.get("raw_session"),
             laps_df=data.get("laps", pd.DataFrame()),  # type: ignore
@@ -337,7 +337,7 @@ class ProbabilisticService:
                 "action_probabilities": {},
                 "state_value_estimate": 0.0
             }
-            
+
         from rl_strategy_agent import F1StrategyEnv, RLPolicyAgent
         env = F1StrategyEnv()
         obs, _ = env.reset(seed=42)
@@ -360,7 +360,7 @@ class ProbabilisticService:
                     "strategy_regret_s": 0.0
                 }
             }
-            
+
         from rl_strategy_agent import RLStrategyEvaluator
         res = RLStrategyEvaluator.evaluate_rl_vs_baselines(driver_id)
         res["status"] = "EXPERIMENTAL - NOT PRODUCTION AUTHORITATIVE"
@@ -439,30 +439,30 @@ class ProbabilisticService:
         """Returns canonical driver strategy state by resolving real-time dependencies."""
         from src.decision_architecture import DecisionArchitectureOrchestrator
         timestamp_s = max(1200.0, float(lap) * 85.0)
-        
+
         try:
             race_context = DecisionArchitectureOrchestrator.build_race_context(session_id=session_id, timestamp_s=timestamp_s, mode="REPLAY")
             driver_ctx = race_context.drivers.get(driver_id)
         except Exception:
             driver_ctx = None
-        
+
         if not driver_ctx:
             return {
                 "session_id": session_id,
                 "lap": lap,
                 "driver_id": driver_id,
                 "position": "UNAVAILABLE",
-                "gap_ahead_s": 0.0,
-                "gap_behind_s": 0.0,
+                "gap_ahead_s": None,
+                "gap_behind_s": None,
                 "current_compound": "UNKNOWN",
-                "tyre_age_laps": 0,
-                "estimated_degradation_s_per_lap": 0.0,
-                "degradation_uncertainty_s": 0.0,
-                "remaining_useful_life_laps": 0,
-                "fuel_mass_kg": 0.0,
+                "tyre_age_laps": None,
+                "estimated_degradation_s_per_lap": None,
+                "degradation_uncertainty_s": None,
+                "remaining_useful_life_laps": None,
+                "fuel_mass_kg": None,
                 "track_condition": "UNKNOWN",
                 "weather_state": "UNKNOWN",
-                "pit_loss_s": 22.4,
+                "pit_loss_s": None,
                 "safety_car_status": "UNKNOWN",
                 "model_versions": {
                     "tyre_degradation": "v3.1.4-bayes",
@@ -481,8 +481,8 @@ class ProbabilisticService:
             "tyre_age_laps": driver_ctx.tyre_age_laps,
             "estimated_degradation_s_per_lap": driver_ctx.degradation_estimate_s_per_lap,
             "degradation_uncertainty_s": 0.015,
-            "remaining_useful_life_laps": max(0, 30 - driver_ctx.tyre_age_laps),
-            "fuel_mass_kg": max(0.0, 100.0 - driver_ctx.lap * 1.5),
+            "remaining_useful_life_laps": max(0, 30 - driver_ctx.tyre_age_laps) if driver_ctx.tyre_age_laps is not None else None,
+            "fuel_mass_kg": max(0.0, 100.0 - driver_ctx.lap * 1.5) if driver_ctx.lap is not None else None,
             "track_condition": "DRY",
             "weather_state": "SUNNY",
             "pit_loss_s": 22.4,
@@ -494,29 +494,30 @@ class ProbabilisticService:
         }
 
     @staticmethod
-    def analyze_undercut_overcut(driver_id: str = "VER", rival_driver_id: str = "HAM", gap_s: float = 2.84) -> Dict[str, Any]:
+    def analyze_undercut_overcut(driver_id: str = "VER", rival_driver_id: str = "HAM", gap_s: float = 2.84, base_pace_s: float = 82.0, rival_base_pace_s: float = None) -> Dict[str, Any]:
         """Performs undercut and overcut success probability and expected time gain analysis using Monte Carlo."""
         from src.monte_carlo_engine import MonteCarloRaceEngine
         from src.race_state import CompleteRaceState, DriverState, TyreState, FuelState, WeatherState, TrackState, SafetyCarState
-        
+
         cur_lap = 22
         total_laps = 66
-        
+
         # We construct a synthetic scenario where rival is ahead by gap_s
         d_state = DriverState(
             driver_id=driver_id,
             position=2,
             current_gap_to_leader_s=gap_s,
-            base_pace_s=82.0,
+            base_pace_s=base_pace_s,
             tyre_state=TyreState(compound="MEDIUM", age_laps=15, remaining_grip_pct=90.0, thermal_deg_rate=0.08),
             fuel_state=FuelState(fuel_remaining_kg=100.0)
         )
+        r_pace = rival_base_pace_s if rival_base_pace_s is not None else base_pace_s - 0.2
         r_state = DriverState(
             driver_id=rival_driver_id,
             position=1,
             current_gap_to_leader_s=0.0,
-            base_pace_s=82.0,
-            tyre_state=TyreState(compound="MEDIUM", age_laps=15, remaining_grip_pct=90.0, thermal_deg_rate=0.08),
+            base_pace_s=r_pace,
+            tyre_state=TyreState(compound="MEDIUM", age_laps=16, remaining_grip_pct=88.0, thermal_deg_rate=0.08),
             fuel_state=FuelState(fuel_remaining_kg=100.0)
         )
         c_state = CompleteRaceState(
@@ -527,17 +528,17 @@ class ProbabilisticService:
             track=TrackState(total_laps=total_laps),
             safety_car=SafetyCarState()
         )
-        
+
         mc_engine = MonteCarloRaceEngine(iterations=25, seed=42)
         rankings = mc_engine.rank_strategies(d_state, [r_state], c_state, objective="MAX_WIN")
-        
+
         p_undercut = 0.0
         gain_undercut = 0.0
         p_overcut = 0.0
         gain_overcut = 0.0
-        
+
         base_time = rankings[-1].expected_race_time_min if rankings else 90.0
-        
+
         for r in rankings:
             if "Undercut" in r.strategy_plan.strategy_name:
                 p_undercut = max(p_undercut, r.win_probability * 100.0)
@@ -545,9 +546,9 @@ class ProbabilisticService:
             else:
                 p_overcut = max(p_overcut, r.win_probability * 100.0)
                 gain_overcut = max(gain_overcut, (base_time - r.expected_race_time_min) * 60.0)
-                
+
         tactic = 'EXECUTE_UNDERCUT' if p_undercut >= p_overcut and p_undercut > 10.0 else 'STAY_ON_CURRENT_PACE'
-        
+
         return {
             "undercut_success_probability_pct": round(p_undercut, 1),
             "undercut_expected_gain_s": round(gain_undercut, 2),
@@ -561,11 +562,11 @@ class ProbabilisticService:
         """Synthesizes Monte Carlo and Exact Optimizer into one authoritative decision via Decision Architecture."""
         from src.decision_architecture import DecisionArchitectureOrchestrator, DecisionEngine
         from dataclasses import asdict
-        
+
         timestamp_s = lap * 90.0
         race_context = DecisionArchitectureOrchestrator.build_race_context(session_id=session_id, timestamp_s=timestamp_s)
         recommendation = DecisionEngine.generate_recommendation(race_context, driver_id, rival_driver_id)
-        
+
         return {
             "recommended_action": recommendation.recommendation,
             "expected_time_gain_s": 0.0,  # Legacy field, Monte Carlo handles overall expected time

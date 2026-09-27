@@ -1,0 +1,121 @@
+.jarvis-container {
+  padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  height: 100%;
+}
+
+.jarvis-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.title-section h2 {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  color: var(--text-primary);
+  font-size: 1.5rem;
+}
+
+.title-section h2 .material-icons {
+  color: var(--accent);
+}
+
+.subtitle {
+  color: var(--text-secondary);
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.jarvis-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.insights-feed {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  max-width: 800px;
+}
+
+.insight-card {
+  display: flex;
+  gap: var(--spacing-md);
+  background: var(--surface);
+  border: 1px solid var(--surface-light);
+  padding: var(--spacing-md);
+  border-radius: 8px;
+  align-items: flex-start;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.insight-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.insight-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-light);
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.insight-card.pace .insight-icon {
+  background: rgba(39, 244, 210, 0.1);
+  color: var(--accent);
+}
+
+.insight-card.strategy .insight-icon {
+  background: rgba(255, 128, 0, 0.1);
+  color: #ff8000;
+}
+
+.insight-card.tyres .insight-icon {
+  background: rgba(220, 53, 69, 0.1);
+  color: #dc3545;
+}
+
+.insight-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.insight-category {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  letter-spacing: 0.05em;
+}
+
+.insight-body p {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--text-primary);
+}
+
+.jarvis-loading, .jarvis-error {
+  padding: var(--spacing-xl);
+  text-align: center;
+  background: var(--surface);
+  border-radius: 8px;
+  color: var(--text-secondary);
+}
+
+.jarvis-error {
+  color: var(--error);
+}

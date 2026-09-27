@@ -1,0 +1,76 @@
+.circuits-container {
+  padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.circuits-header h2 {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  color: var(--text-primary);
+  font-size: 1.5rem;
+}
+
+.circuits-header h2 .material-icons {
+  color: var(--accent);
+}
+
+.circuits-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.circuit-card {
+  background: var(--surface);
+  border: 1px solid var(--surface-light);
+  border-radius: 8px;
+  padding: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  transition: transform 0.2s;
+}
+
+.circuit-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+}
+
+.circuit-round {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.circuit-name {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.circuit-details, .circuit-date {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.circuit-details .material-icons, .circuit-date .material-icons {
+  font-size: 1rem;
+}
+
+.sprint-badge {
+  background: rgba(255, 128, 0, 0.2);
+  color: #ff8000;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  align-self: flex-start;
+  margin-top: var(--spacing-sm);
+}

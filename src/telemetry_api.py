@@ -71,7 +71,7 @@ class TelemetryAPIService:
             row = conn.execute("SELECT * FROM validation_results WHERE dataset_id = ?", (dataset_id,)).fetchone()
             if not row:
                 return {"error": f"Validation report for dataset '{dataset_id}' not found."}
-            
+
             res = dict(row)
             res["errors"] = json.loads(res.get("errors_json", "[]"))
             res["warnings"] = json.loads(res.get("warnings_json", "[]"))
@@ -333,10 +333,10 @@ class TelemetryAPIService:
         from probabilistic_service import ProbabilisticService
         return ProbabilisticService.get_canonical_strategy_state(session_id, lap, driver_id)
 
-    def analyze_undercut_overcut(self, driver_id: str = "VER", rival_driver_id: str = "HAM", gap_s: float = 2.84) -> Dict[str, Any]:
+    def analyze_undercut_overcut(self, driver_id: str = "VER", rival_driver_id: str = "HAM", gap_s: float = 2.84, base_pace_s: float = 82.0, rival_base_pace_s: float = None) -> Dict[str, Any]:
         """POST /strategy/undercut-overcut"""
         from probabilistic_service import ProbabilisticService
-        return ProbabilisticService.analyze_undercut_overcut(driver_id, rival_driver_id, gap_s)
+        return ProbabilisticService.analyze_undercut_overcut(driver_id, rival_driver_id, gap_s, base_pace_s, rival_base_pace_s)
 
     def evaluate_authoritative_strategy(self, session_id: str = "S-2024-SPAIN", lap: int = 22, driver_id: str = "VER", rival_driver_id: str = "HAM") -> Dict[str, Any]:
         """POST /strategy/evaluate"""

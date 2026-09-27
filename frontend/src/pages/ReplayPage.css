@@ -1,0 +1,114 @@
+.replay-container {
+  padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  height: 100%;
+}
+
+.replay-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.title-section h2 {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  color: var(--text-primary);
+  font-size: 1.5rem;
+}
+
+.title-section h2 .material-icons {
+  color: var(--accent);
+}
+
+.session-badge {
+  background: var(--surface-light);
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-top: 8px;
+  display: inline-block;
+}
+
+.replay-content {
+  background: var(--surface);
+  border: 1px solid var(--surface-light);
+  border-radius: 8px;
+  padding: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.canvas-wrapper {
+  background: #0a0a0f;
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.track-canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+.replay-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-sm);
+  background: var(--surface-light);
+  border-radius: 8px;
+}
+
+.play-btn {
+  background: var(--accent);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.play-btn:hover {
+  filter: brightness(1.1);
+  transform: scale(1.05);
+}
+
+.time-slider {
+  flex: 1;
+  cursor: pointer;
+  accent-color: var(--accent);
+}
+
+.time-display {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  min-width: 80px;
+  text-align: right;
+}
+
+.replay-loading, .replay-error {
+  padding: var(--spacing-xl);
+  text-align: center;
+  background: var(--surface);
+  border-radius: 8px;
+  color: var(--text-secondary);
+}
+
+.replay-error {
+  color: var(--error);
+}

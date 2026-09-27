@@ -1,0 +1,110 @@
+.strategy-container {
+  padding: 1.5rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.strategy-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.strategy-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--text-primary);
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.strategy-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--accent-blue);
+  font-family: 'Share Tech Mono', monospace;
+  gap: 1rem;
+}
+
+.strategy-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--error);
+  text-align: center;
+  gap: 1rem;
+}
+
+.prob-display {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.5rem;
+}
+
+.prob-label {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.prob-value {
+  font-size: 2rem;
+  font-weight: bold;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.progress-bar {
+  height: 8px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.progress-fill {
+  height: 100%;
+  transition: width 1s ease-in-out;
+}
+
+.strat-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.strat-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.strat-row:last-child {
+  border-bottom: none;
+}
+
+.strat-key {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.strat-val {
+  color: var(--text-primary);
+  font-family: 'Share Tech Mono', monospace;
+  font-weight: bold;
+}
+
+.directive-box {
+  background: rgba(59, 130, 246, 0.05);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  padding: 1.5rem;
+  border-radius: 6px;
+}
