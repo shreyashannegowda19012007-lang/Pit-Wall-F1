@@ -5,12 +5,12 @@ def test_api_rl_isolation_disabled(monkeypatch):
     monkeypatch.delenv("EXPERIMENTAL_RL_ENABLED", raising=False)
     from src.telemetry_api import TelemetryAPIService
     api_service = TelemetryAPIService()
-    
+
     # Test predict
     res_predict = api_service.predict_rl_action()
     assert res_predict.get("status_code") == 403
     assert res_predict.get("error") == "Forbidden"
-    
+
     # Test evaluate
     res_eval = api_service.evaluate_rl_vs_baselines()
     assert res_eval.get("status_code") == 403
@@ -19,11 +19,11 @@ def test_api_rl_isolation_disabled(monkeypatch):
 def test_service_rl_isolation_disabled(monkeypatch):
     monkeypatch.delenv("EXPERIMENTAL_RL_ENABLED", raising=False)
     from src.probabilistic_service import ProbabilisticService
-    
+
     res = ProbabilisticService.predict_rl_action()
     assert res.get("status") == "EXPERIMENTAL_FEATURE_DISABLED"
     assert res.get("action_name") == "UNAVAILABLE"
-    
+
     res2 = ProbabilisticService.evaluate_rl_vs_baselines()
     assert res2.get("status") == "EXPERIMENTAL_FEATURE_DISABLED"
     assert res2.get("rl_agent", {}).get("recommended_action") == "UNAVAILABLE"
@@ -31,7 +31,7 @@ def test_service_rl_isolation_disabled(monkeypatch):
 def test_rl_metadata_correctness(monkeypatch):
     import src.config as config
     from src.decision_architecture import DecisionArchitectureOrchestrator
-    
+
     # Mock RealtimeRaceStateEngine to prevent ImportError
     import sys
     from unittest.mock import MagicMock
@@ -40,25 +40,25 @@ def test_rl_metadata_correctness(monkeypatch):
     # Actually just mock the entire realtime_race_state module's attribute
     import src.realtime_race_state as rrs
     rrs.RealtimeRaceStateEngine = mock_engine
-    
+
     # Simulate model exists
     original_exists = os.path.exists
     monkeypatch.setattr(os.path, "exists", lambda path: True if "ppo_strategy_v1.zip" in str(path) else original_exists(path))
-    
+
     # Case 1: Exists, False -> False
     monkeypatch.delenv("EXPERIMENTAL_RL_ENABLED", raising=False)
     ctx1 = DecisionArchitectureOrchestrator.build_race_context()
     assert ctx1.model_availability["RL_installed"] is True
     assert ctx1.model_availability["RL_experimental_enabled"] is False
     assert ctx1.model_availability["RL"] is False
-    
+
     # Case 2: Exists, True -> True
     monkeypatch.setenv("EXPERIMENTAL_RL_ENABLED", "true")
     ctx2 = DecisionArchitectureOrchestrator.build_race_context()
     assert ctx2.model_availability["RL_installed"] is True
     assert ctx2.model_availability["RL_experimental_enabled"] is True
     assert ctx2.model_availability["RL"] is True
-    
+
     # Case 3: Missing, True -> False
     monkeypatch.setattr(os.path, "exists", lambda path: False if "ppo_strategy_v1.zip" in str(path) else original_exists(path))
     monkeypatch.setenv("EXPERIMENTAL_RL_ENABLED", "true")

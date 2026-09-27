@@ -288,4 +288,3 @@ class AdvancedMonteCarloStrategyEngine:
             "sensitivity_analysis": sensitivity_analysis,
             "candidate_evaluations": [asdict(r) for r in results]
         }
-

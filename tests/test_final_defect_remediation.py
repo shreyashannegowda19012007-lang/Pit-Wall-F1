@@ -44,7 +44,7 @@ def test_driver_race_state_contract():
 def test_replay_adapter_graceful_empty_state():
     # Defect 3: Graceful empty state when data is genuinely missing
     laps_df = pd.DataFrame()
-    
+
     # Should return empty state, not throw
     adapter = ReplayAdapter(laps_df)
     state = adapter.fetch_current_race_state(session_id="MONACO", timestamp_s=0.0)
@@ -62,12 +62,12 @@ def test_replay_adapter_unexpected_exception():
 def test_replay_adapter_real_data_conversion(fastf1_2024_monaco):
     # Defect 7 & 8: Real FastF1 Runtime test
     laps, results, weather, session = fastf1_2024_monaco
-    
+
     adapter = ReplayAdapter(laps_df=laps, results_df=results)
     # Give a timestamp late in the race so data exists
     state = adapter.fetch_current_race_state(session_id="MONACO", timestamp_s=4000.0)
     assert isinstance(state, UnifiedRaceState)
-    
+
     # Require drivers > 0 and verify at least 5 drivers contain valid state
     assert len(state.drivers) > 0
     valid_drivers = [d for d in state.drivers.values() if d.driver_id and d.position > 0]
@@ -76,11 +76,11 @@ def test_replay_adapter_real_data_conversion(fastf1_2024_monaco):
 def test_timing_tower_real_data(fastf1_2024_monaco):
     # Defect 9: Timing Tower Real Data Test
     laps, results, weather, session = fastf1_2024_monaco
-    
+
     adapter = ReplayAdapter(laps_df=laps, results_df=results)
     state = adapter.fetch_current_race_state(session_id="MONACO", timestamp_s=4000.0)
     assert len(state.drivers) > 0
-    
+
     from src.pitwall_ui import render_unified_realtime_timing_tower
     from unittest.mock import patch
 
@@ -91,7 +91,7 @@ def test_timing_tower_real_data(fastf1_2024_monaco):
     except Exception as e:
         rendered_successfully = False
         pytest.fail(f"render_unified_realtime_timing_tower raised an exception: {e}")
-        
+
     assert rendered_successfully
 
 def test_windows_validation_output():

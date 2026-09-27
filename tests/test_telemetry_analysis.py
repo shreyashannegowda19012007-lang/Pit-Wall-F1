@@ -27,7 +27,7 @@ class TestTelemetryAnalysis(unittest.TestCase):
         dist_grid = np.linspace(0.0, 1000.0, 501)  # 2m resolution
         # Speed profile: 250 km/h baseline, corner deceleration at 400m-600m down to 100 km/h (apex at 500m)
         speed_ref = 250.0 - 150.0 * np.exp(-((dist_grid - 500.0) / 60.0)**2)
-        
+
         # Throttle & Brake
         throttle_ref = np.where(speed_ref < 240, 0.0, 100.0)
         brake_ref = np.where(dist_grid < 500.0, (250.0 - speed_ref) / 150.0 * 100.0, 0.0)
@@ -135,7 +135,7 @@ class TestTelemetryAnalysis(unittest.TestCase):
         aligned_df, _ = align_laps_by_distance(self.df_tgt, self.df_ref, grid_step_m=1.0)
         corners = detect_corners_from_telemetry(aligned_df['Distance'].values, aligned_df['Speed_B'].values)
         self.assertTrue(len(corners) >= 1)
-        
+
         ca = analyze_corner_performance(aligned_df, corners[0], "TGT", "REF")
         # Target was slower in corner -> time loss must be positive
         self.assertTrue(ca.time_loss_seconds > 0.0)

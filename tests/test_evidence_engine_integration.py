@@ -37,10 +37,10 @@ def test_real_telemetry_evidence_and_provenance(monkeypatch):
     import src.evidence_engine
     import src.telemetry_analysis_service
     monkeypatch.setattr(src.telemetry_analysis_service, "TelemetryAnalysisService", DummyTelemetryAnalysisService)
-    
+
     laps_df = pd.DataFrame({'LapNumber': [1, 2, 14]})
     session = DummySession()
-    
+
     response = EvidenceEngine.resolve_evidence(
         question="Why are we losing time in Turn 7?",
         session=session,
@@ -49,10 +49,10 @@ def test_real_telemetry_evidence_and_provenance(monkeypatch):
         ref_driver="HAM",
         current_race_lap=15
     )
-    
+
     assert response.answerable is True
     assert len(response.evidence_items) > 0
-    
+
     # Verify provenance and actual values
     t7_loss = next((e for e in response.evidence_items if e.metric == "time_loss_Turn 7"), None)
     assert t7_loss is not None
@@ -67,7 +67,7 @@ def test_missing_evidence():
         session=None,
         laps_df=pd.DataFrame()
     )
-    
+
     assert response.answerable is False
     assert "INSUFFICIENT_EVIDENCE" in response.reason
     assert len(response.evidence_items) == 0
@@ -81,14 +81,14 @@ def test_real_strategy_evidence_and_uncertainty():
         "downside_risk_pct": 5.0,
         "position_std_dev": 0.8
     }
-    
+
     response = EvidenceEngine.resolve_evidence(
         question="Why is Strategy B preferred?",
         decision_context=decision_ctx
     )
-    
+
     assert response.answerable is True
-    
+
     win_prob = next((e for e in response.evidence_items if e.metric == "win_probability_pct"), None)
     assert win_prob is not None
     assert win_prob.value == 25.5
@@ -101,23 +101,23 @@ def test_future_data_protection(monkeypatch):
     import src.evidence_engine
     import src.telemetry_analysis_service
     monkeypatch.setattr(src.telemetry_analysis_service, "TelemetryAnalysisService", DummyTelemetryAnalysisService)
-    
+
     laps_df = pd.DataFrame({'LapNumber': [1, 2, 14, 15, 30]})
     session = DummySession()
-    
+
     # Mock TelemetryAnalysisService to check the laps_df passed to it, but EvidenceEngine filters it before passing.
     # Actually TelemetryAnalysisService.compare_laps uses session, but EvidenceEngine filters `valid_laps_df`.
     # Let's verify `valid_laps_df` max lap is <= current_race_lap
-    
+
     # We will hook into _gather_telemetry_evidence to check
     original_gather = src.evidence_engine.EvidenceEngine._gather_telemetry_evidence
-    
+
     def mock_gather(cls, question, session, valid_laps_df, target_driver, ref_driver, session_name):
         assert valid_laps_df['LapNumber'].max() <= 15
         return original_gather(question, session, valid_laps_df, target_driver, ref_driver, session_name)
-        
+
     monkeypatch.setattr(src.evidence_engine.EvidenceEngine, "_gather_telemetry_evidence", classmethod(mock_gather))
-    
+
     EvidenceEngine.resolve_evidence(
         question="Why are we losing time in Turn 7?",
         session=session,

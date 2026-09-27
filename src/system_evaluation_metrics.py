@@ -93,4 +93,3 @@ class SystemEvaluationMetrics:
             "p95_ms": round(float(np.percentile(arr, 95)), 2),
             "p99_ms": round(float(np.percentile(arr, 99)), 2)
         }
-

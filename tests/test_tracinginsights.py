@@ -12,7 +12,7 @@ import tracinginsights
 import race_simulator
 
 class TestTracingInsights(unittest.TestCase):
-    
+
     def setUp(self):
         # Create a mock laps dataframe with stints
         self.mock_laps = pd.DataFrame({
@@ -30,7 +30,7 @@ class TestTracingInsights(unittest.TestCase):
                 "2024-06-23T13:31:31Z", "2024-06-23T13:33:01Z", "2024-06-23T13:34:30Z"
             ])
         })
-        
+
         # Create a mock results dataframe
         self.mock_results = pd.DataFrame({
             'Abbreviation': ['VER', 'HAM'],
@@ -42,17 +42,17 @@ class TestTracingInsights(unittest.TestCase):
     def test_driver_color_resolving(self):
         color_ver = tracinginsights.get_driver_color('VER', self.mock_results)
         self.assertEqual(color_ver, '#3671C6')
-        
+
         color_alo = tracinginsights.get_driver_color('ALO')
         self.assertEqual(color_alo, '#229971')
-        
+
         color_unknown = tracinginsights.get_driver_color('XYZ')
         self.assertEqual(color_unknown, '#4A90E2')
 
     def test_fuel_corrected_pace_calculation(self):
         corrected_df = tracinginsights.calculate_fuel_corrected_pace(self.mock_laps, fuel_burn_delta=0.03)
         self.assertIn('FuelCorrected_s', corrected_df.columns)
-        
+
         # VER Lap 1: L_total = 3, L_current = 1, Raw = 90s
         # t_corrected = 90 - (3 - 1) * 0.03 = 89.94s
         ver_l1 = corrected_df[(corrected_df['Driver'] == 'VER') & (corrected_df['LapNumber'] == 1)].iloc[0]
@@ -61,7 +61,7 @@ class TestTracingInsights(unittest.TestCase):
     def test_tyre_smoothing_ema(self):
         smoothed_df = tracinginsights.apply_tyre_smoothing(self.mock_laps, alpha=0.3, fuel_burn_delta=0.03)
         self.assertIn('FuelCorrected_s', smoothed_df.columns)
-        
+
         # VER Lap 1: initial value = 89.94s
         # VER Lap 2 raw corrected = 89.47s
         # VER Lap 2 EMA = 0.3 * 89.47 + 0.7 * 89.94 = 89.799s
@@ -82,7 +82,7 @@ class TestTracingInsights(unittest.TestCase):
         ]
         mapped = tracinginsights.map_radio_to_laps(self.mock_laps, mock_radio)
         self.assertEqual(len(mapped), 2)
-        
+
         ver_msg = next(m for m in mapped if m['driver'] == 'VER')
         self.assertEqual(ver_msg['lap'], 2)
 
@@ -109,7 +109,7 @@ class TestTracingInsights(unittest.TestCase):
             position_delta=1, risk_score=0.1, strategy_score=95.0,
             reasoning="Fastest option."
         )
-        
+
         suggestor = race_simulator.active_inference_strategy_suggestor([r2, r1], baseline_strategy_name="Stay Out")
         self.assertTrue(suggestor["action_flag"])
         self.assertEqual(suggestor["priority"], "CRITICAL")

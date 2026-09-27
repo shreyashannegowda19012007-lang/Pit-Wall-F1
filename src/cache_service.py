@@ -54,4 +54,3 @@ class VersionAwareCache:
 
 
 cache_service = VersionAwareCache()
-

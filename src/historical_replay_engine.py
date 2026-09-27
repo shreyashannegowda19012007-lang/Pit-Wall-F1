@@ -59,7 +59,7 @@ class HistoricalReplayEngine:
             if not res_row.empty and 'Position' in res_row.columns and pd.notna(res_row.iloc[0]['Position']):
                 actual_final_pos = float(res_row.iloc[0]['Position'])
 
-        # Hindsight Oracle benchmark must not be synthetically calculated. 
+        # Hindsight Oracle benchmark must not be synthetically calculated.
         # Mark as None to indicate an Exact Offline Solver is required.
         hindsight_best_pos = None
 
@@ -169,4 +169,3 @@ class HistoricalReplayEngine:
             "summary_metrics": summary_metrics,
             "data_leakage_protected": True
         }
-

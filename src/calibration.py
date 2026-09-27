@@ -88,4 +88,3 @@ class ProbabilityCalibrationEngine:
             "log_loss": round(ProbabilityCalibrationEngine.calculate_log_loss(predictions, actuals), 4),
             "bins": bins_data
         }
-

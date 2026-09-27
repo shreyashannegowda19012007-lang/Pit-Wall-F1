@@ -185,4 +185,3 @@ class FeatureEngineeringService:
             lap_features=lap_feats,
             corner_features=corner_feats
         )
-

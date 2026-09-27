@@ -196,12 +196,12 @@ class SessionPreparationManager:
             finally:
                 if session_key in cls._preparation_locks:
                     del cls._preparation_locks[session_key]
-            
+
             return {"status": "SUCCESS", "session_key": session_key}
 
         job_id = JobQueueManager.create_job("SESSION_PREPARATION")
         cls._preparation_locks[session_key] = job_id
-        
+
         JobQueueManager.execute_async_job(job_id, _prepare_task)
 
         logger.info(f"Launched session preparation job {job_id} for {session_key}.")
@@ -221,5 +221,3 @@ class SessionPreparationManager:
                 "Stage 8/8: Writing metadata to cache registry"
             ]
         }
-
-

@@ -21,37 +21,37 @@ class TrackGeometryCache:
         # Load session using FastF1 API
         session = fastf1.get_session(year, location, session_type)
         session.load(laps=True, telemetry=True)
-        
+
         # Pick the fastest lap
         fastest_lap = session.laps.pick_fastest()
         if fastest_lap is None:
             raise ValueError(f"No fastest lap found for {location} ({year}).")
         pos = fastest_lap.get_pos_data()
-        
+
         if pos.empty or 'X' not in pos.columns:
             raise ValueError(f"No GPS coordinates telemetry available for {location} ({year}).")
-            
+
         x = pos['X'].dropna().values
         y = pos['Y'].dropna().values
-        
+
         # Apply Gaussian smoothing (rolling window median/mean)
         x_smooth = pd.Series(x).rolling(window=7, center=True, min_periods=1).mean().values
         y_smooth = pd.Series(y).rolling(window=7, center=True, min_periods=1).mean().values
-        
+
         # Downsample to optimize Plotly rendering speed while retaining visual accuracy
         step = max(1, len(x_smooth) // 300)
         x_down = x_smooth[::step]
         y_down = y_smooth[::step]
-        
+
         # Normalize coordinates to constant 0-10000 bounding box (preserves aspect ratio)
         x_min, x_max = float(np.min(x_down)), float(np.max(x_down))
         y_min, y_max = float(np.min(y_down)), float(np.max(y_down))
-        
+
         scale = 10000.0 / max(x_max - x_min, y_max - y_min) if max(x_max - x_min, y_max - y_min) > 0 else 1.0
-        
+
         x_norm = ((x_down - x_min) * scale).tolist()
         y_norm = ((y_down - y_min) * scale).tolist()
-        
+
         return {
             "track_x": x_norm,
             "track_y": y_norm,
@@ -68,19 +68,19 @@ class TrackGeometryCache:
         cache_dir = config.TRACK_CACHE_DIR
         os.makedirs(cache_dir, exist_ok=True)
         cache_file = os.path.join(cache_dir, f"{location.lower().replace(' ', '_')}.json")
-        
+
         if os.path.exists(cache_file):
             try:
                 with open(cache_file, 'r', encoding='utf-8') as f:
                     return json.load(f)
             except Exception:
                 pass
-                
+
         # If cache miss, extract and save to disk
         data = TrackGeometryCache.extract_track_from_session(year, location, "R")
         with open(cache_file, 'w', encoding='utf-8') as f:
             json.dump(data, f)
-            
+
         return data
 
 @st.cache_data(ttl=86400)
@@ -169,15 +169,15 @@ def render_animated_track_trace(raw_session, target_drivers):
     Renders an animated spatial track geometry with live driver positioning representing the fastest laps.
     """
     st.markdown("### ANIMATED SPATIAL KINEMATICS")
-    
+
     if not target_drivers:
         st.info("Select at least one driver to initialize the geometry animation.")
         return
-        
+
     try:
         map_lap = raw_session.laps.pick_fastest()
         circuit_pos = map_lap.get_pos_data()
-        
+
         if circuit_pos.empty or 'X' not in circuit_pos.columns:
             st.warning("GPS Positional data is missing for this session.")
             return
@@ -192,37 +192,37 @@ def render_animated_track_trace(raw_session, target_drivers):
             hoverinfo='skip',
             name='Circuit Path'
         ))
-        
+
         num_frames = 150
         time_fractions = np.linspace(0, 1, num_frames)
-        
+
         driver_trajectories = {}
         line_colors = ['#4A90E2', '#EF4444', '#EAE210', '#A020F0', '#00FF7F', '#FFFFFF']
-        
+
         for i, drv in enumerate(target_drivers):
             # FastF1 pick_drivers support
             if hasattr(raw_session.laps, 'pick_drivers'):
                 drv_laps = raw_session.laps.pick_drivers(drv)
             else:
                 drv_laps = raw_session.laps[raw_session.laps['Driver'] == drv]
-                
+
             if drv_laps.empty:
                 continue
             drv_lap = drv_laps.pick_fastest()
             pos = drv_lap.get_pos_data()
             if pos.empty:
                 continue
-            
+
             # Normalize time for this driver's lap
             t = pos['Time'].dt.total_seconds().values
             if len(t) < 2 or (t[-1] - t[0]) == 0:
                 continue
             t_norm = (t - t[0]) / (t[-1] - t[0])
-            
+
             # Interpolate X and Y coordinates to common time fractions
             x_interp = np.interp(time_fractions, t_norm, pos['X'].values)
             y_interp = np.interp(time_fractions, t_norm, pos['Y'].values)
-            
+
             driver_trajectories[drv] = {
                 'x': x_interp,
                 'y': y_interp,
@@ -281,7 +281,7 @@ def render_animated_track_trace(raw_session, target_drivers):
             yaxis=dict(visible=False, scaleanchor="x", scaleratio=1),
             height=600
         )
-        
+
         fig.frames = frames
         st.plotly_chart(fig, use_container_width=True)
 
@@ -291,7 +291,7 @@ def render_animated_track_trace(raw_session, target_drivers):
 def render_2d_track_with_positions(raw_session, primary, comp, current_lap):
     import streamlit as st
     import plotly.graph_objects as go
-    
+
     import textwrap
     st.markdown(textwrap.dedent("""
     <div class="hud-panel-header">
@@ -299,20 +299,20 @@ def render_2d_track_with_positions(raw_session, primary, comp, current_lap):
         <span class="hud-status-badge active">CIRCUIT GEOMETRY</span>
     </div>
     """).strip(), unsafe_allow_html=True)
-    
+
     try:
         circuit_info = raw_session.get_circuit_info()
         corners = circuit_info.corners
-        
+
         # We need generic track x/y. Let's get any fast lap.
         fastest_lap = raw_session.laps.pick_fastest()
         if pd.isna(fastest_lap['LapTime']):
             st.info("No fast lap track layout found.")
             return
-            
+
         pos = fastest_lap.get_pos_data()
         x, y = pos['X'], pos['Y']
-        
+
         fig = go.Figure()
         fig.add_trace(go.Scatter(
             x=x, y=y,
@@ -321,7 +321,7 @@ def render_2d_track_with_positions(raw_session, primary, comp, current_lap):
             name='Track Surface',
             hoverinfo='skip'
         ))
-        
+
         # Primary
         p_laps = raw_session.laps[raw_session.laps['Driver'] == primary]
         if not p_laps.empty:
@@ -338,7 +338,7 @@ def render_2d_track_with_positions(raw_session, primary, comp, current_lap):
                     textfont=dict(color='#EF4444', family='Inter', size=11),
                     name=f"Primary: {primary}"
                 ))
-                
+
         # Comp
         c_laps = raw_session.laps[raw_session.laps['Driver'] == comp]
         if not c_laps.empty:
@@ -375,5 +375,3 @@ def render_2d_track_with_positions(raw_session, primary, comp, current_lap):
         st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
     except Exception as e:
         st.error(f"TRACK DATA UNAVAILABLE: {e}")
-
-

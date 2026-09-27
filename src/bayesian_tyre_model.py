@@ -14,7 +14,7 @@ class AdvancedTyreDegradationModel:
     """
     Probabilistic Tyre Degradation & Thermal Wear Engine.
     """
-    
+
     COMPOUND_BASE_LIFETIME = {
         'SOFT': 18.0,
         'MEDIUM': 32.0,
@@ -22,7 +22,7 @@ class AdvancedTyreDegradationModel:
         'INTERMEDIATE': 25.0,
         'WET': 30.0
     }
-    
+
     COMPOUND_BASE_DECAY = {
         'SOFT': 0.12,     # Lap time loss per lap (sec)
         'MEDIUM': 0.07,
@@ -65,7 +65,7 @@ class AdvancedTyreDegradationModel:
         temp_modifier = 1.0 + max(0.0, (track_temp - 35.0) * 0.02)
         fuel_modifier = 1.0 + (fuel_load_kg / 110.0) * 0.15
         dirty_air_modifier = max(1.0, dirty_air_factor)
-        
+
         effective_age = laps_on_tyre * temp_modifier * fuel_modifier * dirty_air_modifier * lateral_energy_scale
         adjusted_cliff = max(8.0, base_cliff / (temp_modifier * lateral_energy_scale))
 
@@ -76,7 +76,7 @@ class AdvancedTyreDegradationModel:
             tyre_age_laps=int(laps_on_tyre),
             base_decay=base_decay
         )
-        
+
         ml_status = ml_deg_pred["status"]
         if "MODEL_READY" in ml_status:
             mean_deg_rate = ml_deg_pred["predicted_deg"]

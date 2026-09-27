@@ -12,9 +12,8 @@ class MLService:
         if session_id in MLService._model_cache:
             return MLService._model_cache[session_id]
 
-        # Generate some synthetic training data based on real session parameters
-        # We use our TyreAnalyticsEngine to get baseline degradations, then perturb them
-        # to create a dataset for the ML model to learn from.
+        # Extract real training data directly from session telemetry
+        # using TyreAnalyticsEngine logic to construct features for the ML model.
 
         parts = session_id.split('-')
         year = int(parts[1]) if len(parts) > 1 else 2024
@@ -27,43 +26,57 @@ class MLService:
 
         session = data["raw_session"]
 
-        # We will train the model to predict 'lap_time_degradation_per_lap' (seconds)
-        # Features: [compound_idx, starting_fuel_kg, track_temp_c]
-
         compounds = ['SOFT', 'MEDIUM', 'HARD']
         X = []
         y = []
 
-        # Base degradation values (seconds per lap)
-        base_deg = {'SOFT': 0.12, 'MEDIUM': 0.08, 'HARD': 0.05}
+        weather = session.weather_data if hasattr(session, 'weather_data') else None
 
-        # Generate 500 synthetic samples
-        np.random.seed(42)
-        for _ in range(500):
-            c = np.random.choice(compounds)
-            fuel = np.random.uniform(10.0, 110.0)
-            temp = np.random.uniform(25.0, 50.0)
+        total_laps = session.total_laps if hasattr(session, 'total_laps') and session.total_laps else 60
 
-            # True target calculation
-            # Higher fuel = more degradation
-            # Higher temp = more degradation for softs, less for hards (optimal temp)
-            c_idx = compounds.index(c)
-            deg = base_deg[c]
+        from scipy import stats
 
-            # Fuel penalty: +0.0005s/lap per kg
-            deg += (fuel * 0.0005)
+        for driver in session.drivers:
+            try:
+                laps = session.laps.pick_driver(driver)
+                if laps.empty: continue
 
-            # Temp penalty
-            if c == 'SOFT' and temp > 40:
-                deg += 0.02
-            elif c == 'HARD' and temp < 30:
-                deg += 0.03
+                quicklaps = laps.pick_quicklaps().reset_index(drop=True)
+                if quicklaps.empty: continue
 
-            # Add noise
-            deg += np.random.normal(0, 0.01)
+                for stint, stint_laps in quicklaps.groupby('Stint'):
+                    stint_laps = stint_laps.dropna(subset=['LapTime', 'TyreLife'])
+                    if len(stint_laps) < 3: continue
 
-            X.append([c_idx, fuel, temp])
-            y.append(deg)
+                    compound = stint_laps['Compound'].iloc[0] if not stint_laps['Compound'].empty else "UNKNOWN"
+                    if compound not in compounds: continue
+
+                    stint_laps['LapTime_s'] = stint_laps['LapTime'].dt.total_seconds()
+                    FUEL_EFFECT_S_PER_LAP = 0.065
+                    stint_laps['FuelCorrected'] = stint_laps['LapTime_s'] + (stint_laps['LapNumber'] * FUEL_EFFECT_S_PER_LAP)
+
+                    slope, intercept, r_value, p_value, std_err = stats.linregress(
+                        stint_laps['TyreLife'].astype(float).values,
+                        stint_laps['FuelCorrected'].astype(float).values
+                    )
+
+                    if slope < 0 or slope > 0.5: continue
+
+                    track_temp = 30.0
+                    if weather is not None and not weather.empty:
+                        track_temp = weather['TrackTemp'].mean()
+
+                    start_lap = stint_laps['LapNumber'].iloc[0]
+                    fuel = max(0.0, 110.0 - (start_lap / total_laps) * 110.0)
+
+                    X.append([compounds.index(compound), fuel, track_temp])
+                    y.append(slope)
+            except Exception:
+                continue
+
+        if len(X) < 10:
+            MLService._model_cache[session_id] = {"error": "Insufficient real training data (need at least 10 valid stints)"}
+            return MLService._model_cache[session_id]
 
         model = RandomForestRegressor(n_estimators=50, random_state=42)
         model.fit(X, y)
@@ -78,6 +91,11 @@ class MLService:
     @staticmethod
     def predict_degradation(session_id: str, compound: str, fuel_kg: float, track_temp: float):
         model_data = MLService.train_or_get_model(session_id)
+        if "error" in model_data:
+            return {
+                "success": False,
+                "error": model_data["error"]
+            }
         model = model_data["model"]
 
         compounds = ['SOFT', 'MEDIUM', 'HARD']

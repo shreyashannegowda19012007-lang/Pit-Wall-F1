@@ -148,7 +148,7 @@ class TelemetryStorageEngine:
         """Persists dataset metadata record."""
         with self.get_connection() as conn:
             conn.execute("""
-            INSERT OR REPLACE INTO datasets 
+            INSERT OR REPLACE INTO datasets
             (dataset_id, source, source_file, ingestion_timestamp, session_id, driver_id, lap_number, row_count, schema_version, processing_version, checksum)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
@@ -255,8 +255,8 @@ class TelemetryStorageEngine:
         """Indexed range query fetching telemetry samples within a corner window."""
         with self.get_connection() as conn:
             query = """
-            SELECT * FROM telemetry_samples 
-            WHERE dataset_id = ? AND distance_m >= ? AND distance_m <= ? 
+            SELECT * FROM telemetry_samples
+            WHERE dataset_id = ? AND distance_m >= ? AND distance_m <= ?
             ORDER BY distance_m ASC
             """
             return pd.read_sql_query(query, conn, params=(dataset_id, entry_m, exit_m))
@@ -266,5 +266,3 @@ class TelemetryStorageEngine:
         with self.get_connection() as conn:
             row = conn.execute("SELECT * FROM data_lineage WHERE analysis_id = ? OR raw_dataset_id = ?", (analysis_id, analysis_id)).fetchone()
             return dict(row) if row else None
-
-

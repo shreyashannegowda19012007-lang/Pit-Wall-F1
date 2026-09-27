@@ -30,7 +30,13 @@ export default function TyresPage() {
     const timeoutId = setTimeout(() => controller.abort(), 60000);
 
     fetch(`http://localhost:8000/api/tyres/degradation?session_id=${session}&primary_driver=${primaryDriver}&ref_driver=${referenceDriver}`, { signal: controller.signal })
-      .then(r => r.json())
+      .then(async r => {
+        const json = await r.json();
+        if (!r.ok) {
+          throw new Error(json.detail || json.error || `HTTP error ${r.status}`);
+        }
+        return json;
+      })
       .then(res => {
         if (!mounted) return;
         if (res.success === false) {

@@ -53,4 +53,3 @@ def get_logger(name: str = "PitwallF1") -> logging.Logger:
 
 
 logger = get_logger()
-

@@ -12,40 +12,40 @@ class ModelLoader:
         self.registry = self._load_registry()
         self.models = {}
         self.metadata = {}
-        
+
     def _load_registry(self):
         reg_path = os.path.join(self.models_dir, 'registry.json')
         if not os.path.exists(reg_path):
             return {}
         with open(reg_path, 'r', encoding='utf-8') as f:
             return json.load(f)
-            
+
     def load_model(self, model_name: str):
         if model_name in self.models:
             return self.models[model_name]
-            
+
         trained_models = self.registry.get('trained_models', {})
         if model_name not in trained_models:
             return None
-            
+
         status = trained_models.get(model_name)
         if status not in ("ACTIVE", "PRODUCTION"):
             return None
-            
+
         model_dir = os.path.join(self.models_dir, model_name)
         meta_path = os.path.join(model_dir, 'metadata.json')
         model_path = os.path.join(model_dir, 'model.pkl')
-        
+
         if not os.path.exists(meta_path) and not os.path.exists(os.path.join(model_dir, 'metadata_v1.json')):
             return None
-            
+
         actual_meta_path = meta_path if os.path.exists(meta_path) else os.path.join(model_dir, 'metadata_v1.json')
-            
+
         with open(actual_meta_path, 'r', encoding='utf-8') as f:
             self.metadata[model_name] = json.load(f)
-            
+
         algorithm = self.metadata[model_name].get('algorithm', '')
-            
+
         try:
             if algorithm == 'XGBoostRegressor':
                 import xgboost as xgb
@@ -79,39 +79,39 @@ class ModelLoader:
         except Exception as e:
             print(f"[ModelLoader] Unknown error loading {model_name}: {e}")
             return None
-            
+
         return self.models[model_name]
-        
+
     def get_metadata(self, model_name: str):
         if model_name not in self.metadata:
             self.load_model(model_name)
         return self.metadata.get(model_name, None)
-        
+
     def predict(self, model_name: str, features: dict):
         model = self.load_model(model_name)
         if model is None:
             return {"status": "MODEL_UNAVAILABLE", "error": "Model not ACTIVE or not found"}
-            
+
         meta = self.get_metadata(model_name)
         if meta is None:
             return {"status": "MODEL_UNAVAILABLE", "error": "Model metadata not found"}
-        
+
         # Verify feature contract
         expected_features = meta['features']
-        
+
         missing = [f for f in expected_features if f not in features]
         if missing:
             return {"status": "FEATURE_ERROR", "error": f"Missing features: {missing}"}
-            
+
         # Build array
         x = np.array([[features[f] for f in expected_features]])
-        
+
         try:
             if meta['algorithm'] == 'LogisticRegression' or meta['algorithm'] == 'XGBoostClassifier':
                 pred = model.predict_proba(x)[0, 1]
             else:
                 pred = model.predict(x)[0]
-                
+
             return {
                 "status": "MODEL_READY",
                 "prediction": float(pred),
@@ -127,5 +127,3 @@ def get_loader():
     if _loader is None:
         _loader = ModelLoader()
     return _loader
-
-

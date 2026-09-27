@@ -8,4 +8,3 @@ def is_rl_enabled() -> bool:
     "true", "TRUE", "True" -> enabled
     """
     return os.environ.get("EXPERIMENTAL_RL_ENABLED", "false").lower() == "true"
-

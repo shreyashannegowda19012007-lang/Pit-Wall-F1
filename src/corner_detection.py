@@ -42,13 +42,13 @@ def detect_corners_from_telemetry(
 ) -> List[CornerWindow]:
     """
     Detects corners dynamically from a baseline speed trace profile.
-    
+
     Args:
         distance_arr: Distance coordinate array in meters
         speed_arr: Speed trace array in km/h
         min_speed_drop_kmh: Minimum speed drop required to qualify as a corner
         min_distance_gap_m: Minimum spacing between consecutive apexes
-        
+
     Returns:
         List of CornerWindow objects sorted by distance.
     """
@@ -100,4 +100,3 @@ def detect_corners_from_telemetry(
             ))
 
     return corners
-

@@ -21,18 +21,18 @@ class JarvisEngineeringInsightsEngine:
         active_driver: str = None
     ) -> List[Dict[str, Any]]:
         insights = []
-        
+
         target_driver = active_driver or st.session_state.get('primary_drv') or 'VER'
         second_driver = st.session_state.get('comp_drv') or 'HAM'
-        
+
         from src.decision_architecture import DecisionArchitectureOrchestrator, DecisionEngine, JarvisEvidenceEngine
 
         # 1. Build Canonical RaceContext
         race_context = DecisionArchitectureOrchestrator.build_race_context()
-        
+
         # 2. Get Decision Engine Recommendation
         recommendation = DecisionEngine.generate_recommendation(race_context, target_driver, second_driver)
-        
+
         # 3. Pull Dynamic Corner Time-Loss from Real Telemetry
         time_loss_insights = []
         if raw_session is not None:
@@ -49,7 +49,7 @@ class JarvisEngineeringInsightsEngine:
 
                         b_text = f"Braking delta is {b_delta:+.1f}m." if b_delta is not None else ""
                         t_text = f"Throttle delay is {t_delay:+.2f}s." if t_delay is not None else ""
-                        
+
                         time_loss_insights.append({
                             "id": f"INS-00{idx + 2}",
                             "severity": "CRITICAL" if loss_s > 0.2 else ("HIGH" if loss_s > 0.1 else "MEDIUM"),
@@ -75,7 +75,7 @@ class JarvisEngineeringInsightsEngine:
             recommendation=recommendation,
             time_loss_insights=time_loss_insights
         )
-        
+
         # 5. Extract structured insights back to UI layout
         insights.append({
             "id": "INS-DECISION-01",
@@ -90,7 +90,7 @@ class JarvisEngineeringInsightsEngine:
             "corner_ref": "Pit Lane",
             "visual_link": "Monte Carlo Tree"
         })
-        
+
         insights.extend(time_loss_insights)
 
         pd_ctx = race_context.drivers.get(target_driver)
@@ -108,7 +108,7 @@ class JarvisEngineeringInsightsEngine:
                 "corner_ref": "Full Circuit",
                 "visual_link": "Pace Chart"
             })
-            
+
         if len(insights) == 1:
             insights.extend(cls._generate_fallback_insights())
 
@@ -209,4 +209,3 @@ class JarvisEngineeringInsightsEngine:
                     </div>
                 </div>
             """, unsafe_allow_html=True)
-

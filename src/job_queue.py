@@ -46,8 +46,20 @@ class JobQueueManager:
                 logger.error(f"Job {job_id} failed: {str(e)}")
                 cls._update_status(job_id, "FAILED", error_message=str(e))
 
-        thread = threading.Thread(target=worker, daemon=True)
+        thread = threading.Thread(target=worker, daemon=False)
         thread.start()
+
+        if not hasattr(cls, '_active_threads'):
+            cls._active_threads = []
+
+            import atexit
+            def wait_all_jobs():
+                for t in cls._active_threads:
+                    if t.is_alive():
+                        t.join()
+            atexit.register(wait_all_jobs)
+
+        cls._active_threads.append(thread)
 
     @classmethod
     def get_job_status(cls, job_id: str) -> Optional[Dict[str, Any]]:
@@ -82,4 +94,3 @@ class JobQueueManager:
                 WHERE job_id = ?
             """, (status, progress_pct, result_json, error_message, now_str, job_id))
             conn.commit()
-

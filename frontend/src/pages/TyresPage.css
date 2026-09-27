@@ -42,3 +42,14 @@
   text-align: center;
   gap: 1rem;
 }
+
+.chart-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.chart-container {
+  flex: 1;
+  min-height: 0;
+}

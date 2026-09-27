@@ -10,12 +10,12 @@ class F1StrategyEnv(gym.Env):
     """
     Gymnasium-compatible F1 Strategy Environment wrapper around Full-Field mechanics.
     """
-    
+
     ACTION_STAY_OUT = 0
     ACTION_PIT_SOFT = 1
     ACTION_PIT_MEDIUM = 2
     ACTION_PIT_HARD = 3
-    
+
     COMPOUND_MAP = {
         1: "SOFT",
         2: "MEDIUM",
@@ -35,22 +35,22 @@ class F1StrategyEnv(gym.Env):
         )
         self.target_driver = self.config_dict.get("driver", "VER")
         self.action_space = spaces.Discrete(4)
-        
+
         self.observation_space = spaces.Box(low=0.0, high=1.0, shape=(11,), dtype=np.float32)
-        
+
         self.current_lap = 0
         self.rng = None
         self.driver_states = {}
         self.planned_strategies = {}
         self.ml_available = True
-        
+
     def reset(self, seed: Optional[int] = None, options: Optional[Dict[str, Any]] = None) -> Tuple[np.ndarray, Dict[str, Any]]:
         super().reset(seed=seed)
         actual_seed = seed if seed is not None else self.sim_config.simulation_seed
         self.rng = np.random.RandomState(actual_seed)
-        
+
         self.current_lap = 0
-        
+
         # Initialize Full Field Grid
         self.driver_states: Dict[str, DriverSimState] = {}
         for pos, (drv_id, team) in enumerate(FullFieldRaceSimulator.DEFAULT_DRIVERS, start=1):
@@ -73,20 +73,20 @@ class F1StrategyEnv(gym.Env):
                 gap_to_leader_s=(pos - 1) * 0.5,
                 interval_to_ahead_s=0.5 if pos > 1 else 0.0
             )
-            
+
         self.planned_strategies = {drv[0]: [(22, "HARD")] for drv in FullFieldRaceSimulator.DEFAULT_DRIVERS}
-        
+
         obs = self._get_obs()
         info = self._get_info()
         return obs, info
 
     def _get_obs(self) -> np.ndarray:
         target_state = self.driver_states[self.target_driver]
-        
+
         comp_norm = 0.5
         if target_state.tyre_compound == "SOFT": comp_norm = 0.0
         elif target_state.tyre_compound == "HARD": comp_norm = 1.0
-        
+
         ml_deg = 0.075 # Default fallback
         if self.ml_available:
             try:
@@ -97,7 +97,7 @@ class F1StrategyEnv(gym.Env):
             except Exception as e:
                 import logging
                 logging.getLogger(__name__).warning(f"ML engine error in strategy env: {e}")
-                
+
         obs = [
             self.current_lap / float(self.sim_config.total_laps),
             target_state.current_position / 20.0,
@@ -111,7 +111,7 @@ class F1StrategyEnv(gym.Env):
             0.0, # SC
             min(1.0, ml_deg / 0.5)
         ]
-        
+
         obs_arr = np.array(obs, dtype=np.float32)
         obs_arr = np.nan_to_num(obs_arr, nan=0.0, posinf=1.0, neginf=0.0)
         obs_arr = np.clip(obs_arr, 0.0, 1.0)
@@ -130,27 +130,27 @@ class F1StrategyEnv(gym.Env):
             "rival_model": "UNAVAILABLE",
             "safety_car_model": "UNAVAILABLE"
         }
-        
+
     def step(self, action: int) -> Tuple[np.ndarray, float, bool, bool, Dict[str, Any]]:
         if self.current_lap >= self.sim_config.total_laps:
             return self._get_obs(), 0.0, True, False, self._get_info()
-            
+
         self.current_lap += 1
         is_safety_car = (self.rng.rand() < self.sim_config.safety_car_probability_per_lap)
-        
+
         # Override Target Driver strategy based on action
         if action in self.COMPOUND_MAP:
             # Add pit stop for THIS lap
             self.planned_strategies[self.target_driver] = [(self.current_lap, self.COMPOUND_MAP[action])]
         else:
             self.planned_strategies[self.target_driver] = [] # Stay out
-            
+
         prev_position = self.driver_states[self.target_driver].current_position
-        
+
         # 1. Advance all drivers
         for drv_id, state in self.driver_states.items():
             if state.status == "RETIRED": continue
-            
+
             state.lap_number = self.current_lap
             state.tyre_age_laps += 1
 
@@ -189,21 +189,20 @@ class F1StrategyEnv(gym.Env):
             drv.current_position = pos
             drv.gap_to_leader_s = round(drv.total_race_time_s - leader_time, 3)
             drv.interval_to_ahead_s = round(drv.total_race_time_s - sorted_drivers[pos - 2].total_race_time_s, 3) if pos > 1 else 0.0
-            
+
         target_state = self.driver_states[self.target_driver]
         terminated = (self.current_lap >= self.sim_config.total_laps)
-        
+
         # Reward
         lap_time_penalty = -(target_state.last_lap_time_s - self.sim_config.base_lap_time_s) / 10.0
         pos_gain = prev_position - target_state.current_position
         reward = lap_time_penalty + (pos_gain * 2.0)
-        
+
         if terminated:
             reward += (21 - target_state.current_position) * 10.0
-            
+
         info = self._get_info()
         info["action"] = action
         info["reward_components"] = {"lap_time_penalty": lap_time_penalty, "pos_gain": pos_gain}
-        
+
         return self._get_obs(), float(reward), terminated, False, info
-

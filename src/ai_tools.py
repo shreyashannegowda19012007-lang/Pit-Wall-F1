@@ -84,4 +84,3 @@ class AIToolRegistry:
         """Tool: Compares decision snapshots at lap A vs lap B to explain why recommendation changed."""
         from decision_history import global_decision_audit
         return global_decision_audit.compare_decisions(lap_a, lap_b)
-

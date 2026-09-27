@@ -13,7 +13,7 @@ class DummySession:
     def __init__(self):
         self.event = {'RaceLaps': 50, 'EventName': 'Test GP'}
         self.weather_data = pd.DataFrame([{'TrackTemp': 35.0, 'AirTemp': 25.0, 'Rainfall': False}])
-        
+
 def test_timing_tower_real_data():
     results = pd.DataFrame([{'Driver': 'VER', 'Abbreviation': 'VER', 'Position': 1, 'GridPosition': 1, 'DriverNumber': '1', 'TeamName': 'Red Bull'}])
     laps = pd.DataFrame([{'Driver': 'VER', 'LapNumber': 1, 'LapTime': pd.to_timedelta(90, unit='s'), 'Sector1Time': pd.to_timedelta(30, unit='s'), 'Sector2Time': pd.to_timedelta(30, unit='s'), 'Sector3Time': pd.to_timedelta(30, unit='s'), 'Compound': 'SOFT', 'TyreLife': 5}])
@@ -34,7 +34,7 @@ def test_get_tyre_html():
     html = get_tyre_html('SOFT', 5)
     assert 'S' in html
     assert '5' in html
-    
+
 def test_render_jarvis_deck():
     laps = pd.DataFrame([{'Driver': 'VER', 'LapNumber': 1, 'Compound': 'SOFT', 'TyreLife': 5}])
     results = pd.DataFrame([{'Driver': 'VER', 'Position': 1}])

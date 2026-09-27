@@ -179,5 +179,3 @@ class RealtimeRaceOperationsEngine:
             "ingestion_latency_ms": "NOT_MEASURED",
             "alerts": [asdict(a) for a in self.alert_engine.alerts[:10]]
         }
-
-

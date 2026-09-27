@@ -59,7 +59,7 @@ class TestBayesianUpdatingSystem(unittest.TestCase):
     def test_state_snapshot_persistence(self):
         """Verifies snapshot persistence at specified lap."""
         state = BayesianRaceState(race_lap=0)
-        
+
         laps_mock = pd.DataFrame({
             'Driver': ['VER'] * 5,
             'LapNumber': [1, 2, 3, 4, 5],

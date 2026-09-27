@@ -446,4 +446,3 @@ class TelemetryAPIService:
 
 # Global API Service Singleton
 api_service = TelemetryAPIService()
-

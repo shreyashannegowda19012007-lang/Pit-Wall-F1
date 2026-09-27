@@ -229,4 +229,3 @@ class DecisionEngine:
             alternatives=[],
             uncertainties=["Simulation unavailable"]
         )
-

@@ -41,4 +41,3 @@ class StrategyPlan:
             "compounds": self.compounds,
             "stint_count": len(self.stints)
         }
-

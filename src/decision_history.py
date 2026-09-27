@@ -108,4 +108,3 @@ class DecisionAuditTrail:
 
 # Global Decision Audit Trail Singleton
 global_decision_audit = DecisionAuditTrail()
-

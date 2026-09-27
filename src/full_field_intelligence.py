@@ -70,7 +70,7 @@ class FullFieldRaceIntelligenceEngine:
     def get_20_car_field_state(cls, session_id: str = "S-2024-SPAIN", lap: int = 22) -> List[FullFieldDriverState]:
         """Constructs full-field state for all 20 Formula 1 drivers."""
         from src.probabilistic_service import ProbabilisticService
-        
+
         timestamp_s = lap * 90.0
         try:
             state_obj = ProbabilisticService.get_unified_race_state(session_id, timestamp_s, mode="REPLAY")
@@ -93,7 +93,7 @@ class FullFieldRaceIntelligenceEngine:
                     race_status=drv.timing_status
                 )
             )
-        
+
         return sorted(field_state, key=lambda x: x.position if x.position > 0 else 999)
 
     @classmethod
@@ -130,9 +130,9 @@ class FullFieldRaceIntelligenceEngine:
                 "field_summary": [],
                 "active_battles": []
             }
-            
+
         from src.full_field_simulator import FullFieldRaceSimulator, RaceSimulationConfig, DriverSimState
-        
+
         initial_states = []
         for d in field_state:
             initial_states.append(DriverSimState(
@@ -158,12 +158,12 @@ class FullFieldRaceIntelligenceEngine:
         win_counts = {}
         podium_counts = {}
         sum_positions = {}
-        
+
         for i in range(num_simulations):
             sim_cfg = RaceSimulationConfig(simulation_seed=42+i)
             res = FullFieldRaceSimulator.run_full_field_simulation(config=sim_cfg, initial_states=initial_states)
             standings = res.final_standings
-            
+
             for rank, drv in enumerate(standings, start=1):
                 d_id = drv['driver_id']
                 if rank == 1:
@@ -178,7 +178,7 @@ class FullFieldRaceIntelligenceEngine:
             win_prob = round((win_counts.get(d_id, 0) / num_simulations) * 100.0, 1)
             pod_prob = round((podium_counts.get(d_id, 0) / num_simulations) * 100.0, 1)
             exp_pos = round(sum_positions.get(d_id, d.position * num_simulations) / num_simulations, 2)
-            
+
             summary.append({
                 "driver_id": d_id,
                 "team_id": d.team_id,
@@ -194,4 +194,3 @@ class FullFieldRaceIntelligenceEngine:
             "field_summary": summary,
             "active_battles": [asdict(b) for b in cls.detect_track_battles_and_drs_trains()]
         }
-

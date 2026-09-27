@@ -40,4 +40,3 @@ class ScenarioEngine:
             race_state.weather.track_wetness_pct = 90.0
 
         return race_state
-

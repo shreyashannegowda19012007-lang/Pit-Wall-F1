@@ -52,7 +52,7 @@ class CanonicalLapTelemetry:
     raw_df: Optional[pd.DataFrame] = field(default=None, repr=False)
     cleaned_df: Optional[pd.DataFrame] = field(default=None, repr=False)
     units: TelemetryUnits = field(default_factory=TelemetryUnits)
-    
+
     @property
     def channel_availability(self) -> Dict[str, bool]:
         """Returns map of available telemetry channels in cleaned_df."""
@@ -74,4 +74,3 @@ class CanonicalLapTelemetry:
             'drs': bool('DRS' in df.columns and df['DRS'].notna().any()),
             'steering': bool('Steering' in df.columns and df['Steering'].notna().any())
         }
-

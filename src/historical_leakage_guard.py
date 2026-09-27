@@ -47,4 +47,3 @@ class HistoricalInformationFilter:
         max_lap = int(df['LapNumber'].max())
         if max_lap > current_lap:
             raise DataLeakageError(max_lap, current_lap, f"Dataframe in {context} contains Lap {max_lap} exceeding cutoff Lap {current_lap}.")
-

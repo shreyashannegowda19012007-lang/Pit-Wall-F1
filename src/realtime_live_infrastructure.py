@@ -98,7 +98,7 @@ class LiveEventBus:
 
     def get_system_health(self) -> LiveSystemHealth:
         """Returns health metrics for the live infrastructure.
-        
+
         Calculates genuine ingestion latency, p50 and p95 processing latencies,
         and event bus throughput from actual logged events.
         """
@@ -173,4 +173,3 @@ class RealtimeLiveInfrastructureEngine:
     def get_live_system_health(cls) -> LiveSystemHealth:
         """Returns live infrastructure system health."""
         return cls._event_bus.get_system_health()
-

@@ -82,7 +82,7 @@ class TimeSeriesTrendEngine:
             }
 
         deg_rate = stint_deg.get("degradation_rate_s_per_lap", 0.0)
-        
+
         # Check corner time-loss pattern
         significant_corner_losses = [ca for ca in corner_analyses if ca.get("time_loss_seconds", 0.0) > 0.05]
 
@@ -112,4 +112,3 @@ class TimeSeriesTrendEngine:
             "isolated_cause": "UNISOLATED",
             "explanation": "Cause cannot be isolated from available telemetry."
         }
-

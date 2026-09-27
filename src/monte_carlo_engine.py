@@ -117,7 +117,7 @@ class MonteCarloRaceEngine:
             opp_cliff = self.COMPOUND_CLIFFS.get(opp.tyre_state.compound.upper(), 30.0)
             opp_pit_lap = race_state.current_lap + max(1, int(opp_cliff - opp.tyre_state.age_laps))
             opp_target_compound = "HARD" if opp.tyre_state.compound.upper() != "HARD" else "MEDIUM"
-            
+
             opp_strat = StrategyPlan(
                 strategy_name=f"Opponent {opp.driver_id}",
                 stints=[
@@ -158,7 +158,7 @@ class MonteCarloRaceEngine:
         probs_map = {}
         for k in range(1, 21):
             probs_map[f"P{k}"] = round(float(np.mean(ranks == k)), 4)
-        
+
         # Enforce sum(P) = 1.0 normalization
         tot_p = sum(probs_map.values())
         if tot_p > 0:
@@ -249,12 +249,12 @@ class MonteCarloRaceEngine:
         Simulates N iterations of cumulative race time for a driver under a specific strategy.
         """
         laps_range = np.arange(race_state.current_lap + 1, race_state.total_laps + 1)
-        
+
         # Build lap-by-lap compound, tyre age, and warm-up masks
         compounds = []
         ages = []
         warmup_penalties = []
-        
+
         current_comp = driver.tyre_state.compound.upper()
         current_age = driver.tyre_state.age_laps
 
@@ -269,7 +269,7 @@ class MonteCarloRaceEngine:
                     warmup_penalties.append(0.2)  # Lap 2 warm-up
                 else:
                     warmup_penalties.append(0.0)
-            
+
             compounds.append(current_comp)
             ages.append(current_age)
             current_age += 1
@@ -290,17 +290,17 @@ class MonteCarloRaceEngine:
         else:
             deg_rates = compound_base_rates
         cliffs = np.array([self.COMPOUND_CLIFFS.get(c, 32.0) for c in compounds], dtype=np.float32)
-        
+
         deg_mult = np.where(ages_arr > cliffs, 1.8, 1.0)
         temp_factor = max(1.0, (race_state.weather.track_temp_c / 35.0))
-        
+
         # Fuel mass effect: dynamic penalty per kg from driver.fuel_state (defaults to 0.03 s/lap/kg)
         fuel_penalty = getattr(getattr(driver, "fuel_state", None), "fuel_time_penalty_per_kg", 0.03)
         fuel_burn = (race_state.total_laps - laps_range) * fuel_penalty
-        
+
         # Track evolution grip benefit
         evo_benefit = (laps_range / race_state.total_laps) * (race_state.track.track_evolution_factor * 0.4)
-        
+
         # Rain penalty if wrong tyres fitted
         rain_penalty = 15.0 if race_state.weather.rainfall else 0.0
         slick_mask = np.array([c not in ['INTERMEDIATE', 'WET'] for c in compounds], dtype=np.float32)
@@ -406,4 +406,3 @@ class MonteCarloRaceEngine:
             results.sort(key=lambda x: x.strategy_score, reverse=True)
 
         return results
-

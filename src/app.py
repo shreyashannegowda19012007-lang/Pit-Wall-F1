@@ -64,37 +64,37 @@ def _main_execution_loop():
                 </div>
             </div>
         """, unsafe_allow_html=True)
-        
+
         app_mode = st.radio("OPERATIONAL MODE", ["REPLAY", "POST-RACE", "LIVE"])
-        
+
         is_live = app_mode == "LIVE"
-        
+
         seasons = api_service.get_available_seasons()
         # Default to 2024 for authentic baseline
         default_year_idx = seasons.index(2024) if 2024 in seasons else (len(seasons)-3 if len(seasons) >= 3 else 0)
         selected_year = st.selectbox("CHAMPIONSHIP YEAR", seasons, index=default_year_idx)
-        
+
         rounds = api_service.get_season_rounds(selected_year)
         round_names = [f"R{r['round_number']} - {r['event_name']} ({r['country']})" for r in rounds]
-        
+
         # Default to Bahrain Grand Prix for authentic baseline
         default_round_idx = 0
         for i, r in enumerate(rounds):
             if r['event_name'] == "Bahrain Grand Prix":
                 default_round_idx = i
                 break
-                
+
         sel_round_idx = st.selectbox("ROUND / GRAND PRIX", range(len(round_names)), index=default_round_idx, format_func=lambda i: round_names[i])
-        
+
         selected_gp = rounds[sel_round_idx]['event_name']
         avail_sessions = rounds[sel_round_idx].get('available_sessions', ["RACE"])
-        
+
         # Default to Race session
         default_session_idx = avail_sessions.index("RACE") if "RACE" in avail_sessions else 0
         selected_session = st.selectbox("SESSION", avail_sessions, index=default_session_idx)
-        
+
         trigger_fetch = st.button("INITIALIZE UPLINK", use_container_width=True)
-        
+
         if is_live:
             live_active = st.checkbox("Enable OpenF1 Live Uplink", value=False)
             if live_active:
@@ -104,7 +104,7 @@ def _main_execution_loop():
                 st.caption("ℹ️ Enable checkbox & click Initialize Uplink to stream live session.")
         else:
             stop_live_worker()
-            
+
         if trigger_fetch:
             # Clear caches and reset session state for new session
             st.cache_data.clear()
@@ -241,4 +241,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

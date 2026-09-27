@@ -42,7 +42,7 @@ class TestUncertaintyFramework(unittest.TestCase):
         self.assertEqual(pred.point_estimate, 3.8)
         self.assertEqual(pred.model_version, "v2.4.0")
         self.assertIn("3.8 ± 1.2", pred.format_summary())
-        
+
         p_dict = pred.to_dict()
         self.assertEqual(p_dict["data_quality"], "HIGH")
         self.assertIn("summary_text", p_dict)

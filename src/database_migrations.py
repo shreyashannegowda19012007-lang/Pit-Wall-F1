@@ -35,7 +35,7 @@ class DatabaseManager:
         """Initializes database schema with migration tracking."""
         with self.get_connection() as conn:
             cursor = conn.cursor()
-            
+
             # Migration tracking table
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS schema_migrations (
@@ -150,5 +150,3 @@ class DatabaseManager:
 
 
 db_manager = DatabaseManager()
-
-

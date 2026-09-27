@@ -65,4 +65,3 @@ class WebSocketConnectionManager:
 
 # Global Singleton Manager
 ws_manager = WebSocketConnectionManager()
-

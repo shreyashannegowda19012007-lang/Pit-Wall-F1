@@ -35,7 +35,7 @@ def get_oauth_token():
     if not client_id or not client_secret:
         logger.warning("Missing OPENF1_CLIENT_ID or OPENF1_CLIENT_SECRET environment variables.")
         return None
-        
+
     try:
         resp = requests.post("https://api.openf1.org/token", data={
             "client_id": client_id,
@@ -87,7 +87,7 @@ def on_message(client, userdata, msg):
     try:
         topic = msg.topic
         payload = json.loads(msg.payload.decode('utf-8'))
-        
+
         with state_lock:
             if topic == "v1/laps":
                 live_state["laps"].append(payload)
@@ -99,13 +99,13 @@ def on_message(client, userdata, msg):
                 live_state["weather"].append(payload)
             elif topic == "v1/race_control":
                 live_state["race_control"].append(payload)
-                
+
             current_time = time.time()
             if current_time - last_write_time >= 1.0:
                 filepath = userdata.get("filepath", config.LIVE_STREAM_TXT) if isinstance(userdata, dict) else config.LIVE_STREAM_TXT
                 atomic_write_json(filepath, live_state)
                 last_write_time = current_time
-            
+
     except Exception as e:
         logger.error(f"Message parsing error: {e}")
 
@@ -118,7 +118,7 @@ def start_worker(filepath=None):
     token = get_oauth_token()
     if not token:
         logger.warning("Starting without auth token. Connection may be rejected if enforced.")
-        
+
     try:
         # Compatibility across paho-mqtt versions
         if hasattr(mqtt, 'CallbackAPIVersion') and hasattr(mqtt.CallbackAPIVersion, 'VERSION1'):
@@ -129,23 +129,23 @@ def start_worker(filepath=None):
         client = mqtt.Client(client_id="pitwall-openf1-worker", clean_session=True)
 
     client.user_data_set({"filepath": filepath})
-    
+
     if token:
         client.username_pw_set(username="pitwall", password=token)
-        
+
     try:
         ctx = ssl.create_default_context()
         client.tls_set_context(ctx)
     except Exception as e:
         logger.error(f"Failed to configure TLS: {e}")
         sys.exit(1)
-        
+
     client.on_connect = on_connect
     client.on_message = on_message
     client.on_disconnect = on_disconnect
-    
+
     client.reconnect_delay_set(min_delay=1, max_delay=120)
-    
+
     try:
         logger.info("Connecting to mqtt.openf1.org:8883...")
         client.connect("mqtt.openf1.org", 8883, keepalive=60)
@@ -157,6 +157,3 @@ if __name__ == '__main__':
     target_filepath = sys.argv[1] if len(sys.argv) > 1 else config.LIVE_STREAM_TXT
     os.makedirs(os.path.dirname(os.path.abspath(target_filepath)), exist_ok=True)
     start_worker(target_filepath)
-
-
-

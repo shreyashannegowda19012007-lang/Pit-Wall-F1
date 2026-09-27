@@ -180,7 +180,7 @@ class TyreModelEvaluator:
         # Calculate empirical degradation slope from actuals
         x = [obs.tyre_age_laps for obs in stint_laps]
         y = [obs.lap_time_s for obs in stint_laps]
-        
+
         deg_slope = 0.0
         if len(x) > 1:
             deg_slope = float(np.polyfit(x, y, 1)[0])
@@ -232,4 +232,3 @@ class TyreModelEvaluator:
             "bayesian_posterior_degradation": {"mean_s_per_lap": round(deg_slope, 4), "std_s_per_lap": 0.014},
             "detailed_predictions": [asdict(r) for r in detailed_results]
         }
-

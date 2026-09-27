@@ -93,11 +93,11 @@ class TestHistoricalRaceReplayFramework(unittest.TestCase):
         self.assertIn("ablation_variants", ablation_res)
         variants = ablation_res["ablation_variants"]
         self.assertEqual(len(variants), 4)
-        
+
         # Full System should have a calculated regret, others are UNAVAILABLE
         full_sys_regret = next(v["decision_regret"] for v in variants if "Full" in v["variant_name"])
         fixed_sys_regret = next(v["decision_regret"] for v in variants if "Fixed" in v["variant_name"])
-        
+
         self.assertIsInstance(full_sys_regret, float)
         self.assertEqual(fixed_sys_regret, "UNAVAILABLE")
 

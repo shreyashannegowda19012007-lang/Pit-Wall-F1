@@ -76,7 +76,7 @@ class TelemetryIngestionService:
         """Computes a deterministic SHA-256 hash of a Pandas DataFrame content."""
         if df is None or df.empty:
             return hashlib.sha256(b"EMPTY_DATAFRAME").hexdigest()
-        
+
         # Use csv byte serialization for stable hash calculation
         data_bytes = df.to_csv(index=False).encode('utf-8')
         return hashlib.sha256(data_bytes).hexdigest()
@@ -149,7 +149,7 @@ class TelemetryIngestionService:
                 data = json.loads(json_payload)
             else:
                 data = json_payload
-            
+
             df = pd.DataFrame(data)
             return cls.ingest_from_dataframe(
                 df=df,
@@ -182,4 +182,3 @@ class TelemetryIngestionService:
         except Exception as e:
             logger.error(f"Failed to ingest FastF1 lap for driver {driver_id}: {e}")
             return cls.ingest_from_dataframe(pd.DataFrame(), source="FASTF1_FAILED", session_id=session_id, driver_id=driver_id)
-

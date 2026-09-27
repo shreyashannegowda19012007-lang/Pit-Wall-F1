@@ -14,12 +14,12 @@ logger = logging.getLogger(__name__)
 class JolpicaF1Client:
     def __init__(self, base_url: str = "https://api.jolpi.ca/ergast/f1", cache_name: str = "f1_cache/jolpica_cache", expire_after: int = 86400):
         self.base_url = os.environ.get('JOLPICA_BASE_URL', base_url).rstrip("/")
-        
+
         # Ensure cache directory exists if a path is provided
         cache_dir = os.path.dirname(cache_name)
         if cache_dir:
             os.makedirs(cache_dir, exist_ok=True)
-        
+
         self.session = requests_cache.CachedSession(
             cache_name,
             backend='sqlite',
@@ -31,20 +31,20 @@ class JolpicaF1Client:
 
     def _make_request(self, endpoint: str) -> Dict[str, Any]:
         url = f"{self.base_url}/{endpoint.lstrip('/')}.json"
-        
+
         for attempt in range(self.max_retries):
             try:
                 response = self.session.get(url, timeout=self.timeout)
                 response.raise_for_status()
-                
+
                 if not getattr(response, 'from_cache', False):
                     logger.debug(f"Jolpica API Hit: {url}")
                 else:
                     logger.debug(f"Jolpica Cache Hit: {url}")
-                    
+
                 data = response.json()
                 return data.get("MRData", {})
-                
+
             except requests.exceptions.HTTPError as e:
                 if e.response.status_code == 429:
                     logger.warning(f"Rate limited by Jolpica. Retrying... (Attempt {attempt + 1}/{self.max_retries})")
@@ -59,7 +59,7 @@ class JolpicaF1Client:
             except requests.exceptions.RequestException as e:
                 logger.error(f"Request Error querying Jolpica {endpoint}: {e}")
                 return {}
-                
+
         logger.error(f"Max retries exceeded for Jolpica {endpoint}")
         return {}
 
@@ -101,7 +101,7 @@ class JolpicaF1Client:
         res = self._make_request(endpoint)
         lists = res.get("StandingsTable", {}).get("StandingsLists", [])
         return lists[0].get("DriverStandings", []) if lists else []
-        
+
     def get_constructor_standings(self, year: int, round_number: Optional[int] = None) -> List[Dict[str, Any]]:
         endpoint = f"{year}/{round_number}/constructorStandings" if round_number else f"{year}/constructorStandings"
         res = self._make_request(endpoint)

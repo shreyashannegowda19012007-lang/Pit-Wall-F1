@@ -98,21 +98,21 @@ class UnifiedTyreIntelligenceEngine:
         Computes canonical tyre state using empirical telemetry data.
         """
         from src.data_ingestion import fetch_session_data
-        
+
         parts = session_id.split('-')
         year = int(parts[1]) if len(parts) > 1 else 2024
         event_map = {"SPAIN": "Spanish Grand Prix", "MONACO": "Monaco Grand Prix", "SILVERSTONE": "British Grand Prix", "BAHRAIN": "Bahrain Grand Prix"}
         event = event_map.get(parts[2], "Spanish Grand Prix") if len(parts) > 2 else "Spanish Grand Prix"
-        
+
         emp_deg = 0.08 # Baseline fallback
         emp_std = 0.02
         source = SourceClassification.MODELLED
-        
+
         try:
             session, laps, _ = fetch_session_data(year, event, 'R')
             drv_laps = laps[laps['Driver'] == driver_id].copy()
             drv_laps = drv_laps[drv_laps['Compound'] == compound]
-            
+
             if len(drv_laps) > 3:
                 # Calculate simple empirical degradation (slope of lap times)
                 valid_laps = drv_laps.dropna(subset=['LapTime'])
@@ -127,7 +127,7 @@ class UnifiedTyreIntelligenceEngine:
                         source = SourceClassification.OBSERVED
         except Exception:
             pass
-            
+
         bayes = cls.calculate_bayesian_posterior(observed_mean=emp_deg, observed_std=emp_std, n_obs=stint_lap)
 
         # 3-Layer Thermal Model Physics: Surface (108C) <-> Bulk (98C) <-> Core (92C)
@@ -175,11 +175,11 @@ class UnifiedTyreIntelligenceEngine:
         }
         params_a = compound_params.get(compound_a.upper(), compound_params['MEDIUM'])
         params_b = compound_params.get(compound_b.upper(), compound_params['HARD'])
-        
+
         offset_a = params_a['offset']
         offset_b = params_b['offset']
         deg_a = params_a['deg_rate']
-        
+
         if deg_a <= 0 or offset_b <= offset_a:
             # If A doesn't degrade or B is faster initially, crossover is N/A or immediate
             crossover = 0
@@ -213,17 +213,16 @@ class UnifiedTyreIntelligenceEngine:
             compound = "MEDIUM"
 
         params = compound_params.get(str(compound).upper(), compound_params['MEDIUM'])
-        
+
         cliff = params['thermal_cliff']
         # Optimal pit is just before the thermal cliff
         optimal = current_lap + max(1, cliff - stint_lap)
         earliest = max(current_lap + 1, optimal - 4)
         latest = optimal + 3
-        
+
         return PitWindowForecast(
             earliest_pit_lap=earliest,
             optimal_pit_lap=optimal,
             latest_pit_lap=latest,
             confidence_interval_laps=(earliest, latest)
         )
-

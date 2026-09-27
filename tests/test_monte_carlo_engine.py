@@ -49,7 +49,7 @@ class TestMonteCarloRaceEngine(unittest.TestCase):
     def test_seed_reproducibility(self):
         """Verifies that a fixed seed produces identical simulation outcomes across runs."""
         strat = StrategyPlan("1-Stop (Hard)", [StintPlan("MEDIUM", 15, 25), StintPlan("HARD", 25, 50)], [25], ["MEDIUM", "HARD"], 1)
-        
+
         engine1 = MonteCarloRaceEngine(iterations=2000, seed=42)
         out1 = engine1.simulate_strategy_vectorized(strat, self.driver_target, self.opponents, self.race_state)
 
@@ -75,7 +75,7 @@ class TestMonteCarloRaceEngine(unittest.TestCase):
     def test_multi_objective_ranking(self):
         """Verifies multi-objective strategy sorting."""
         engine = MonteCarloRaceEngine(iterations=2000, seed=42)
-        
+
         # Max Podium Sort
         rankings_podium = engine.rank_strategies(self.driver_target, self.opponents, self.race_state, objective=ObjectiveType.MAX_PODIUM)
         self.assertTrue(rankings_podium[0].podium_probability >= rankings_podium[-1].podium_probability)

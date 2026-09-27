@@ -98,7 +98,7 @@ class TestDecisionEngine(unittest.TestCase):
         """Verifies that strategy violating min_stops or max_stops constraints is rejected."""
         constraints = DecisionConstraint(min_stops=2, max_stops=3)
         dec = DecisionEngine.evaluate(self.race_state, None, self.outcomes, objective=ObjectiveType.MAX_PODIUM, constraints=constraints)
-        
+
         # Strategy A (1-stop) must be filtered out by min_stops=2 constraint
         self.assertEqual(dec.selected_strategy_name, "2-Stop (Aggressive)")
 

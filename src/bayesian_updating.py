@@ -147,7 +147,7 @@ class ConjugateBayesianEstimator:
         # Calculate empirical lap-to-lap pace differences (controlling for lap number progression)
         lap_times = driver_laps['LapTime'].dt.total_seconds().values
         lap_diffs = np.diff(lap_times)
-        
+
         # Filter extreme outliers (> 2.0s anomalies e.g. traffic/yellow flags)
         clean_diffs = [float(d) for d in lap_diffs if -0.5 <= d <= 1.5]
 
@@ -193,4 +193,3 @@ class ConjugateBayesianEstimator:
             f"Conjugate posterior updated across {len(clean_times)} clean race laps"
         ]
         return param
-

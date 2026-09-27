@@ -11,8 +11,8 @@ import streamlit as st
 class RaceState:
     current_lap: int
     total_laps: int
-    weather_state: str 
-    safety_car_probability: float 
+    weather_state: str
+    safety_car_probability: float
     track_temperature: float
     air_temperature: float
     rainfall: bool
@@ -24,10 +24,10 @@ class RaceState:
 class DriverState:
     driver: str
     position: int
-    compound: str 
+    compound: str
     tyre_age: int
-    tyre_health: float 
-    current_gap: float 
+    tyre_health: float
+    current_gap: float
     average_pace: float
     gap_ahead: float
     gap_behind: float
@@ -49,7 +49,7 @@ class SimulationResult:
     avg_lap_time: float
     total_deg_cost: float
     position_delta: int
-    risk_score: float 
+    risk_score: float
     strategy_score: float
     reasoning: str
     # Distribution structures for Active Inference
@@ -97,18 +97,18 @@ def active_inference_strategy_suggestor(rankings: List[SimulationResult], baseli
             "best_strategy": "Stay Out",
             "expected_p50_gain": 0.0
         }
-        
+
     baseline = next((r for r in rankings if r.strategy_name == baseline_strategy_name), rankings[-1])
     best_strategy = rankings[0]
-    
+
     directive = "MAINTAIN CURRENT STRATEGY WINDOW. PACE IS OPTIMAL."
     priority = "LOW"
     action_flag = False
     time_savings = 0.0
-    
+
     if best_strategy.strategy_name != baseline.strategy_name:
         time_savings = baseline.expected_finish_time - best_strategy.expected_finish_time
-        
+
         if time_savings > 2.0:
             directive = f"DIRECTIVE: INITIATE {best_strategy.strategy_name.upper()} IMMEDIATELY."
             priority = "CRITICAL"
@@ -117,7 +117,7 @@ def active_inference_strategy_suggestor(rankings: List[SimulationResult], baseli
             directive = f"TACTICAL RECOMMENDATION: ALTERNATIVE PATH '{best_strategy.strategy_name.upper()}' YIELDS POSITION ADVANTAGE."
             priority = "MEDIUM"
             action_flag = True
-            
+
     return {
         "directive": directive,
         "priority": priority,
@@ -155,9 +155,9 @@ def render_simulator_ui(session, laps, selected_driver, manual_lap, sc_prob, rac
         if current_laps.empty:
             st.warning(f"No telemetry laps found for {selected_driver}.")
             return
-            
+
         last_lap = current_laps.iloc[-1]
-        
+
         # Derive running position at current lap rather than using final race classification
         pos_val = last_lap.get('Position')
         if pd.notna(pos_val):
@@ -167,8 +167,8 @@ def render_simulator_ui(session, laps, selected_driver, manual_lap, sc_prob, rac
             if isinstance(pos_val, pd.Series): pos_val = pos_val.iloc[0]
             current_pos = int(pos_val)
         else:
-            current_pos = 10 
-        
+            current_pos = 10
+
         avg_pace = current_laps['LapTime'].dt.total_seconds().tail(3).mean()
         if pd.isna(avg_pace): avg_pace = 82.0
 
@@ -178,20 +178,20 @@ def render_simulator_ui(session, laps, selected_driver, manual_lap, sc_prob, rac
             if d == selected_driver: continue
             d_laps = get_driver_laps(laps, d)
             if d_laps.empty: continue
-            
+
             d_last = d_laps.iloc[-1]
             p_last = current_laps.iloc[-1]
-            
+
             common_lap = min(d_last['LapNumber'], p_last['LapNumber'])
             d_match = d_laps[d_laps['LapNumber'] == common_lap]
-            
+
             # Find gap to leader, not just primary driver
             leader = selected_driver
             if results is not None and not results.empty:
                 leader_row = results[results['Position'] == 1.0]
                 if not leader_row.empty:
                     leader = leader_row['Abbreviation'].iloc[0]
-            
+
             ldr_laps = get_driver_laps(laps, leader)
             gap = 0.0
             if not ldr_laps.empty:
@@ -202,19 +202,19 @@ def render_simulator_ui(session, laps, selected_driver, manual_lap, sc_prob, rac
             opponents.append(DriverState(
                 driver=d, position=0, compound=str(d_last['Compound']),
                 tyre_age=int(d_last['TyreLife']), tyre_health=0,
-                current_gap=gap, 
+                current_gap=gap,
                 average_pace=d_laps['LapTime'].dt.total_seconds().tail(3).mean() or 83.0,
                 gap_ahead=0, gap_behind=0
             ))
 
         weather = session.weather_data.iloc[-1] if not session.weather_data.empty else None
-        
+
         # Robustly extract weather values avoiding Series ambiguity
         def safe_extract(val, default):
             if val is None: return default
             if isinstance(val, pd.Series): return val.iloc[0]
             return val
-            
+
         r_state = RaceState(
             current_lap=manual_lap, total_laps=total_race_laps,
             weather_state='Rain' if weather is not None and bool(safe_extract(weather['Rainfall'], False)) else 'Dry',
@@ -234,7 +234,7 @@ def render_simulator_ui(session, laps, selected_driver, manual_lap, sc_prob, rac
             track_temp=float(safe_extract(weather['TrackTemp'] if weather is not None else 30.0, 30.0)),
             fuel_load_kg=110.0 * (1.0 - (manual_lap / total_race_laps)) if total_race_laps else 50.0
         )
-        
+
         # Gap for primary driver
         p_gap = 0.0
         if not ldr_laps.empty:
@@ -332,13 +332,13 @@ def render_simulator_ui(session, laps, selected_driver, manual_lap, sc_prob, rac
             mc_outcomes=mc_rankings,
             objective=obj_type
         )
-        
+
         directive_color = {
-            "PIT_NOW": "#EF4444", 
-            "PREPARE_PIT": "#FFEA00",   
-            "STAY_OUT": "#4A90E2"       
+            "PIT_NOW": "#EF4444",
+            "PREPARE_PIT": "#FFEA00",
+            "STAY_OUT": "#4A90E2"
         }.get(decision.recommended_action, "#27F4D2")
-        
+
         st.markdown(f"""
             <div style="border: 2px solid {directive_color}; background-color: #0A101C; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
                 <h3 style="color: {directive_color}; margin: 0; font-family: 'Share Tech Mono';">DECISION ENGINE DIRECTIVE: {decision.recommended_action}</h3>
@@ -350,7 +350,7 @@ def render_simulator_ui(session, laps, selected_driver, manual_lap, sc_prob, rac
         """, unsafe_allow_html=True)
 
         col_left, col_right = st.columns([1, 1])
-        
+
         with col_left:
             st.markdown("##### DRIVER STATE")
             st.write(f"**Position:** P{current_pos} | **Compound:** {d_state.compound} ({d_state.tyre_age} laps)")
@@ -397,7 +397,7 @@ def render_simulator_ui(session, laps, selected_driver, manual_lap, sc_prob, rac
         pitwall_ui.render_full_field_simulation_dashboard(selected_driver)
         pitwall_ui.render_advanced_monte_carlo_strategy_dashboard(selected_driver)
         pitwall_ui.render_historical_backtest_evaluation_dashboard(selected_driver)
-        
+
         from src.rl_config import is_rl_enabled
         if is_rl_enabled():
             pitwall_ui.render_rl_strategy_agent_dashboard(selected_driver)
@@ -430,7 +430,7 @@ def render_simulator_ui(session, laps, selected_driver, manual_lap, sc_prob, rac
                 "Downside Risk % (P10+)": f"{r.downside_risk_probability*100:.1f}%",
                 "Expected Race Time": f"{r.expected_race_time_min:.2f} min"
             })
-            
+
         st.table(pd.DataFrame(results_rows))
 
     except Exception as e:
@@ -457,19 +457,19 @@ def render_decision_engine_panel(raw_session, laps, primary, comp, current_lap, 
     if laps.empty:
         st.info("Insufficient data for strategy projection.")
         return
-        
+
     try:
         primary_laps = laps[laps['Driver'] == primary]
         if primary_laps.empty:
             st.info(f"No strategy data for {primary}.")
             return
-            
+
         last_lap = primary_laps.iloc[-1]
         compound = last_lap.get('Compound', 'UNKNOWN')
         tyre_life = last_lap.get('TyreLife', 0)
-        
+
         results = raw_session.results if raw_session else None
-        
+
         # Determine actual running positions and true race leader at current replay lap
         driver_positions = {}
         for d in laps['Driver'].unique():
@@ -479,7 +479,7 @@ def render_decision_engine_panel(raw_session, laps, primary, comp, current_lap, 
                 pos_val = d_last.get('Position')
                 if pd.notna(pos_val):
                     driver_positions[d] = int(pos_val)
-        
+
         # Fallback if Position column is unavailable: sort by (LapNumber desc, Time asc)
         if not driver_positions:
             last_records = []
@@ -501,7 +501,7 @@ def render_decision_engine_panel(raw_session, laps, primary, comp, current_lap, 
                 d_laps = laps[laps['Driver'] == d]
                 if not d_laps.empty:
                     d_last = d_laps.iloc[-1]
-                    
+
                     # Calculate real gap to current leader
                     common_lap = min(d_last['LapNumber'], last_lap['LapNumber'])
                     d_match = d_laps[d_laps['LapNumber'] == common_lap]
@@ -509,10 +509,10 @@ def render_decision_engine_panel(raw_session, laps, primary, comp, current_lap, 
                     gap = 0.0
                     if not d_match.empty and not l_match.empty and pd.notna(d_match['Time'].iloc[0]) and pd.notna(l_match['Time'].iloc[0]):
                         gap = max(0.0, (d_match['Time'].iloc[0] - l_match['Time'].iloc[0]).total_seconds())
-                        
+
                     avg_pace = d_laps['LapTime'].dt.total_seconds().tail(3).mean()
                     if pd.isna(avg_pace): avg_pace = 82.0
-                    
+
                     pos = driver_positions.get(d, 10)
                     opponents.append(RDriverState(driver_id=d, position=pos, current_gap_to_leader_s=gap, base_pace_s=avg_pace, tyre_state=TyreState(str(d_last.get('Compound', 'UNKNOWN')), int(d_last.get('TyreLife', 0)), 50.0, 0.05), fuel_state=FuelState(50.0)))
 
@@ -524,7 +524,7 @@ def render_decision_engine_panel(raw_session, laps, primary, comp, current_lap, 
             track=TrackState(track_name=track_name, total_laps=total_laps, pit_lane_loss_seconds=22.5),
             safety_car=SafetyCarState(sc_probability_per_lap=0.0, condition="Green Flag")
         )
-        
+
         p_pos = driver_positions.get(primary, 1)
         p_avg_pace = primary_laps['LapTime'].dt.total_seconds().tail(3).mean()
         if pd.isna(p_avg_pace): p_avg_pace = 82.0
@@ -539,13 +539,13 @@ def render_decision_engine_panel(raw_session, laps, primary, comp, current_lap, 
 
         t_driver = RDriverState(driver_id=primary, position=p_pos, current_gap_to_leader_s=p_gap, base_pace_s=p_avg_pace, tyre_state=TyreState(str(compound), int(tyre_life), 50.0, 0.05), fuel_state=FuelState(50.0))
         c_race_state.drivers = {t_driver.driver_id: t_driver, **{opp.driver_id: opp for opp in opponents}}
-        
+
         what_if = st.session_state.get("what_if_strategy")
-        
+
         with st.spinner("Running Monte Carlo + Decision Engine..."):
             mc_engine = MonteCarloRaceEngine(iterations=250, seed=42)
             mc_outcomes = mc_engine.rank_strategies(t_driver, opponents, c_race_state, objective="MAX_WIN_PROBABILITY")
-            
+
             if what_if:
                 from strategy_model import StrategyPlan, StintPlan
                 wi_strat = StrategyPlan(
@@ -561,11 +561,11 @@ def render_decision_engine_panel(raw_session, laps, primary, comp, current_lap, 
                 wi_res = mc_engine.simulate_strategy_vectorized(wi_strat, t_driver, opponents, c_race_state)
                 # Assign this custom strategy as the chosen decision context if we want to visualize it
                 mc_outcomes.insert(0, wi_res)
-                
+
             decision = DecisionEngine.evaluate(c_race_state, None, mc_outcomes, "MAX_WIN_PROBABILITY")
             st.session_state['race_state'] = c_race_state
             st.session_state['mc_outcomes'] = mc_outcomes
-        
+
         st.markdown(f"""
             <div class="hud-card" style="border: 1px solid rgba(255, 0, 85, 0.4); box-shadow: 0 0 20px rgba(255, 0, 85, 0.15); margin-top: 10px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 0, 85, 0.25); padding-bottom: 8px; margin-bottom: 12px;">
@@ -599,7 +599,7 @@ def render_decision_engine_panel(raw_session, laps, primary, comp, current_lap, 
                 </div>
             </div>
         """, unsafe_allow_html=True)
-        
+
         st.markdown("##### WHAT-IF SCENARIO")
         with st.expander("Modify Strategy Parameters"):
             with st.form("what_if_form"):
@@ -612,7 +612,6 @@ def render_decision_engine_panel(raw_session, laps, primary, comp, current_lap, 
                 if submitted:
                     st.session_state["what_if_strategy"] = {"compound": target_compound, "lap": target_lap}
                     st.rerun()
-            
+
     except Exception as e:
         st.error(f"Strategy Engine Error: {e}")
-

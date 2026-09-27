@@ -64,11 +64,11 @@ class DecisionEngine:
     """
     Authoritative strategy recommendation layer.
     """
-    
+
     @classmethod
     def generate_recommendation(
-        cls, 
-        race_context: RaceContext, 
+        cls,
+        race_context: RaceContext,
         primary_driver: str,
         comp_driver: str
     ) -> StrategyRecommendation:
@@ -78,20 +78,20 @@ class DecisionEngine:
         from src.decision_engine import DecisionEngine as FormalDecisionEngine
         import os
         from src import config
-        
+
         models_used = {"DecisionEngine": "v2.0", "MonteCarlo": "v2.4.0"}
-        
+
         from src.rl_config import is_rl_enabled
-        
+
         # Check RL Availability ONLY if explicitly enabled
         rl_available = False
         rl_installed = os.path.exists(os.path.join(config.BASE_DIR, "models", "rl_strategy", "ppo_strategy_v1.zip"))
-        
+
         if is_rl_enabled():
             if rl_installed:
                 rl_available = True
                 models_used["RL_PPO"] = "ppo_strategy_v1"
-            
+
         # Check ML Availability
         ml_available = False
         ml_model_path = os.path.join(config.BASE_DIR, "models", "lap_time", "xgboost_lap_time_v1.json")
@@ -116,7 +116,7 @@ class DecisionEngine:
             tyre_state=TyreState(compound=p_ctx.tyre_compound, age_laps=p_ctx.tyre_age_laps, remaining_grip_pct=90.0, thermal_deg_rate=0.08),
             fuel_state=FuelState(fuel_remaining_kg=100.0)
         )
-        
+
         opp_states = []
         for d_id, d_ctx in race_context.drivers.items():
             if d_id != primary_driver:
@@ -128,7 +128,7 @@ class DecisionEngine:
                     tyre_state=TyreState(compound=d_ctx.tyre_compound, age_laps=d_ctx.tyre_age_laps, remaining_grip_pct=90.0, thermal_deg_rate=0.08),
                     fuel_state=FuelState(fuel_remaining_kg=100.0)
                 ))
-                
+
         c_race_state = CompleteRaceState(
             current_lap=race_context.current_lap,
             total_laps=race_context.total_laps,
@@ -137,14 +137,14 @@ class DecisionEngine:
             track=TrackState(total_laps=race_context.total_laps),
             safety_car=SafetyCarState()
         )
-        
+
         # 2. Strategy Candidate Generation & Monte Carlo Optimizer
         mc_engine = MonteCarloRaceEngine(iterations=25, seed=42)
         mc_rankings = mc_engine.rank_strategies(t_driver_state, opp_states, c_race_state, objective="MAX_PODIUM")
-        
+
         # 3. Decision Engine (Mapping MC to Formal Decision)
         structured_dec = FormalDecisionEngine.evaluate(c_race_state, None, mc_rankings, objective="MAX_PODIUM")
-        
+
         recommendation = structured_dec.recommended_action
         reasoning = structured_dec.primary_reason
         alternative = structured_dec.alternatives[0].strategy_name if structured_dec.alternatives else "Stay Out"
@@ -153,7 +153,7 @@ class DecisionEngine:
         if mc_rankings:
             best_time = min(r.expected_race_time_min for r in mc_rankings)
             mc_regret = (mc_rankings[0].expected_race_time_min - best_time) * 60.0
-        
+
         expected_time_s = mc_rankings[0].expected_race_time_min * 60.0 if mc_rankings else float(race_context.total_laps * t_driver_state.base_pace_s)
 
         # 4. Experimental RL Override (Only if explicitly enabled)
@@ -166,7 +166,7 @@ class DecisionEngine:
                 mc_regret = eval_res.get("rl_agent", {}).get("strategy_regret_s", 0.0)
 
         confidence = max(0.0, 100.0 - structured_dec.downside_risk_pct) if mc_rankings else 0.0
-        
+
         return StrategyRecommendation(
             recommendation=recommendation,
             expected_race_time_s=expected_time_s,
@@ -184,7 +184,7 @@ class DecisionEngine:
             strategy_regret_s=mc_regret,
             disagreement_analysis=""
         )
-        
+
     @classmethod
     def _fallback_recommendation(cls, driver: str, models: Dict[str, str]) -> StrategyRecommendation:
          return StrategyRecommendation(
@@ -204,7 +204,7 @@ class DecisionEngine:
 # =============================================================================
 
 class JarvisEvidenceEngine:
-    
+
     @classmethod
     def construct_jarvis_context(
         cls,
@@ -217,9 +217,9 @@ class JarvisEvidenceEngine:
         """Builds evidence payload to enforce NO HALLUCINATION in JARVIS."""
         pd_ctx = race_context.drivers.get(primary_driver)
         cd_ctx = race_context.drivers.get(comparison_driver)
-        
+
         return {
-            "mode": "REPLAY" if race_context.season < 2026 else "LIVE", 
+            "mode": "REPLAY" if race_context.season < 2026 else "LIVE",
             "primary_driver": asdict(pd_ctx) if pd_ctx else None,
             "comparison_driver": asdict(cd_ctx) if cd_ctx else None,
             "decision_engine_recommendation": asdict(recommendation),
@@ -233,22 +233,22 @@ class JarvisEvidenceEngine:
 
 class DecisionArchitectureOrchestrator:
     """Orchestrates the canonical R6 integration flow."""
-    
+
     @classmethod
     def build_race_context(cls, session_id: str = "S-2024-SPAIN", timestamp_s: float = 1200.0, mode: str = "REPLAY") -> RaceContext:
         """Fetches from RealtimeRaceStateEngine to build Canonical RaceContext."""
         from src.realtime_race_state import RealtimeRaceStateEngine
-        
+
         state_dict = RealtimeRaceStateEngine.get_unified_state(session_id, timestamp_s, mode)
-        
+
         season = state_dict.get("session_info", {}).get("year", 2024)
         round_n = state_dict.get("session_info", {}).get("round", 1)
         event = state_dict.get("session_info", {}).get("event_name", "Grand Prix")
         session = state_dict.get("session_info", {}).get("session", "Race")
-        
+
         current_lap = state_dict.get("timing_tower", {}).get("current_lap", 1)
         total_laps = state_dict.get("timing_tower", {}).get("total_laps", 57)
-        
+
         drivers_dict = {}
         for d in state_dict.get("timing_tower", {}).get("drivers", []):
             d_id = d.get("driver_id", "UNK")
@@ -267,21 +267,21 @@ class DecisionArchitectureOrchestrator:
                 degradation_estimate_s_per_lap=0.0,
                 telemetry_state="AVAILABLE" if d.get("last_lap_time_s", 0.0) > 0 else "NO_DATA"
             )
-            
+
         import os
         from src import config
         from src.rl_config import is_rl_enabled
-        
+
         rl_installed = os.path.exists(os.path.join(config.BASE_DIR, "models", "rl_strategy", "ppo_strategy_v1.zip"))
         rl_enabled = is_rl_enabled()
-        
+
         model_availability = {
             "RL_installed": rl_installed,
             "RL_experimental_enabled": rl_enabled,
             "RL": rl_installed and rl_enabled,
             "ML": os.path.exists(os.path.join(config.BASE_DIR, "models", "lap_time", "xgboost_lap_time_v1.json")),
         }
-            
+
         return RaceContext(
             season=season, round=round_n, event=event, session=session,
             current_lap=current_lap, total_laps=total_laps,
@@ -290,5 +290,3 @@ class DecisionArchitectureOrchestrator:
             model_availability=model_availability,
             data_timestamp=datetime.now(timezone.utc).isoformat()
         )
-
-

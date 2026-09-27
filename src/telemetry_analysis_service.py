@@ -167,4 +167,3 @@ class TelemetryAnalysisService:
             "validation_b": val_b.to_dict(),
             "alignment_metadata": align_meta
         }
-

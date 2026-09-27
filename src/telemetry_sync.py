@@ -38,12 +38,12 @@ def synchronize_telemetry_channels(
 ) -> Tuple[pd.DataFrame, Dict[str, Any]]:
     """
     Synchronizes asynchronous, multi-frequency telemetry channels onto a uniform time grid.
-    
+
     Args:
         df: Input cleaned telemetry DataFrame containing a time column.
         target_freq_hz: Target uniform sampling frequency in Hz (default 100.0 Hz = 0.01s grid step).
         time_col: Name of time column ('Time' or 'timestamp_s').
-        
+
     Returns:
         (synchronized_df, synchronization_metadata)
     """
@@ -85,11 +85,11 @@ def synchronize_telemetry_channels(
 
     # 2. Define Uniform Target Time Grid
     uniform_time_grid = np.arange(t_start, t_end + dt_step, dt_step)
-    
+
     synced_data: Dict[str, np.ndarray] = {
         'timestamp_s': uniform_time_grid
     }
-    
+
     interp_log: Dict[str, str] = {}
 
     # 3. Synchronize each channel according to its physical type
@@ -144,4 +144,3 @@ def synchronize_telemetry_channels(
     }
 
     return synced_df, metadata
-

@@ -13,10 +13,10 @@ class DemoDataSeeder:
             Tuple[pd.DataFrame, pd.DataFrame]: laps_df, results_df
         """
         rng = np.random.RandomState(seed)
-        
+
         drivers = ["VER", "HAM", "NOR", "LEC", "SAI", "RUS", "PER", "PIA"]
         laps = []
-        
+
         for driver in drivers:
             base_time = rng.normal(82.0, 0.5)
             for lap in range(1, 58):
@@ -29,16 +29,16 @@ class DemoDataSeeder:
                     "TyreLife": min(lap, 30),
                     "Time": pd.Timedelta(seconds=lap_time * lap)
                 })
-                
+
         laps_df = pd.DataFrame(laps)
-        
+
         results = []
         for pos, driver in enumerate(drivers, start=1):
             results.append({
                 "Abbreviation": driver,
                 "Position": pos
             })
-            
+
         results_df = pd.DataFrame(results)
-        
+
         return laps_df, results_df

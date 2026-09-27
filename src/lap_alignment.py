@@ -20,7 +20,7 @@ def align_laps_by_distance(
 ) -> Tuple[pd.DataFrame, Dict[str, Any]]:
     """
     Transforms Lap A and Lap B into a common distance coordinate grid.
-    
+
     Returns:
         aligned_df: DataFrame indexed by Distance (m) with columns:
             Distance, Speed_A, Speed_B, Throttle_A, Throttle_B, Brake_A, Brake_B,
@@ -55,7 +55,7 @@ def align_laps_by_distance(
             return np.full_like(x_grid, fill_val)
         x_orig = df['Distance'].values
         y_orig = df[col].values
-        
+
         # Linear 1D Interpolation
         f = interp1d(x_orig, y_orig, kind='linear', bounds_error=False, fill_value=(y_orig[0], y_orig[-1]))
         return f(x_grid)
@@ -156,4 +156,3 @@ def align_laps_by_distance(
     aligned_df.attrs = metadata
 
     return aligned_df, metadata
-

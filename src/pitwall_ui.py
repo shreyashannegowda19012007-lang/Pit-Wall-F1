@@ -10,7 +10,7 @@ def get_tyre_html(compound, life):
     """Generates the HTML badge for tyre compounds matching F1 official colors."""
     if not isinstance(compound, str) or not compound:
         return "<span class='gray'>-</span>"
-    
+
     comp = compound.upper()
     color = config.TYRE_COLORS.get(comp, config.TYRE_COLORS.get('UNKNOWN', '#64748B'))
     COMPOUND_LETTERS = {'SOFT': 'S', 'MEDIUM': 'M', 'HARD': 'H', 'INTERMEDIATE': 'I', 'WET': 'W'}
@@ -24,17 +24,17 @@ def format_sector_html(val, status):
     """Formats sector times with micro-sector timing colors (purple/green/yellow)."""
     if pd.isna(val) or val == float('inf'):
         return "-"
-    
+
     if hasattr(val, 'total_seconds'):
         seconds = val.total_seconds()
     else:
         seconds = float(val)
-        
+
     if pd.isna(seconds):
         return "-"
-        
+
     time_str = f"{seconds:.3f}"
-    
+
     if status == 'purple':
         return f'<span class="sector-badge purple" title="Overall Fastest" aria-label="Overall Fastest">🟣 {time_str}</span>'
     elif status == 'green':
@@ -130,16 +130,16 @@ def render_pitwall_console_header(info: Optional[Dict[str, Any]] = None, weather
     total_laps_val = info.get("TotalLaps", 0) if info else 0
 
     PitWallConsoleOrchestrator.render_top_session_bar(
-        year=year_val, 
-        gp_name=gp, 
-        session_type=sess, 
-        mode="REPLAY", 
-        current_lap=0, 
-        total_laps=total_laps_val, 
+        year=year_val,
+        gp_name=gp,
+        session_type=sess,
+        mode="REPLAY",
+        current_lap=0,
+        total_laps=total_laps_val,
         freshness_ms=0.0
     )
     PitWallConsoleOrchestrator.render_command_palette()
-    
+
 def render_timing_tower(results, laps):
     """Compiles and displays the high-density timing tower matrix."""
     st.markdown("<h3 style='color: #4A90E2; font-family: 'Inter', sans-serif; font-size: 14px; letter-spacing: 2px; margin-top: 20px;'>LIVE TIMING MATRIX</h3>", unsafe_allow_html=True)
@@ -148,13 +148,13 @@ def render_timing_tower(results, laps):
         return
 
     timing_rows = []
-    
+
     valid_s1 = laps['Sector1Time'].dropna().dt.total_seconds() if 'Sector1Time' in laps.columns else pd.Series(dtype=float)
     session_fastest_s1 = valid_s1.min() if not valid_s1.empty else float('inf')
-    
+
     valid_s2 = laps['Sector2Time'].dropna().dt.total_seconds() if 'Sector2Time' in laps.columns else pd.Series(dtype=float)
     session_fastest_s2 = valid_s2.min() if not valid_s2.empty else float('inf')
-    
+
     valid_s3 = laps['Sector3Time'].dropna().dt.total_seconds() if 'Sector3Time' in laps.columns else pd.Series(dtype=float)
     session_fastest_s3 = valid_s3.min() if not valid_s3.empty else float('inf')
 
@@ -163,31 +163,31 @@ def render_timing_tower(results, laps):
     for i, (index, row) in enumerate(results.iterrows(), start=1):
         driver = row.get('Abbreviation', row.get('Driver', 'UNK'))
         driver_laps = driver_laps_grouped.get_group(driver) if driver in driver_laps_grouped.groups else pd.DataFrame()
-        
+
         if not driver_laps.empty:
             fastest_lap = driver_laps.loc[driver_laps['LapTime'].idxmin()] if driver_laps['LapTime'].notna().any() else None
             last_lap = driver_laps.sort_values(by='LapNumber').iloc[-1]
-            
+
             compound = last_lap.get('Compound', 'UNKNOWN')
             tyre_life = last_lap.get('TyreLife', 0)
-            
+
             last_lap_val = last_lap.get('LapTime')
             if hasattr(last_lap_val, 'total_seconds') and pd.notna(last_lap_val):
                 sec = last_lap_val.total_seconds()
                 last_lap_str = f"{int(sec//60)}:{sec%60:06.3f}"
             else:
                 last_lap_str = "-"
-                
+
             s1_val = last_lap.get('Sector1Time')
             s1_sec = s1_val.total_seconds() if hasattr(s1_val, 'total_seconds') and pd.notna(s1_val) else float('inf')
             pb_s1 = driver_laps['Sector1Time'].min().total_seconds() if hasattr(driver_laps['Sector1Time'].min(), 'total_seconds') else float('inf')
             s1_stat = 'gray' if s1_sec == float('inf') else ('purple' if s1_sec <= session_fastest_s1 else ('green' if s1_sec <= pb_s1 else 'yellow'))
-            
+
             s2_val = last_lap.get('Sector2Time')
             s2_sec = s2_val.total_seconds() if hasattr(s2_val, 'total_seconds') and pd.notna(s2_val) else float('inf')
             pb_s2 = driver_laps['Sector2Time'].min().total_seconds() if hasattr(driver_laps['Sector2Time'].min(), 'total_seconds') else float('inf')
             s2_stat = 'gray' if s2_sec == float('inf') else ('purple' if s2_sec <= session_fastest_s2 else ('green' if s2_sec <= pb_s2 else 'yellow'))
-            
+
             s3_val = last_lap.get('Sector3Time')
             s3_sec = s3_val.total_seconds() if hasattr(s3_val, 'total_seconds') and pd.notna(s3_val) else float('inf')
             pb_s3 = driver_laps['Sector3Time'].min().total_seconds() if hasattr(driver_laps['Sector3Time'].min(), 'total_seconds') else float('inf')
@@ -203,11 +203,11 @@ def render_timing_tower(results, laps):
         s1_html = format_sector_html(s1_sec if s1_sec != float('inf') else np.nan, s1_stat)
         s2_html = format_sector_html(s2_sec if s2_sec != float('inf') else np.nan, s2_stat)
         s3_html = format_sector_html(s3_sec if s3_sec != float('inf') else np.nan, s3_stat)
-        
+
         grid_pos = row.get('GridPosition', 0)
         raw_pos = row.get('Position')
         safe_pos = int(raw_pos) if pd.notna(raw_pos) else i
-        
+
         import html
         timing_rows.append({
             "POS": safe_pos,
@@ -262,14 +262,14 @@ def render_race_control_log(messages):
     sorted_msg = messages.copy()
     if 'Time' in sorted_msg.columns:
         sorted_msg = sorted_msg.sort_values(by='Time', ascending=False)
-        
+
     import html
     for _, row in sorted_msg.iterrows():
         time = str(row.get('Time', ''))[:8]
         msg = html.escape(str(row.get('Message', '')))
         log_html += f"<div style='margin-bottom: 6px;'><span style='color: #4A90E2; font-weight: bold;'>[{time}]</span> <span style='color: #CBD5E1;'>{msg}</span></div>"
     log_html += "</div>"
-    
+
     st.markdown(log_html, unsafe_allow_html=True)
 
 def render_driver_time_loss_debrief(session, target_driver: str, ref_driver: str):
@@ -325,7 +325,7 @@ def render_driver_time_loss_debrief(session, target_driver: str, ref_driver: str
 
         corner_labels = [f"{ca['corner_id']} ({ca['corner_name']}) — +{ca['time_loss_seconds']:.3f}s" for ca in opps]
         selected_corner_label = st.selectbox("Select Corner to Inspect Evidence & Telemetry Trace", corner_labels, key="loss_corner_select")
-        
+
         sel_idx = corner_labels.index(selected_corner_label)
         selected_corner_ca = opps[sel_idx]
 
@@ -354,7 +354,7 @@ def render_driver_time_loss_debrief(session, target_driver: str, ref_driver: str
         if not aligned_df.empty:
             entry_m = ca.get('entry_m', 0.0)
             exit_m = ca.get('exit_m', aligned_df['Distance'].max())
-            
+
             # Add padding to visual window
             pad_m = 50.0
             sub_df = aligned_df[(aligned_df['Distance'] >= max(0.0, entry_m - pad_m)) & (aligned_df['Distance'] <= min(aligned_df['Distance'].max(), exit_m + pad_m))]
@@ -418,7 +418,7 @@ def render_pipeline_lineage_hud(session, target_driver: str):
         from data_ingestion import get_driver_telemetry
 
         raw_tel = get_driver_telemetry(session, target_driver) if session is not None else pd.DataFrame()
-        
+
         pipeline = TelemetryPipeline()
         res = pipeline.process_session_telemetry(
             raw_data=raw_tel,
@@ -708,7 +708,7 @@ def render_bayesian_updating_hud(session: Any, laps_df: pd.DataFrame, results_df
             deg_p = params.get("tyre_degradation", {})
             with m1:
                 st.markdown(f"**TYRE DEG POSTERIOR (LAP {selected_checkpoint}):**<br><span style='color:#A855F7; font-size:18px; font-weight:bold;'>{deg_p.get('posterior_mean', 0.07):.4f} s/lap</span><br><span style='color:#64748B; font-size:11px;'>Prior: {deg_p.get('prior_mean', 0.07):.4f} (Shift: {deg_p.get('update_magnitude_pct', 0.0):+.1f}%)</span>", unsafe_allow_html=True)
-            
+
             pace_p = params.get("driver_pace", {})
             with m2:
                 st.markdown(f"**DRIVER PACE POSTERIOR:**<br><span style='color:#4A90E2; font-size:18px; font-weight:bold;'>{pace_p.get('posterior_mean', 90.0):.3f} s</span><br><span style='color:#64748B; font-size:11px;'>Prior: {pace_p.get('prior_mean', 90.0):.3f} (N={pace_p.get('observation_count', 0)} laps)</span>", unsafe_allow_html=True)
@@ -817,7 +817,7 @@ def render_decision_engine_panel(decision: Any, active_driver: str):
             st.warning("Executing a human override will log the decision shift into the persistent audit trail.")
             ov_choice = st.selectbox("SELECT OVERRIDE STRATEGY:", options=["Stay Out", "Pit Early (Soft)", "Pit Late (Hard)", "Alternative Compound Strategy"], key="sel_override_strat")
             ov_reason = st.text_input("ENTER OVERRIDE REASON / MOTIVATION:", placeholder="e.g. Driver reported severe front-left graining...", key="input_override_reason")
-            
+
             if st.button("RECORD HUMAN OVERRIDE", key="btn_record_override"):
                 from decision_history import global_decision_audit
                 rec = global_decision_audit.record_human_override(
@@ -2410,7 +2410,7 @@ F: Fullscreen View               4: 3D Circuit & Cockpit
         return f"{int(sec // 60)}:{sec % 60:06.3f}"
 
     filtered_laps['LapTimeStr'] = filtered_laps['LapTime'].apply(clean_lap_time)
-    
+
     try:
         matrix_df = filtered_laps.pivot_table(index='LapNumber', columns='Driver', values='LapTimeStr', aggfunc='first')  # type: ignore
         matrix_df = matrix_df.sort_index(ascending=False)
@@ -2425,23 +2425,23 @@ def render_timing_tower_v2(results, laps, primary, comp):
             <span class="hud-status-badge active">P1–P20 LIVE</span>
         </div>
     """, unsafe_allow_html=True)
-    
+
     if results.empty or laps.empty:
         st.warning("Insufficient timing telemetry vectors available.")
         return
 
     driver_laps_grouped = laps.groupby('Driver')
-    
+
     rows_html = []
     for i, (index, row) in enumerate(results.iterrows(), start=1):
         driver = str(row.get('Abbreviation', row.get('Driver', 'UNK')))
         driver_laps = driver_laps_grouped.get_group(driver) if driver in driver_laps_grouped.groups else pd.DataFrame()
-        
+
         if not driver_laps.empty:
             last_lap = driver_laps.sort_values(by='LapNumber').iloc[-1]
             compound = str(last_lap.get('Compound', 'UNKNOWN')).upper()
             tyre_life = int(last_lap.get('TyreLife', 0)) if pd.notna(last_lap.get('TyreLife')) else 0
-            
+
             last_lap_val = last_lap.get('LapTime')
             if hasattr(last_lap_val, 'total_seconds') and pd.notna(last_lap_val):
                 sec = last_lap_val.total_seconds()
@@ -2465,11 +2465,11 @@ def render_timing_tower_v2(results, laps, primary, comp):
         elif driver == comp:
             row_class = "comp-row"
             driver_styled = f"<strong style='color: #4A90E2;'>{driver}</strong>"
-            
+
         safe_pos = row.get('Position')
         pos_num = int(safe_pos) if pd.notna(safe_pos) else i
         team_str = str(row.get('TeamName', '-'))[:9]
-        
+
         rows_html.append(f'<tr class="{row_class}"><td style="width: 28px; text-align: center; font-weight: 700; color: #8FB4D4;">{pos_num}</td><td style="width: 52px; font-weight: 700;">{driver_styled}</td><td style="width: 50px;">{tyre_html}</td><td style="width: 68px; font-family: \'Share Tech Mono\';">{last_lap_str}</td><td style="width: 72px; color: #8FB4D4;">{team_str}</td></tr>')
 
     table_body = "".join(rows_html)
@@ -2538,7 +2538,7 @@ def render_tyre_panel(laps, primary, comp):
             <span class="hud-status-badge active">BAYESIAN DEGRADATION</span>
         </div>
     """, unsafe_allow_html=True)
-    
+
     col_p, col_c = st.columns(2)
     for col_target, drv, color_accent in [(col_p, primary, "#EF4444"), (col_c, comp, "#4A90E2")]:
         with col_target:
@@ -2604,9 +2604,3 @@ def render_tyre_panel(laps, primary, comp):
                 pass
 
             st.markdown("</div>", unsafe_allow_html=True)
-
-
-
-
-
-

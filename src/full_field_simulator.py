@@ -276,4 +276,3 @@ class FullFieldRaceSimulator:
             "total_laps": config.total_laps,
             "driver_rankings": sorted(rankings, key=lambda x: x['win_probability_pct'], reverse=True)
         }
-

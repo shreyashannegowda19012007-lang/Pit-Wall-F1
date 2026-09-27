@@ -14,6 +14,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 
 from src.telemetry_api import api_service
 from src import data_ingestion
+from src.telemetry_schema import DataStatus
 
 def sanitize_for_json(obj):
     if isinstance(obj, float):
@@ -169,7 +170,8 @@ def get_telemetry_compare(session_id: str = "S-2024-SPAIN", target_driver: str =
         data = provider.fetch_session_data(year, event, 'R')
 
         if not data.get("success"):
-            raise HTTPException(status_code=500, detail=data.get("error", "Failed to load session data"))
+            status_code = 503 if data.get("status") == DataStatus.UNAVAILABLE else 500
+            raise HTTPException(status_code=status_code, detail=data.get("error", "Failed to load session data"))
 
         session = data.get("raw_session")
         res = TelemetryAnalysisService.compare_laps(session, target_driver, ref_driver)
@@ -199,7 +201,8 @@ def get_tyre_degradation(session_id: str = "S-2024-SPAIN", primary_driver: str =
         data = provider.fetch_session_data(year, event, 'R')
 
         if not data.get("success"):
-            raise HTTPException(status_code=500, detail=data.get("error", "Failed to load session data"))
+            status_code = 503 if data.get("status") == DataStatus.UNAVAILABLE else 500
+            raise HTTPException(status_code=status_code, detail=data.get("error", "Failed to load session data"))
 
         session = data.get("raw_session")
 
@@ -237,7 +240,8 @@ def get_strategy_simulation(session_id: str = "S-2024-SPAIN", primary_driver: st
         data = provider.fetch_session_data(year, event, 'R')
 
         if not data.get("success"):
-            raise HTTPException(status_code=500, detail=data.get("error", "Failed to load session data"))
+            status_code = 503 if data.get("status") == DataStatus.UNAVAILABLE else 500
+            raise HTTPException(status_code=status_code, detail=data.get("error", "Failed to load session data"))
 
         session = data.get("raw_session")
         laps = session.laps
@@ -263,9 +267,13 @@ def get_strategy_simulation(session_id: str = "S-2024-SPAIN", primary_driver: st
             # Get median pace
             base_pace = primary_laps.pick_quicklaps()['LapTime'].dt.total_seconds().median()
             if pd.isna(base_pace):
-                raise HTTPException(status_code=400, detail="Unable to calculate median base pace.")
+                raise HTTPException(status_code=400, detail="Unable to calculate primary median base pace.")
 
-        res = ProbabilisticService.analyze_undercut_overcut(primary_driver, ref_driver, gap_s, base_pace)
+            rival_base_pace = ref_laps.pick_quicklaps()['LapTime'].dt.total_seconds().median()
+            if pd.isna(rival_base_pace):
+                raise HTTPException(status_code=400, detail="Unable to calculate rival median base pace.")
+
+        res = ProbabilisticService.analyze_undercut_overcut(primary_driver, ref_driver, gap_s, base_pace, rival_base_pace)
 
         if isinstance(res, dict) and not res.get("success", True):
             raise HTTPException(status_code=400, detail=res.get("error", "Failed to run probabilistic strategy simulation"))
@@ -307,7 +315,8 @@ def get_replay_track(session_id: str = "S-2024-SPAIN", frequency_hz: int = 1):
         data = provider.fetch_session_data(year, event, 'R')
 
         if not data.get("success"):
-            raise HTTPException(status_code=500, detail=data.get("error", "Failed to load session data"))
+            status_code = 503 if data.get("status") == DataStatus.UNAVAILABLE else 500
+            raise HTTPException(status_code=status_code, detail=data.get("error", "Failed to load session data"))
 
         session = data.get("raw_session")
         res = ReplayService.extract_track_map(session, frequency_hz)

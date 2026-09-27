@@ -23,7 +23,7 @@ def get_driver_color(driver: str, results_df: Optional[pd.DataFrame] = None) -> 
                 if not color.startswith('#'):
                     return f"#{color}"
                 return color
-                
+
     # Fallbacks for key drivers if results dataframe doesn't resolve color
     fallbacks = {
         'VER': '#3671C6', 'PER': '#3671C6',
@@ -48,12 +48,12 @@ def calculate_fuel_corrected_pace(laps_df: pd.DataFrame, fuel_burn_delta: float 
     df = laps_df.dropna(subset=['LapTime']).copy()
     if df.empty:
         return df
-        
+
     df['LapTime_s'] = df['LapTime'].dt.total_seconds()
-    
+
     # Calculate L_total dynamically per driver to handle DNFs cleanly
     df['L_total'] = df.groupby('Driver')['LapNumber'].transform('max')
-    
+
     # Apply LaTeX pace correction formula
     df['FuelCorrected_s'] = df['LapTime_s'] - (df['L_total'] - df['LapNumber']) * fuel_burn_delta
     return df
@@ -66,14 +66,14 @@ def apply_tyre_smoothing(laps_df: pd.DataFrame, alpha: float = 0.3, fuel_burn_de
     df = calculate_fuel_corrected_pace(laps_df, fuel_burn_delta)
     if df.empty:
         return df
-        
+
     smoothed_list = []
     for (driver, stint), group in df.groupby(['Driver', 'Stint']):
         group = group.sort_values('LapNumber')
         # ewm implements recursive EMA. adjust=False matches the mathematical recurrence exactly
         group['FuelCorrected_s'] = group['FuelCorrected_s'].ewm(alpha=alpha, adjust=False).mean()
         smoothed_list.append(group)
-        
+
     if smoothed_list:
         return pd.concat(smoothed_list).sort_index()
     return df
@@ -83,22 +83,22 @@ def generate_fuel_pace_chart(laps_df: pd.DataFrame, results_df: pd.DataFrame, se
     Renders Plotly comparison chart between raw, fuel-corrected, and EMA smoothed lap times.
     """
     fig = go.Figure()
-    
+
     if apply_ema:
         corrected_df = apply_tyre_smoothing(laps_df, ema_alpha, fuel_burn_delta)
     else:
         corrected_df = calculate_fuel_corrected_pace(laps_df, fuel_burn_delta)
-        
+
     if corrected_df.empty or not selected_drivers:
         return fig
-        
+
     for drv in selected_drivers:
         drv_data = corrected_df[corrected_df['Driver'] == drv].sort_values('LapNumber')
         if drv_data.empty:
             continue
-            
+
         color = get_driver_color(drv, results_df)
-        
+
         # Raw Lap Time Trace
         fig.add_trace(go.Scatter(
             x=drv_data['LapNumber'],
@@ -110,13 +110,13 @@ def generate_fuel_pace_chart(laps_df: pd.DataFrame, results_df: pd.DataFrame, se
             hovertemplate="Driver: %{text}<br>Lap: %{x}<br>Raw Time: %{y:.3f}s<extra></extra>",
             text=[drv] * len(drv_data)
         ))
-        
+
         # Fuel-Corrected Pace Trace
         col_y = 'FuelCorrected_s'
         trace_label = "Fuel Corrected"
         if apply_ema:
             trace_label = "Fuel Corrected + EMA"
-            
+
         fig.add_trace(go.Scatter(
             x=drv_data['LapNumber'],
             y=drv_data[col_y],
@@ -127,7 +127,7 @@ def generate_fuel_pace_chart(laps_df: pd.DataFrame, results_df: pd.DataFrame, se
             hovertemplate=f"Driver: %{{text}}<br>Lap: %{{x}}<br>{trace_label} Time: %{{y:.3f}}s<extra></extra>",
             text=[drv] * len(drv_data)
         ))
-        
+
     fig.update_layout(
         title=dict(text="FUEL-CORRECTED PACE EVOLUTION", font=dict(family="Share Tech Mono")),
         xaxis=dict(title="Lap Number", gridcolor="#1E293B"),
@@ -151,13 +151,13 @@ def generate_25_zone_map(raw_session: Any, results_df: pd.DataFrame) -> go.Figur
     try:
         fastest_lap = raw_session.laps.pick_fastest()
         ref_tel = fastest_lap.get_telemetry().add_distance()
-        
+
         if ref_tel.empty or 'X' not in ref_tel.columns:
             return fig
-            
+
         D = ref_tel['Distance'].max()
         zone_boundaries = np.linspace(0, D, 26)
-        
+
         # Determine dominance using top 10 competitive drivers
         drivers = results_df.head(10)['Abbreviation'].tolist()
         driver_telemetries = {}
@@ -174,50 +174,50 @@ def generate_25_zone_map(raw_session: Any, results_df: pd.DataFrame) -> go.Figur
                         driver_telemetries[d] = d_tel
             except Exception:
                 pass
-                
+
         if not driver_telemetries:
             return fig
-            
+
         zone_winners = []
         for i in range(25):
             z_start = zone_boundaries[i]
             z_end = zone_boundaries[i+1]
             z_mid = (z_start + z_end) / 2.0
-            
+
             best_speed = -1.0
             winner = None
-            
+
             for d, d_tel in driver_telemetries.items():
                 speed_at_mid = np.interp(z_mid, d_tel['Distance'], d_tel['Speed'])
                 if speed_at_mid > best_speed:
                     best_speed = speed_at_mid
                     winner = d
-            
+
             zone_winners.append(winner)
-            
+
         plotted_drivers = set()
         for i in range(25):
             z_start = zone_boundaries[i]
             z_end = zone_boundaries[i+1]
-            
+
             zone_mask = (ref_tel['Distance'] >= z_start) & (ref_tel['Distance'] <= z_end)
             zone_data = ref_tel[zone_mask]
-            
+
             if zone_data.empty:
                 continue
-                
+
             if len(zone_data) < 2:
                 idx = (ref_tel['Distance'] - z_mid).abs().idxmin()
                 start_idx = max(0, idx - 1)
                 end_idx = min(len(ref_tel) - 1, idx + 1)
                 zone_data = ref_tel.iloc[start_idx:end_idx+1]
-                
+
             winner = zone_winners[i]
             color = get_driver_color(winner, results_df)
-            
+
             show_legend = winner not in plotted_drivers
             plotted_drivers.add(winner)
-            
+
             fig.add_trace(go.Scatter(
                 x=zone_data['X'],
                 y=zone_data['Y'],
@@ -228,7 +228,7 @@ def generate_25_zone_map(raw_session: Any, results_df: pd.DataFrame) -> go.Figur
                 showlegend=show_legend,
                 hovertemplate=f"Zone {i+1}<br>Dominant: {winner}<extra></extra>"
             ))
-            
+
         fig.update_layout(
             plot_bgcolor='rgba(0,0,0,0)',
             paper_bgcolor='rgba(0,0,0,0)',
@@ -239,10 +239,10 @@ def generate_25_zone_map(raw_session: Any, results_df: pd.DataFrame) -> go.Figur
             height=600,
             legend=dict(orientation="h", yanchor="bottom", y=-0.1, xanchor="center", x=0.5)
         )
-        
+
     except Exception as e:
         st.error(f"Failed to generate Dominance Spatial Map: {e}")
-        
+
     return fig
 
 
@@ -252,28 +252,28 @@ def generate_race_trace(laps_df: pd.DataFrame, results_df: pd.DataFrame, referen
     Renders lap-by-lap cumulative gap delta curves with a dynamic lapped traffic bottom shadow.
     """
     fig = go.Figure()
-    
+
     valid_laps = laps_df.dropna(subset=['Time']).copy()
     if valid_laps.empty:
         return fig
-        
+
     valid_laps['SessionTime_s'] = valid_laps['Time'].dt.total_seconds()
-    
+
     # Pivot session times
     time_pivot = valid_laps.pivot(index='LapNumber', columns='Driver', values='SessionTime_s')
-    
+
     if reference_driver not in time_pivot.columns:
         return fig
-        
+
     ref_times = time_pivot[reference_driver]
     gap_df = time_pivot.sub(ref_times, axis=0)
-    
+
     # Add dynamic lapped traffic shadow region (bottom shadow)
     median_lap_time = 90.0
     ref_laps = laps_df[laps_df['Driver'] == reference_driver]
     if not ref_laps.empty:
         median_lap_time = ref_laps['LapTime'].dt.total_seconds().median()
-        
+
     # Standard F1 race traces invert Y axis: 0 is at top, positive gaps (behind) go down.
     # We color the lapped zone at the bottom of the chart
     y_max_bound = max(gap_df.max().max(), median_lap_time + 60.0) if not gap_df.empty else 180.0
@@ -286,14 +286,14 @@ def generate_race_trace(laps_df: pd.DataFrame, results_df: pd.DataFrame, referen
         annotation_position="bottom right",
         annotation_font=dict(size=10, color="#EF4444", family="Share Tech Mono")
     )
-    
+
     for drv in gap_df.columns:
         drv_gaps = gap_df[drv].dropna()
         if drv_gaps.empty:
             continue
-            
+
         color = get_driver_color(drv, results_df)
-        
+
         # Base Gap Trace
         fig.add_trace(go.Scatter(
             x=drv_gaps.index,
@@ -304,7 +304,7 @@ def generate_race_trace(laps_df: pd.DataFrame, results_df: pd.DataFrame, referen
             hovertemplate="Driver: %{text}<br>Lap: %{x}<br>Delta vs Ref: %{y:.3f}s<extra></extra>",
             text=[drv] * len(drv_gaps)
         ))
-        
+
         # Pitstop overlay
         drv_laps = valid_laps[valid_laps['Driver'] == drv]
         pit_laps = drv_laps[drv_laps['PitOutTime'].notna() | drv_laps['PitInTime'].notna()]
@@ -322,7 +322,7 @@ def generate_race_trace(laps_df: pd.DataFrame, results_df: pd.DataFrame, referen
                 hovertemplate="Driver: %{text}<br>Lap: %{x}<br>PIT STOP ACTION<extra></extra>",
                 text=[drv] * len(pit_gaps)
             ))
-            
+
         # Track limits overlay
         if 'Deleted' in drv_laps.columns:
             limit_laps = drv_laps[drv_laps['Deleted'] == True]
@@ -340,7 +340,7 @@ def generate_race_trace(laps_df: pd.DataFrame, results_df: pd.DataFrame, referen
                     hovertemplate="Driver: %{text}<br>Lap: %{x}<br>TRACK LIMIT VIOLATION<extra></extra>",
                     text=[drv] * len(limit_gaps)
                 ))
-                
+
     fig.update_layout(
         title=dict(text=f"RACE TRACE (CUMULATIVE GAP IN SECONDS VS {reference_driver})", font=dict(family="Share Tech Mono")),
         xaxis=dict(title="Lap Number", gridcolor="#1E293B"),
@@ -362,27 +362,27 @@ def generate_pace_heatmap(laps_df: pd.DataFrame, selected_drivers: List[str]) ->
     fig = go.Figure()
     if not selected_drivers:
         return fig
-        
+
     df = laps_df.dropna(subset=['LapTime']).copy()
     if df.empty:
         return fig
-        
+
     df['LapTime_s'] = df['LapTime'].dt.total_seconds()
-    
+
     # Clip pit stops to prevent distortion
     min_lap = df['LapTime_s'].min()
     upper_threshold = min_lap * 1.15
     df['Pace_Clipped'] = df['LapTime_s'].clip(upper=upper_threshold)
-    
+
     matrix = df[df['Driver'].isin(selected_drivers)].pivot(index='Driver', columns='LapNumber', values='Pace_Clipped')
     matrix_raw = df[df['Driver'].isin(selected_drivers)].pivot(index='Driver', columns='LapNumber', values='LapTime_s')
-    
+
     if matrix.empty:
         return fig
-        
+
     matrix = matrix.reindex(selected_drivers)
     matrix_raw = matrix_raw.reindex(selected_drivers)
-    
+
     fig.add_trace(go.Heatmap(
         z=matrix.values,
         x=matrix.columns,
@@ -393,7 +393,7 @@ def generate_pace_heatmap(laps_df: pd.DataFrame, selected_drivers: List[str]) ->
         text=matrix_raw.values,
         hovertemplate="Driver: %{y}<br>Lap: %{x}<br>Actual Pace: %{text:.3f}s<extra></extra>"
     ))
-    
+
     fig.update_layout(
         title=dict(text="GRID PACING THERMAL CLIFF MATRIX", font=dict(family="Share Tech Mono")),
         xaxis=dict(title="Lap Number"),
@@ -451,7 +451,7 @@ def detect_corners_from_speed(distance: np.ndarray, speed: np.ndarray) -> List[D
     """
     corners = []
     s_speed = pd.Series(speed).rolling(window=15, center=True, min_periods=1).mean().values
-    
+
     # Peak/Valley identifier
     for i in range(15, len(s_speed) - 15):
         if s_speed[i] < 190.0 and all(s_speed[i] <= s_speed[i+j] for j in range(-15, 16) if j != 0):
@@ -474,13 +474,13 @@ def generate_cornering_kinematics(raw_session: Any, results_df: pd.DataFrame, se
         vertical_spacing=0.03,
         subplot_titles=("SPEED (km/h)", "THROTTLE (%)", "BRAKE", "GEAR")
     )
-    
+
     if not selected_drivers:
         return fig
-        
+
     line_colors = ['#4A90E2', '#EF4444', '#27F4D2', '#FFEA00', '#A020F0', '#FFFFFF']
     ref_tel = None
-    
+
     for idx, drv in enumerate(selected_drivers):
         try:
             if hasattr(raw_session.laps, 'pick_drivers'):
@@ -493,39 +493,39 @@ def generate_cornering_kinematics(raw_session: Any, results_df: pd.DataFrame, se
             tel = drv_lap.get_telemetry().add_distance()
             if tel.empty:
                 continue
-                
+
             color = config.TEAM_COLORS.get(drv, line_colors[idx % len(line_colors)])
             if ref_tel is None:
                 ref_tel = tel
-                
+
             fig.add_trace(go.Scatter(x=tel['Distance'], y=tel['Speed'], name=drv, line=dict(color=color, width=2)), row=1, col=1)
             fig.add_trace(go.Scatter(x=tel['Distance'], y=tel['Throttle'], showlegend=False, line=dict(color=color, width=2)), row=2, col=1)
             fig.add_trace(go.Scatter(x=tel['Distance'], y=tel['Brake'], showlegend=False, line=dict(color=color, width=2)), row=3, col=1)
             fig.add_trace(go.Scatter(x=tel['Distance'], y=tel['nGear'], showlegend=False, line=dict(color=color, width=2, shape='hv')), row=4, col=1)
         except Exception:
             pass
-            
+
     if ref_tel is None or ref_tel.empty:
         return fig
-        
+
     # Add vertical apex indicators
     corners = None
     for key in CIRCUIT_CORNERS:
         if key.lower() in gp_name.lower():
             corners = CIRCUIT_CORNERS[key]
             break
-            
+
     if not corners:
         corners = detect_corners_from_speed(ref_tel['Distance'].values, ref_tel['Speed'].values)
-        
+
     for turn in corners:
         dist = turn['distance']
         name = turn['name']
-        
+
         # Add line to all subplots
         for r in range(1, 5):
             fig.add_vline(x=dist, line=dict(color="rgba(148, 163, 184, 0.35)", width=1, dash="dash"), row=r, col=1)
-            
+
         fig.add_annotation(
             x=dist,
             y=ref_tel['Speed'].max(),
@@ -537,7 +537,7 @@ def generate_cornering_kinematics(raw_session: Any, results_df: pd.DataFrame, se
             yshift=-20,
             row=1, col=1
         )
-        
+
     fig.update_layout(
         height=800,
         template="plotly_dark",
@@ -561,31 +561,31 @@ def validate_z_axis(raw_session: Any, driver_code: str, tolerance: float = 2.0) 
         ref_lap = raw_session.laps.pick_fastest()
         ref_tel = ref_lap.get_telemetry().add_distance()
         ref_tel['Z_smoothed'] = ref_tel['Z'].rolling(window=15, center=True, min_periods=1).mean()
-        
+
         if hasattr(raw_session.laps, 'pick_drivers'):
             d_laps = raw_session.laps.pick_drivers(driver_code)
         else:
             d_laps = raw_session.laps[raw_session.laps['Driver'] == driver_code]
-            
+
         if d_laps.empty:
             return {"success": False, "error": f"No telemetry for driver {driver_code}"}
-            
+
         driver_lap = d_laps.pick_fastest()
         tel = driver_lap.get_telemetry().add_distance()
-        
+
         if tel.empty or ref_tel.empty:
             return {"success": False, "error": "Missing telemetry streams"}
-            
+
         tel['Z_ref'] = np.interp(tel['Distance'], ref_tel['Distance'], ref_tel['Z_smoothed'])
         tel['Z_delta'] = (tel['Z'] - tel['Z_ref']).abs()
         tel['Corrupted'] = tel['Z_delta'] > tolerance
-        
+
         total_packets = len(tel)
         corrupted_packets = tel['Corrupted'].sum()
         drop_rate = (corrupted_packets / total_packets) * 100.0 if total_packets > 0 else 0.0
-        
+
         fig = go.Figure()
-        
+
         fig.add_trace(go.Scatter(
             x=ref_tel['Distance'],
             y=ref_tel['Z_smoothed'],
@@ -593,7 +593,7 @@ def validate_z_axis(raw_session: Any, driver_code: str, tolerance: float = 2.0) 
             line=dict(color='#64748B', width=1.5, dash='dash'),
             name="Reference (Smoothed)"
         ))
-        
+
         valid_tel = tel[~tel['Corrupted']]
         fig.add_trace(go.Scatter(
             x=valid_tel['Distance'],
@@ -602,7 +602,7 @@ def validate_z_axis(raw_session: Any, driver_code: str, tolerance: float = 2.0) 
             line=dict(color='#4A90E2', width=2),
             name="Uplink Verified"
         ))
-        
+
         corrupt_tel = tel[tel['Corrupted']]
         if not corrupt_tel.empty:
             fig.add_trace(go.Scatter(
@@ -612,7 +612,7 @@ def validate_z_axis(raw_session: Any, driver_code: str, tolerance: float = 2.0) 
                 marker=dict(color='#EF4444', size=6, symbol='x'),
                 name="Dropped Packet"
             ))
-            
+
         fig.update_layout(
             title=dict(text=f"Z-AXIS TELEMETRY CORRELATION: {driver_code}", font=dict(family="Share Tech Mono")),
             xaxis=dict(title="Track Distance (meters)", gridcolor="#1E293B"),
@@ -622,7 +622,7 @@ def validate_z_axis(raw_session: Any, driver_code: str, tolerance: float = 2.0) 
             plot_bgcolor='rgba(0,0,0,0)',
             margin=dict(l=10, r=10, t=50, b=10)
         )
-        
+
         return {
             "success": True,
             "fig": fig,
@@ -641,7 +641,7 @@ def fetch_openf1_intervals(session_key: Optional[int] = None) -> List[Dict[str, 
     """
     if not session_key:
         return []
-        
+
     try:
         url = "https://api.openf1.org/v1/intervals"
         params = {'session_key': session_key}
@@ -674,17 +674,17 @@ def map_radio_to_laps(laps_df: pd.DataFrame, radio_data: List[Dict[str, Any]]) -
     Maps UTC team radio transcripts directly onto driver lap numbers.
     """
     mapped_radio = []
-    
+
     date_col = 'LapStartDate' if 'LapStartDate' in laps_df.columns else 'Date'
     if date_col not in laps_df.columns:
         return mapped_radio
-        
+
     df = laps_df.dropna(subset=[date_col, 'LapTime']).copy()
     if df.empty or not radio_data:
         return mapped_radio
-        
+
     df['LapStartUtc'] = df[date_col] - df['LapTime']
-    
+
     for msg in radio_data:
         try:
             msg_num = str(msg.get('driver_number'))
@@ -692,13 +692,13 @@ def map_radio_to_laps(laps_df: pd.DataFrame, radio_data: List[Dict[str, Any]]) -
             msg_time_str = msg.get('date')
             if not msg_time_str:
                 continue
-                
+
             msg_time = pd.to_datetime(msg_time_str)
-            
+
             drv_laps = df[df['DriverNumber'].astype(str) == msg_num]
             if drv_laps.empty:
                 continue
-                
+
             lap_match = drv_laps[(drv_laps['LapStartUtc'] <= msg_time) & (msg_time <= drv_laps[date_col])]
             if not lap_match.empty:
                 lap_num = lap_match.iloc[0]['LapNumber']
@@ -711,7 +711,7 @@ def map_radio_to_laps(laps_df: pd.DataFrame, radio_data: List[Dict[str, Any]]) -
                 })
         except Exception:
             pass
-            
+
     return mapped_radio
 
 def generate_radio_timeline(laps_df: pd.DataFrame, results_df: pd.DataFrame, radio_data: List[Dict[str, Any]]) -> go.Figure:
@@ -719,17 +719,17 @@ def generate_radio_timeline(laps_df: pd.DataFrame, results_df: pd.DataFrame, rad
     Renders timeline scatter map representing team radio tooltip markers.
     """
     fig = go.Figure()
-    
+
     mapped_radio = map_radio_to_laps(laps_df, radio_data)
     if not mapped_radio:
         return fig
-        
+
     radio_df = pd.DataFrame(mapped_radio)
-    
+
     for drv in radio_df['driver'].unique():
         drv_radio = radio_df[radio_df['driver'] == drv]
         color = get_driver_color(drv, results_df)
-        
+
         fig.add_trace(go.Scatter(
             x=drv_radio['lap'],
             y=drv_radio['driver'],
@@ -741,7 +741,7 @@ def generate_radio_timeline(laps_df: pd.DataFrame, results_df: pd.DataFrame, rad
             hovertext=drv_radio['transcript'],
             hovertemplate="Driver: %{y}<br>Lap: %{x}<br>Transcript: %{hovertext}<extra></extra>"
         ))
-        
+
     fig.update_layout(
         title=dict(text="TEAM RADIO TIMELINE TOOLTIP OVERLAY", font=dict(family="Share Tech Mono")),
         xaxis=dict(title="Lap Number", gridcolor="#1E293B", dtick=1),
@@ -781,5 +781,3 @@ def render_pdf_viewer(pdf_base64: str) -> None:
         return
     pdf_display = f'<iframe src="data:application/pdf;base64,{pdf_base64}" width="100%" height="500" type="application/pdf" style="border:1px solid #1E293B; border-radius:4px;"></iframe>'
     st.markdown(pdf_display, unsafe_allow_html=True)
-
-

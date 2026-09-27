@@ -228,4 +228,3 @@ class SensitivityAnalysisEngine:
                 for k, v in scenario_outcomes.items()
             }
         }
-

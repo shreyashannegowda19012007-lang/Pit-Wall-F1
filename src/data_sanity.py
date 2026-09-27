@@ -114,4 +114,3 @@ class DataSanityEngine:
             errors.append(f"Probability sum invariant violated: sum = {total_sum:.4f} != 1.0.")
 
         return len(errors) == 0, errors
-

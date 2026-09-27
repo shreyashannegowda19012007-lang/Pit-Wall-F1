@@ -234,7 +234,7 @@ def backtest_race(race: Dict[str, Any]) -> Dict[str, Any]:
     regret_mc = round(mc_time_s - exact['race_time_s'], 3) if mc_time_s is not None else None
     regret_base = round(base_1stop - exact['race_time_s'], 3)
     regret_rl = round(rl_result['race_time_s'] - exact['race_time_s'], 3) if rl_result.get('race_time_s') else None
-    
+
     # Calculate Actual vs Recommended
     actual_vs_mc_s = round(actual_time - mc_time_s, 3) if actual_time is not None and mc_time_s is not None else None
 
@@ -284,7 +284,7 @@ def main():
     rl_regrets = [r['regret']['rl_vs_exact_s'] for r in ok_results
                   if r.get('regret', {}).get('rl_vs_exact_s') is not None]
     base_regrets = [r['regret']['baseline_vs_exact_s'] for r in ok_results if 'regret' in r]
-    actual_vs_mc_regrets = [r['regret']['actual_vs_mc_s'] for r in ok_results 
+    actual_vs_mc_regrets = [r['regret']['actual_vs_mc_s'] for r in ok_results
                             if r.get('regret', {}).get('actual_vs_mc_s') is not None]
     leakage_passes = sum(1 for r in ok_results if r.get('leakage_passed'))
 
@@ -407,4 +407,3 @@ def _make_plots(ok_results, mc_regrets, rl_regrets):
 
 if __name__ == '__main__':
     main()
-

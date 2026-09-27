@@ -100,11 +100,11 @@ class RLPolicyAgent:
         import os
         from stable_baselines3 import PPO
         from src import config
-        
+
         print("WARNING: RLPolicyAgent is EXPERIMENTAL and not for production use.")
         self.model_id = model_id
         self.model = None
-        
+
         model_path = os.path.join(config.BASE_DIR, "models", "rl_strategy", f"{model_id}.zip")
         if os.path.exists(model_path):
             try:
@@ -129,7 +129,7 @@ class RLPolicyAgent:
         # Predict action
         action, _states = self.model.predict(observation, deterministic=True)
         action_idx = int(action)
-        
+
         # Get action probabilities from policy
         import torch
         obs_tensor = torch.tensor(observation).unsqueeze(0).to(self.model.device)
@@ -137,7 +137,7 @@ class RLPolicyAgent:
             dist = self.model.policy.get_distribution(obs_tensor)
             probs = dist.distribution.probs.cpu().numpy()[0]  # type: ignore
             value = self.model.policy.predict_values(obs_tensor).cpu().numpy()[0][0]
-            
+
         action_prob_map = {ACTION_NAMES[i]: float(probs[i]) for i in range(len(probs))}
 
         return {
@@ -160,15 +160,15 @@ class RLStrategyEvaluator:
         Executes side-by-side comparison of Strategy vs Baselines.
         """
         agent = RLPolicyAgent()
-        
+
         # 1. Evaluate RL Agent
         env = F1StrategyEnv()
         obs, _ = env.reset(seed=42)
         rl_total_reward = 0.0
         done = False
-        
+
         first_policy_output = agent.predict_action(obs)
-        
+
         info = {}
         while not done:
             policy_output = agent.predict_action(obs)
@@ -176,7 +176,7 @@ class RLStrategyEvaluator:
             obs, float_reward, terminated, truncated, info = env.step(action)
             rl_total_reward += float_reward
             done = terminated or truncated
-        
+
         rl_final_pos = info.get("position", 1)
 
         # 2. Evaluate Baseline (Stay Out)
@@ -189,7 +189,7 @@ class RLStrategyEvaluator:
             obs_base, float_reward, terminated, truncated, info_base = env_base.step(0)
             base_total_reward += float_reward
             done = terminated or truncated
-            
+
         base_final_pos = info_base.get("position", 1)
 
         # Regret in this toy setup approximated by negative reward difference
@@ -224,5 +224,3 @@ class RLStrategyEvaluator:
             },
             "disagreement_analysis": f"RL Reward: {rl_total_reward}, Baseline Reward: {base_total_reward}"
         }
-
-

@@ -186,4 +186,3 @@ class HistoricalRetrievalEngine:
         best_tm = cls.get_best_lap_context(laps_df, tm_code)
         best_tm["is_teammate"] = True
         return best_tm
-

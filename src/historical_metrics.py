@@ -21,7 +21,7 @@ class HistoricalReplayMetrics:
         if actual_finish is None or hindsight_best_finish is None:
             return None
         return max(0.0, float(actual_finish - hindsight_best_finish))
-        
+
     @staticmethod
     def calculate_expected_regret(actual_finish: Optional[float], expected_finish: Optional[float]) -> Optional[float]:
         """
@@ -81,11 +81,11 @@ class HistoricalReplayMetrics:
         actual_win_flags = [1 if actual_final_finish == 1 else (0 if actual_final_finish is not None else None)] * len(checkpoints)
 
         oracle_gap = cls.calculate_oracle_gap(actual_final_finish, hindsight_best_finish)
-        
+
         # We calculate expected regret for the last decision point
         final_expected = expected_pos[-1] if expected_pos else None
         expected_regret = cls.calculate_expected_regret(actual_final_finish, final_expected)
-        
+
         mae = cls.calculate_position_mae(expected_pos, actual_pos)
         agreement_pct = cls.calculate_strategy_agreement_pct(model_recs, actual_acts)
         brier = cls.calculate_brier_score(win_probs, actual_win_flags)
@@ -101,4 +101,3 @@ class HistoricalReplayMetrics:
             "brier_calibration_score": round(brier, 4) if brier is not None else "UNAVAILABLE",
             "evaluation_status": "VALIDATED"
         }
-

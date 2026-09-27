@@ -203,4 +203,3 @@ class TimeLossAttributor:
             attributed_exit_loss_s=round(attr_exit, 3),
             data_quality_pct=96.5
         )
-

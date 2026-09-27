@@ -142,4 +142,3 @@ class BayesianRaceReplayEngine:
             "timeline": timeline,
             "bayesian_state": bayesian_state.to_dict()
         }
-

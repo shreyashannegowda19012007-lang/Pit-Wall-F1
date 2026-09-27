@@ -15,24 +15,24 @@ def render_jarvis_deck(raw_session, target_driver, laps, results, info):
     </div>
     """).strip()
     st.markdown(header_html, unsafe_allow_html=True)
-    
+
     try:
         from ai_engineer_service import AIEngineerService
         from universal_session_engine import EventSessionInfo
-        
+
         jarvis = AIEngineerService()
-        
+
         query = st.text_input("TACTICAL QUERY", placeholder="e.g. Why are we losing time? or Should we pit?", key="jarvis_query", label_visibility="collapsed")
-        
+
         # Determine comparison driver (just default to someone else for now or let UI pass it)
         comp_driver = st.session_state.get('comp_drv', 'HAM') if st.session_state.get('comp_drv') != target_driver else 'VER'
-        
+
         if query:
             with st.spinner("Analyzing telemetry & strategy vectors..."):
                 mc_outcomes = st.session_state.get('mc_outcomes', None)
                 race_state = st.session_state.get('race_state', None)
                 current_lap = int(laps['LapNumber'].max()) if not laps.empty and 'LapNumber' in laps.columns else 1
-                
+
                 resp = jarvis.process_query(
                     query=query,
                     primary_driver=target_driver,
@@ -44,7 +44,7 @@ def render_jarvis_deck(raw_session, target_driver, laps, results, info):
                     current_lap=current_lap,
                     mode="REPLAY"
                 )
-                
+
                 status_color = "#00CC64" if resp.get("data_status") == "SUCCESS" else "#FFB800"
                 status_header = textwrap.dedent(f"""
                 <div style="background: #0E1015; border: 1px solid #1E2129; border-left: 3px solid {status_color}; padding: 10px 14px; border-radius: 6px; margin-top: 10px; font-family: 'Inter', sans-serif;">
@@ -54,10 +54,10 @@ def render_jarvis_deck(raw_session, target_driver, laps, results, info):
                 </div>
                 """).strip()
                 st.markdown(status_header, unsafe_allow_html=True)
-                
+
                 # Render answer markdown cleanly without enclosing indented HTML code block
                 st.markdown(resp.get('answer_markdown', resp.get('answer', '')))
-                
+
                 # Render Evidence Citations if any
                 if resp.get("evidence_citations"):
                     ev_header = textwrap.dedent("""
@@ -77,16 +77,16 @@ def render_strategy_timeline(laps):
     Visualizes the entire grid's compound history using a horizontal stacked Gantt chart.
     """
     st.markdown("### GRID-WIDE STRATEGY TIMELINE")
-    
+
     try:
         # Group laps into stints: [Driver, Stint, Compound, LapCount]
         # We aggregate based on the unique combination of Driver and Stint
         stint_data = laps.groupby(['Driver', 'Stint', 'Compound']).agg({
             'LapNumber': 'count'
         }).reset_index()
-        
+
         stint_data.columns = ['Driver', 'Stint', 'Compound', 'LapsCount']
-        
+
         # Exact FIA Compound Color Mapping
         color_map = {
             'SOFT': '#FF3333',
@@ -104,7 +104,7 @@ def render_strategy_timeline(laps):
 
         for compound in stint_data['Compound'].unique():
             comp_df = stint_data[stint_data['Compound'] == compound]
-            
+
             fig.add_trace(go.Bar(
                 name=str(compound),
                 y=comp_df['Driver'],

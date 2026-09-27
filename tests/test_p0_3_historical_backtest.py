@@ -74,7 +74,7 @@ class TestHistoricalBacktestMetricsRemediation(unittest.TestCase):
 
         # Backtest strictly on lap 10
         res = ProbabilisticService.run_historical_backtest("S-2024-SPAIN", "VER", decision_lap=10)
-        
+
         self.assertIn("summary_metrics", res)
         summary = res["summary_metrics"]
         # Expected regret is computed based on whatever the MC engine returned vs Actual 4.0
@@ -98,7 +98,7 @@ class TestHistoricalBacktestMetricsRemediation(unittest.TestCase):
         """TEST F: Verify Monte Carlo Reproducibility across backtests."""
         res1 = HistoricalReplayEngine.run_full_race_replay(None, self.mock_laps, self.mock_results, "VER", decision_lap=10, mc_iterations=10)
         res2 = HistoricalReplayEngine.run_full_race_replay(None, self.mock_laps, self.mock_results, "VER", decision_lap=10, mc_iterations=10)
-        
+
         self.assertEqual(
             res1["summary_metrics"]["online_expected_regret_positions"],
             res2["summary_metrics"]["online_expected_regret_positions"]
@@ -120,7 +120,7 @@ class TestHistoricalBacktestMetricsRemediation(unittest.TestCase):
         # The API shouldn't crash and should return the expected dictionary structure
         self.assertIn("summary_metrics", b_res)
         self.assertIn("ablation_variants", ab_res)
-        
+
         # Ablation study shouldn't hallucinate fake differences (should return UNAVAILABLE for unimplemented models)
         for variant in ab_res["ablation_variants"]:
             if "Baseline" in variant["variant_name"]:

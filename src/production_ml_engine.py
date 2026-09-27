@@ -60,7 +60,7 @@ class ProductionMLEngine:
             meta = loader.get_metadata(model_name)
             if not meta:
                 continue
-                
+
             metrics = meta.get("metrics", {})
             cards.append(ModelCard(
                 model_id=meta.get("model_id", model_name),
@@ -90,7 +90,7 @@ class ProductionMLEngine:
     ) -> QuantileLapTimePrediction:
         loader = get_loader()
         meta = loader.get_metadata("lap_time")
-        
+
         if not meta:
             return QuantileLapTimePrediction(
                 driver_id=driver_id,
@@ -101,7 +101,7 @@ class ProductionMLEngine:
                 confidence_interval_s=None,
                 quality_flag="UNAVAILABLE: Model metadata not found"
             )
-        
+
         comp_clean = str(compound_str).upper()
         raw_feature_pool = {
             "tyre_life": float(tyre_age_laps),
@@ -112,13 +112,13 @@ class ProductionMLEngine:
             "comp_SOFT": 1 if comp_clean == "SOFT" else 0,
             "comp_WET": 1 if comp_clean == "WET" else 0
         }
-        
+
         # Enforce exact feature schema declared by the loaded model metadata
         declared_features = meta.get("features", [])
         features = {f: raw_feature_pool[f] for f in declared_features if f in raw_feature_pool}
-        
+
         res = loader.predict("lap_time", features)
-        
+
         if res["status"] != "MODEL_READY":
             return QuantileLapTimePrediction(
                 driver_id=driver_id,
@@ -129,12 +129,12 @@ class ProductionMLEngine:
                 confidence_interval_s=None,
                 quality_flag=f"UNAVAILABLE: {res.get('status', 'ERROR')} - {res.get('error', 'Prediction unavailable')}"
             )
-            
+
         pred_delta = res["prediction"]
         predicted_lap_time = base_pace_s + pred_delta
         metrics = meta.get("metrics", {})
         rmse = metrics.get("rmse_s", metrics.get("test_rmse", 0.549))
-        
+
         return QuantileLapTimePrediction(
             driver_id=driver_id,
             lap_number=lap_number,
@@ -157,7 +157,7 @@ class ProductionMLEngine:
         loader = get_loader()
         meta = loader.get_metadata("lap_time")
         model = loader.load_model("lap_time")
-        
+
         if not model or not meta:
             return SHAPExplanation(
                 prediction_id=f"PRED-{driver_id}-L{lap_number}",
@@ -166,7 +166,7 @@ class ProductionMLEngine:
                 feature_contributions={},
                 explanation_summary="SHAP_UNAVAILABLE"
             )
-            
+
         comp_clean = str(compound_str).upper()
         raw_feature_pool = {
             "tyre_life": float(tyre_age_laps),
@@ -177,7 +177,7 @@ class ProductionMLEngine:
             "comp_SOFT": 1 if comp_clean == "SOFT" else 0,
             "comp_WET": 1 if comp_clean == "WET" else 0
         }
-        
+
         try:
             import shap
             declared_features = meta.get("features", [])
@@ -186,17 +186,17 @@ class ProductionMLEngine:
                 raise ValueError(f"Missing features for SHAP: {missing_features}")
             ordered_values = [raw_feature_pool[f] for f in declared_features]
             x_input = pd.DataFrame([ordered_values], columns=declared_features)
-            
+
             if meta.get('algorithm') == 'XGBoostRegressor':
                 explainer = shap.TreeExplainer(model)
             else:
                 explainer = shap.LinearExplainer(model, x_input)
-                
+
             shap_values = explainer.shap_values(x_input)
             expected_value = explainer.expected_value
             if isinstance(expected_value, np.ndarray):
                 expected_value = expected_value[0]
-                
+
             contributions = {feat: float(val) for feat, val in zip(meta["features"], shap_values[0])}
 
             return SHAPExplanation(
@@ -223,12 +223,12 @@ class ProductionMLEngine:
         gap_s: float = 0.85
     ) -> Dict[str, Any]:
         loader = get_loader()
-        
+
         from src.decision_architecture import DecisionArchitectureOrchestrator
         race_context = DecisionArchitectureOrchestrator.build_race_context()
         attacker_data = race_context.drivers.get(attacker_id)
         defender_data = race_context.drivers.get(defender_id)
-        
+
         if attacker_data:
             tyre_age_delta = attacker_data.tyre_age_laps - (defender_data.tyre_age_laps if defender_data else attacker_data.tyre_age_laps)
             pace_delta = attacker_data.last_lap_s - (defender_data.last_lap_s if defender_data else attacker_data.last_lap_s)
@@ -242,9 +242,9 @@ class ProductionMLEngine:
             "pace_delta": pace_delta,
             "drs_available": 1 if gap_s < 1.0 else 0
         }
-        
+
         res = loader.predict("overtake_probability", features)
-        
+
         if res["status"] != "MODEL_READY":
             return {
                 "attacker_id": attacker_id,
@@ -255,13 +255,13 @@ class ProductionMLEngine:
                 "brier_score": None,
                 "status": f"UNAVAILABLE: {res['status']}"
             }
-            
+
         meta = loader.get_metadata("overtake_probability")
-        
+
         # The model directly consumes gap_s, so no artificial post-multiplier is needed
         raw_prob = res["prediction"]
         calibrated_prob = min(1.0, max(0.0, raw_prob))
-        
+
         return {
             "attacker_id": attacker_id,
             "defender_id": defender_id,
@@ -271,7 +271,7 @@ class ProductionMLEngine:
             "brier_score": meta["metrics"].get("test_brier"),
             "status": f"MODEL_READY ({res['model_version']})"
         }
-        
+
     @classmethod
     def predict_tyre_degradation(
         cls,
@@ -280,7 +280,7 @@ class ProductionMLEngine:
         base_decay: float
     ) -> Dict[str, Any]:
         loader = get_loader()
-        
+
         # 'tyre_life', 'tyre_age_sq', 'prev_deg', 'rolling_deg_3', comp_...
         features = {
             "tyre_life": tyre_age_laps,
@@ -293,20 +293,18 @@ class ProductionMLEngine:
             "comp_SOFT": 1 if compound_str == "SOFT" else 0,
             "comp_WET": 1 if compound_str == "WET" else 0
         }
-        
+
         res = loader.predict("tyre_degradation", features)
-        
+
         if res["status"] != "MODEL_READY":
             return {
                 "predicted_deg": None,
                 "status": f"UNAVAILABLE: {res['status']}"
             }
-            
+
         meta = loader.get_metadata("tyre_degradation")
         return {
             "predicted_deg": res["prediction"],
             "status": f"MODEL_READY ({res['model_version']})",
             "rmse": meta["metrics"].get("test_rmse", 0.0)
         }
-
-

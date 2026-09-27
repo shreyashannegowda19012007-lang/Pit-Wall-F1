@@ -35,12 +35,15 @@ class TestAuthoritativeStrategyEngine(unittest.TestCase):
     def test_api_service_strategy_routes(self):
         """Verifies API routes for canonical strategy state, undercut/overcut, and authoritative evaluation."""
         state = api_service.get_canonical_strategy_state("S-2024-SPAIN", 22, "VER")
-        uo = api_service.analyze_undercut_overcut("VER", "HAM", 2.84)
+        uo = api_service.analyze_undercut_overcut("VER", "HAM", 2.84, 82.0, 81.8)
+        uo_missing = api_service.analyze_undercut_overcut("VER", "HAM", 2.84, 82.0, None)
         eval_res = api_service.evaluate_authoritative_strategy("S-2024-SPAIN", 22, "VER")
 
         self.assertEqual(state["driver_id"], "VER")
-        # Default mock has rival 0.2s faster, so undercut fails
+
         self.assertEqual(uo["recommended_tactic"], "STAY_ON_CURRENT_PACE")
+        self.assertFalse(uo_missing.get("success", True))
+        self.assertIn("error", uo_missing)
 
         # The API route correctly uses the production DecisionEngine.
         # Since FastF1 telemetry is available, it should generate a real strategy.

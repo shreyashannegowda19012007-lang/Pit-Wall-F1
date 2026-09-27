@@ -112,7 +112,7 @@ class ProductionCacheManager:
 
     def get_stats(self) -> CacheStats:
         """Returns cache efficiency metrics.
-        
+
         avg_latency_ms is NOT_MEASURED — per-query latency requires profiler instrumentation
         at call sites which is not currently active. Hit/miss counts and memory are genuine.
         """
@@ -178,4 +178,3 @@ class SessionPreparationManager:
     @classmethod
     def get_cache_manager(cls) -> ProductionCacheManager:
         return cls._cache_mgr
-

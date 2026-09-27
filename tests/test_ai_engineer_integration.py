@@ -67,7 +67,7 @@ def test_driver_performance_question(service, test_data, mock_telemetry):
 
 def test_strategy_question(service, test_data, mock_telemetry, monkeypatch):
     laps_df, session, mc_outcomes, race_state = test_data
-    
+
     # Mock AIToolRegistry inside ai_engineer_service
     import src.ai_engineer_service
     class MockRegistry:
@@ -80,7 +80,7 @@ def test_strategy_question(service, test_data, mock_telemetry, monkeypatch):
                 "primary_reason": "Maximizes win probability."
             }
     monkeypatch.setattr(src.ai_engineer_service, "AIToolRegistry", MockRegistry)
-    
+
     res = service.process_query(
         query="Should we pit now?",
         session=session,
@@ -99,7 +99,7 @@ def test_strategy_question(service, test_data, mock_telemetry, monkeypatch):
 
 def test_what_if_question(service, test_data, mock_telemetry, monkeypatch):
     laps_df, session, mc_outcomes, race_state = test_data
-    
+
     import src.ai_engineer_service
     class MockRegistry:
         @staticmethod
@@ -154,18 +154,18 @@ def test_future_data_protection(service, test_data):
 def test_ml_rl_unavailable(service, monkeypatch):
     from src.evidence_engine import StructuredEvidenceResponse
     import src.ai_engineer_service
-    
+
     class MockEvidenceEngine:
         @classmethod
         def get_ml_evidence(cls, model_name):
             return StructuredEvidenceResponse(question="", answerable=False, session="ANY", reason="Not available")
-            
+
     monkeypatch.setattr(src.ai_engineer_service, "EvidenceEngine", MockEvidenceEngine)
-    
+
     res_ml = service.process_query("What does the ML model predict?")
     assert res_ml["data_status"] == "ML_MODEL_NOT_TRAINED"
     assert "not currently available" in res_ml["answer_markdown"]
-    
+
     res_rl = service.process_query("What does the RL model say?")
     assert res_rl["data_status"] == "RL_MODEL_NOT_TRAINED"
 

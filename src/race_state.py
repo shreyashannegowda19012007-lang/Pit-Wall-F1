@@ -100,4 +100,3 @@ class CompleteRaceState:
             "track_temp": self.weather.track_temp_c,
             "safety_car": self.safety_car.condition
         }
-

@@ -61,4 +61,3 @@ class DecisionValidationEngine:
 
         is_valid = len(violations) == 0
         return is_valid, corrected_text, violations
-

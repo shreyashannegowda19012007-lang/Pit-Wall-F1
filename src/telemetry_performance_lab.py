@@ -104,75 +104,75 @@ class DriverPerformanceIntelligenceEngine:
         using genuine differential telemetry math.
         """
         from src.data_ingestion import fetch_session_data
-        
+
         parts = session_id.split('-')
         year = int(parts[1]) if len(parts) > 1 else 2024
-        
+
         event_map = {
             "SPAIN": "Spanish Grand Prix",
-            "MONACO": "Monaco Grand Prix", 
+            "MONACO": "Monaco Grand Prix",
             "SILVERSTONE": "British Grand Prix",
             "BAHRAIN": "Bahrain Grand Prix"
         }
         event = event_map.get(parts[2], "Spanish Grand Prix") if len(parts) > 2 else "Spanish Grand Prix"
-        
+
         try:
             data = fetch_session_data(year, event, 'R')
             session = data.get('raw_session')
             laps = data.get('laps')
             weather = data.get('weather')
-            
+
             drv_laps = laps[laps['Driver'] == driver_id]
             ref_laps = laps[laps['Driver'] == ref_driver_id]
-            
+
             if drv_laps.empty or ref_laps.empty:
                 raise ValueError("No laps found")
-                
+
             drv_fastest = drv_laps.pick_fastest().get_telemetry()
             ref_fastest = ref_laps.pick_fastest().get_telemetry()
-            
+
             # Get corner bounds
             corner = next((c for c in cls.get_circuit_corner_database() if c.corner_number == corner_number), None)
             if not corner:
                 raise ValueError("Corner not found")
-                
+
             c_start = corner.entry_distance_m
             c_end = corner.exit_distance_m
-            
+
             drv_corner = drv_fastest[(drv_fastest['Distance'] >= c_start) & (drv_fastest['Distance'] <= c_end)]
             ref_corner = ref_fastest[(ref_fastest['Distance'] >= c_start) & (ref_fastest['Distance'] <= c_end)]
-            
+
             if drv_corner.empty or ref_corner.empty:
                 raise ValueError("No telemetry in corner")
-                
+
             # Min speed delta
             drv_min_v = drv_corner['Speed'].min()
             ref_min_v = ref_corner['Speed'].min()
             min_speed_kmh = float(drv_min_v - ref_min_v)
-            
+
             # Peak brake
             drv_peak_b = drv_corner['Brake'].max()
             ref_peak_b = ref_corner['Brake'].max()
             peak_brake_pct = float(drv_peak_b - ref_peak_b) * 100.0 # Sometimes Brake is boolean, sometimes float 0-100
-            
+
             # Exit speed
             drv_exit_v = drv_corner.iloc[-1]['Speed']
             ref_exit_v = ref_corner.iloc[-1]['Speed']
             exit_speed_kmh = float(drv_exit_v - ref_exit_v)
-            
+
             # Time delta approximation (integrate dt over distance)
             drv_time = (drv_corner['Time'].iloc[-1] - drv_corner['Time'].iloc[0]).total_seconds()
             ref_time = (ref_corner['Time'].iloc[-1] - ref_corner['Time'].iloc[0]).total_seconds()
             total_loss = drv_time - ref_time
-            
+
             # Find braking point (first distance where brake > 0)
             drv_brake_pts = drv_corner[drv_corner['Brake'] > 0]
             ref_brake_pts = ref_corner[ref_corner['Brake'] > 0]
-            
+
             drv_brake_dist = drv_brake_pts.iloc[0]['Distance'] if not drv_brake_pts.empty else c_start
             ref_brake_dist = ref_brake_pts.iloc[0]['Distance'] if not ref_brake_pts.empty else c_start
             brake_delta_m = float(drv_brake_dist - ref_brake_dist)
-            
+
             return CornerTimeLossAttribution(
                 corner_number=corner_number,
                 total_loss_s=round(total_loss, 3),
@@ -196,9 +196,9 @@ class DriverPerformanceIntelligenceEngine:
 
     @classmethod
     def rank_performance_opportunities(
-        cls, 
-        driver_id: str = "VER", 
-        ref_driver_id: str = "HAM", 
+        cls,
+        driver_id: str = "VER",
+        ref_driver_id: str = "HAM",
         session_id: str = "S-2024-SPAIN"
     ) -> List[PerformanceOpportunity]:
         """Ranks corner performance opportunities by time loss, repeatability, and confidence."""
@@ -213,7 +213,7 @@ class DriverPerformanceIntelligenceEngine:
                     cause = "Apex Speed Deficit"
                 elif loss.exit_speed_delta_kmh < -2.0:
                     cause = "Exit Speed Deficit"
-                
+
                 opportunities.append(PerformanceOpportunity(
                     rank=0,
                     corner_number=corner.corner_number,
@@ -223,11 +223,11 @@ class DriverPerformanceIntelligenceEngine:
                     potential_gain_s=round(loss.total_loss_s * 0.8, 3),
                     primary_loss_cause=cause
                 ))
-        
+
         opportunities.sort(key=lambda x: x.attributable_loss_s, reverse=True)
         for i, opp in enumerate(opportunities):
             opp.rank = i + 1
-            
+
         return opportunities
 
     @classmethod
@@ -250,11 +250,11 @@ class DriverPerformanceIntelligenceEngine:
                 min_speed = drv_fastest['Speed'].min() if 'Speed' in drv_fastest else 80.0
                 if isinstance(max_brake, bool):
                     max_brake = 100.0 if max_brake else 0.0
-                
+
                 std_lap = drv_laps['LapTime'].dt.total_seconds().std()
                 avg_lap = drv_laps['LapTime'].dt.total_seconds().mean()
                 consistency = max(0.0, min(100.0, 100.0 - (std_lap / avg_lap * 200.0))) if pd.notna(std_lap) and avg_lap > 0 else 90.0
-                
+
                 return DriverPerformanceProfile(
                     driver_id=driver_id,
                     braking_aggressiveness_score=round(min(100.0, float(max_brake)), 1),
@@ -264,7 +264,7 @@ class DriverPerformanceIntelligenceEngine:
                 )
         except Exception:
             pass
-            
+
         return DriverPerformanceProfile(
             driver_id=driver_id,
             braking_aggressiveness_score=85.0,
@@ -272,4 +272,3 @@ class DriverPerformanceIntelligenceEngine:
             throttle_pickup_responsiveness_score=85.0,
             overall_consistency_score=85.0
         )
-

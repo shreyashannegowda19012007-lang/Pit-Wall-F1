@@ -118,4 +118,3 @@ def clean_telemetry_df(
     }
 
     return cleaned, metadata
-

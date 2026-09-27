@@ -83,4 +83,3 @@ class PitWallConsoleOrchestrator:
                 st.caption("• [1-6]: Panel Focus")
                 st.caption("• [F]: Focus Primary Driver")
                 st.caption("• [C]: Focus Comparison Driver")
-

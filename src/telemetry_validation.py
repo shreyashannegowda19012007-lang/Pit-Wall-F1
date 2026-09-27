@@ -102,7 +102,7 @@ def validate_telemetry_df(df: pd.DataFrame) -> TelemetryValidationResult:
     else:
         if (dist_vals < 0).any():
             warnings.append(f"Found {(dist_vals < 0).sum()} negative distance values.")
-        
+
         # Monotonicity check
         dist_diffs = np.diff(dist_vals)
         if (dist_diffs < 0).any():
@@ -158,4 +158,3 @@ def validate_telemetry_df(df: pd.DataFrame) -> TelemetryValidationResult:
         rows_checked=rows_checked,
         channel_availability=channel_availability
     )
-

@@ -73,7 +73,7 @@ def inject_custom_css():
             color: #FFFFFF !important;
             font-size: 13px !important;
         }
-        
+
         div[data-baseweb="popover"] li:hover {
             background: #252830 !important;
         }
@@ -86,7 +86,7 @@ def inject_custom_css():
             padding: 8px 12px !important;
             margin-bottom: 4px !important;
         }
-        
+
         div[data-testid="stRadio"] div[role="radiogroup"] > label:hover {
             border-color: #4A90E2 !important;
             background: #1C2028 !important;
@@ -96,12 +96,12 @@ def inject_custom_css():
             border-color: #4A90E2 !important;
             background: #1F2A38 !important;
         }
-        
+
         div[data-testid="stRadio"] div[role="radiogroup"] > label p {
             color: #D1D5DB !important;
             font-size: 13px !important;
         }
-        
+
         div[data-testid="stRadio"] div[role="radiogroup"] > label[data-checked="true"] p {
             color: #FFFFFF !important;
             font-weight: 600 !important;
@@ -120,7 +120,7 @@ def inject_custom_css():
             letter-spacing: 1px !important;
             width: 100%;
         }
-        
+
         div.stButton > button:hover {
 
         /* Base alert reset */
@@ -131,7 +131,7 @@ def inject_custom_css():
             font-size: 13px !important;
             font-weight: 600 !important;
         }
-        
+
         /* INFO   Cyan/teal theme */
         div[data-testid="stAlert"][data-baseweb="notification"][kind="info"],
         div[data-testid="stNotification"][kind="info"] {
@@ -140,7 +140,7 @@ def inject_custom_css():
             border-left: 4px solid #4A90E2 !important;
             color: #A8D4F0 !important;
         }
-        
+
         /* WARNING   Amber theme */
         div[data-testid="stAlert"][data-baseweb="notification"][kind="warning"],
         div[data-testid="stNotification"][kind="warning"] {
@@ -149,7 +149,7 @@ def inject_custom_css():
             border-left: 4px solid #FFB400 !important;
             color: #FFD580 !important;
         }
-        
+
         /* ERROR   Red theme */
         div[data-testid="stAlert"][data-baseweb="notification"][kind="error"],
         div[data-testid="stNotification"][kind="error"] {
@@ -158,7 +158,7 @@ def inject_custom_css():
             border-left: 4px solid #EF4444 !important;
             color: #FF9AB8 !important;
         }
-        
+
         /* SUCCESS   Green theme */
         div[data-testid="stAlert"][data-baseweb="notification"][kind="success"],
         div[data-testid="stNotification"][kind="success"] {
@@ -176,7 +176,7 @@ def inject_custom_css():
             font-size: 13px !important;
             font-weight: 600 !important;
         }
-        
+
         /* Alert icons */
         div[data-testid="stAlert"] svg, div[data-testid="stNotification"] svg {
             flex-shrink: 0 !important;
@@ -220,7 +220,7 @@ def inject_custom_css():
             color: #4A90E2 !important;
             border-color: #4A90E2 !important;
             border-bottom: 2px solid #4A90E2 !important;
-            
+
             background: linear-gradient(180deg, rgba(0,240,255,0.15) 0%, rgba(8,16,30,0.98) 100%) !important;
         }
 
@@ -258,7 +258,7 @@ def inject_custom_css():
             font-size: 22px !important;
             font-weight: 900 !important;
             font-family: 'Share Tech Mono', monospace !important;
-            
+
             white-space: normal !important;
             word-break: break-word !important;
         }
@@ -592,14 +592,14 @@ def inject_custom_css():
             border-radius: 6px !important;
             color: #A8D4F0 !important;
         }
-        
+
         .stMarkdown code {
             background: #333842 !important;
             border: 1px solid #333842 !important;
             color: #4A90E2 !important;
             border-radius: 3px !important;
         }
-        
+
         /* ============================================================
            DATAFRAME & TABLE ENHANCEMENTS
         ============================================================ */
@@ -608,12 +608,12 @@ def inject_custom_css():
             border-radius: 8px !important;
             overflow: hidden !important;
         }
-        
+
         /* Glassine panel backdrop for sections */
         div[data-testid="stVerticalBlock"] > div[data-testid="element-container"]:first-child {
             padding-top: 0 !important;
         }
-        
+
         /* ============================================================
            CHECKBOX AND TOGGLE
         ============================================================ */
@@ -622,7 +622,7 @@ def inject_custom_css():
             font-size: 13px !important;
             font-weight: 600 !important;
         }
-        
+
         /* ============================================================
            TEXT INPUT FIELDS
         ============================================================ */
@@ -636,14 +636,14 @@ def inject_custom_css():
             font-size: 14px !important;
             font-weight: 600 !important;
         }
-        
+
         [data-testid="stTextInput"] input:focus,
         [data-testid="stTextArea"] textarea:focus {
             border-color: #333842 !important;
             box-shadow: 0 0 10px #333842 !important;
             outline: none !important;
         }
-        
+
         [data-testid="stTextInput"] label,
         [data-testid="stTextArea"] label {
             color: #8FB4D4 !important;
@@ -659,7 +659,7 @@ def inject_custom_css():
         [data-testid="stAppViewBlockContainer"] {
             background: transparent !important;
         }
-        
+
         /* Top Gradient Fade */
         [data-testid="stAppViewContainer"]::before {
             content: '';
@@ -679,7 +679,7 @@ def inject_custom_css():
                 font-size: 20px !important;
             }
         }
-        
+
         @media (max-width: 1366px) {
             [data-testid="stMetricValue"] {
                 font-size: 17px !important;
@@ -842,7 +842,7 @@ def render_standby_screen():
 def render_live_track_map(location_df):
     """
     Renders an animated, high-performance Plotly scatter map of live driver locations.
-    Uses OpenF1 X/Y coordinates. 
+    Uses OpenF1 X/Y coordinates.
     """
     import plotly.graph_objects as go
 
@@ -893,13 +893,13 @@ def inject_hotkeys():
     const doc = window.parent.document;
     doc.addEventListener('keydown', function(e) {
         if (e.target.tagName.toLowerCase() === 'input' || e.target.tagName.toLowerCase() === 'textarea') return;
-        
+
         let tabToClick = null;
         if (e.key === '1') tabToClick = "TIMING TOWER";
         if (e.key === '2') tabToClick = "TELEMETRY & PERFORMANCE";
         if (e.key === '3') tabToClick = "TYRE STRATEGY";
         if (e.key === '4') tabToClick = "TRACK";
-        
+
         if (tabToClick) {
             const tabs = doc.querySelectorAll('button[data-baseweb="tab"]');
             for (let i = 0; i < tabs.length; i++) {
@@ -912,5 +912,3 @@ def inject_hotkeys():
     });
     </script>
     """, height=0)
-
-

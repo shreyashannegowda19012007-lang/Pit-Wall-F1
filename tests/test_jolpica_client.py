@@ -44,7 +44,7 @@ def test_get_driver_standings_empty(mock_get, jolpica_client):
 @patch('requests_cache.CachedSession.get')
 def test_timeout_handling(mock_get, jolpica_client):
     mock_get.side_effect = requests.exceptions.Timeout("Connection timed out")
-    
+
     result = jolpica_client.get_circuits(year=2024)
     assert result == []
     assert mock_get.call_count == jolpica_client.max_retries

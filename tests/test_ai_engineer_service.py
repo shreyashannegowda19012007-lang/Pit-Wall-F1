@@ -25,7 +25,7 @@ class TestAIEngineerJarvisSubsystem(unittest.TestCase):
             def __init__(self, name="Test Grand Prix"):
                 self.session_info = {'Meeting': {'Name': name}}
         session = DummySession()
-        
+
         # Monkey patch
         import src.telemetry_analysis_service
         class DummyTelemetryAnalysisService:
@@ -63,7 +63,7 @@ class TestAIEngineerJarvisSubsystem(unittest.TestCase):
         session = DummySession()
 
         from unittest.mock import patch
-        
+
         with patch('src.ai_engineer_service.AIToolRegistry.get_current_decision') as mock_get_decision:
             mock_get_decision.return_value = {
                 "recommended_action": "STAY_OUT",

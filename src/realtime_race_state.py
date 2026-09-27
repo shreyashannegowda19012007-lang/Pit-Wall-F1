@@ -117,15 +117,15 @@ class ReplayAdapter(BaseDataProvider):
                 drivers={},
                 race_control_messages=[]
             )
-            
+
         try:
             # Replay time in timedelta, normalized to start of session
             t_start = pd.Timedelta(seconds=0)
             if 'LapStartTime' in self.laps_df.columns and not self.laps_df['LapStartTime'].empty:
                 t_start = self.laps_df['LapStartTime'].min()
-            
+
             replay_td = t_start + pd.Timedelta(seconds=timestamp_s)
-            
+
             # Filter laps up to the replay timestamp
             # 'Time' in fastf1 is the session time at the end of the lap
             # We also include laps that started before timestamp (LapStartTime <= timestamp)
@@ -133,29 +133,29 @@ class ReplayAdapter(BaseDataProvider):
                 past_laps = self.laps_df[self.laps_df['LapStartTime'] <= replay_td]
             else:
                 past_laps = self.laps_df[self.laps_df['Time'] <= replay_td]
-            
+
             drivers_state = {}
             current_max_lap = 0
-            
+
             if not past_laps.empty:
                 for driver_id in past_laps['Driver'].unique():
                     driver_laps = past_laps[past_laps['Driver'] == driver_id]
                     if driver_laps.empty:
                         continue
-                    
+
                     last_lap_record = driver_laps.iloc[-1]
                     lap_number = int(last_lap_record['LapNumber'])
                     if lap_number > current_max_lap:
                         current_max_lap = lap_number
-                        
+
                     compound = str(last_lap_record.get('Compound', 'UNKNOWN'))
-                    
+
                     tyre_life_val = last_lap_record.get('TyreLife', 1)
                     tyre_life = 1 if pd.isna(tyre_life_val) else int(tyre_life_val)
-                    
+
                     position_val = last_lap_record.get('Position', 0)
                     position = 0 if pd.isna(position_val) else int(position_val)
-                        
+
                     status_val = "ON_TRACK"
                     if 'PitOutTime' in last_lap_record and not pd.isna(last_lap_record['PitOutTime']):
                         if last_lap_record['PitOutTime'] > replay_td:
@@ -163,7 +163,7 @@ class ReplayAdapter(BaseDataProvider):
                     if 'PitInTime' in last_lap_record and not pd.isna(last_lap_record['PitInTime']):
                         if last_lap_record['PitInTime'] <= replay_td:
                             status_val = "IN_PIT"
-                            
+
                     last_lap_time = last_lap_record.get('LapTime')
                     last_lap_time_ms = 0
                     if pd.notna(last_lap_time) and isinstance(last_lap_time, pd.Timedelta):
@@ -173,7 +173,7 @@ class ReplayAdapter(BaseDataProvider):
                     number = 0
                     team = "UNKNOWN"
                     grid_position = 0
-                    
+
                     if self.results_df is not None and not self.results_df.empty:
                         dr = None
                         if 'Abbreviation' in self.results_df.columns:
@@ -186,7 +186,7 @@ class ReplayAdapter(BaseDataProvider):
                             matches = self.results_df[self.results_df['DriverNumber'].astype(str) == str(driver_id)]
                             if not matches.empty:
                                 dr = matches.iloc[0]
-                                
+
                         if dr is not None:
                             driver_name = str(dr.get('LastName', driver_name))
                             num_val = dr.get('DriverNumber', dr.get('number', 0))
@@ -197,9 +197,9 @@ class ReplayAdapter(BaseDataProvider):
 
                     speed_val = last_lap_record.get('SpeedST', last_lap_record.get('SpeedFL', last_lap_record.get('Speed', 0.0)))
                     speed_kmh = float(speed_val) if pd.notna(speed_val) else 0.0
-                    
+
                     throttle_pct = 100.0 if speed_kmh > 0 else 0.0
-                    
+
                     drivers_state[driver_id] = DriverRaceState(
                         driver_id=str(driver_id),
                         driver_name=driver_name,
@@ -228,29 +228,29 @@ class ReplayAdapter(BaseDataProvider):
                         z=0.0,
                         heading_deg=0.0
                     )
-            
+
             # Calculate True Gaps and Intervals
             leader_driver = None
             for drv in drivers_state.values():
                 if drv.position == 1:
                     leader_driver = drv.driver_id
                     break
-                    
+
             if leader_driver:
                 leader_laps = past_laps[past_laps['Driver'] == leader_driver]
                 leader_last_lap_num = drivers_state[leader_driver].lap_number
                 leader_time_record = leader_laps[leader_laps['LapNumber'] == leader_last_lap_num]
                 leader_time_s = None
-                
+
                 if not leader_time_record.empty and pd.notna(leader_time_record.iloc[-1].get('Time')):
                     lt = leader_time_record.iloc[-1]['Time']
                     if isinstance(lt, pd.Timedelta):
                         leader_time_s = lt.total_seconds()
-                
+
                 if leader_time_s is not None:
                     # Sort drivers by actual position
                     sorted_drivers = sorted(drivers_state.values(), key=lambda d: d.position if d.position > 0 else 999)
-                    
+
                     prev_gap = 0.0
                     for drv in sorted_drivers:
                         if drv.position == 1:
@@ -259,7 +259,7 @@ class ReplayAdapter(BaseDataProvider):
                             drv.laps_behind_leader = 0
                             drv.timing_status = "VALID"
                             continue
-                            
+
                         drv_laps = past_laps[past_laps['Driver'] == drv.driver_id]
                         if drv_laps.empty:
                             drv.gap_to_leader_s = None
@@ -332,9 +332,9 @@ class ReplayAdapter(BaseDataProvider):
                             drv.gap_to_leader_s = gap_at_lap
                             drv.interval_to_ahead_s = round(gap_at_lap - prev_gap, 3) if (prev_gap is not None and gap_at_lap is not None and gap_at_lap >= prev_gap) else gap_at_lap
                             prev_gap = gap_at_lap or prev_gap
-            
+
             total_laps = int(self.laps_df['LapNumber'].max()) if not self.laps_df.empty else 0
-            
+
             return UnifiedRaceState(
                 session_id=session_id,
                 schema_version=SCHEMA_VERSION,
@@ -409,7 +409,7 @@ class RealtimeRaceStateEngine:
         if len(parts) >= 3 and parts[1].isdigit():
             year = int(parts[1])
             event_name = parts[2].title() + " Grand Prix"
-        
+
         return {
             "session_info": {"year": year, "round": 1, "event_name": event_name, "session": session_type},
             "timing_tower": {
@@ -418,4 +418,3 @@ class RealtimeRaceStateEngine:
                 "drivers": drivers
             }
         }
-

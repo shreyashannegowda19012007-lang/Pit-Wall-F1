@@ -51,13 +51,13 @@ class AIEngineerQAEngine:
         Processes an engineering query and returns an evidence-backed answer structure.
         """
         q_lower = question.lower()
-        
+
         # Build Full Evidence Bundle first for use in fallbacks and answers
         bundle = EvidenceEngine.resolve_evidence(
-            question=question, 
-            session=session, 
-            laps_df=laps_df, 
-            target_driver=target_driver, 
+            question=question,
+            session=session,
+            laps_df=laps_df,
+            target_driver=target_driver,
             ref_driver=ref_driver
         )
         bundle_dict = bundle.to_dict()
@@ -109,7 +109,7 @@ class AIEngineerQAEngine:
             }
 
         answer_parts = []
-        
+
         if bundle.answerable and bundle.evidence_items:
             for i, item in enumerate(bundle.evidence_items[:3]):
                 val = f"{item.value:.3f}" if isinstance(item.value, float) else item.value
@@ -124,4 +124,3 @@ class AIEngineerQAEngine:
             "has_data": bundle.answerable,
             "data_status": "SUCCESS" if bundle.answerable else "INSUFFICIENT_EVIDENCE"
         }
-

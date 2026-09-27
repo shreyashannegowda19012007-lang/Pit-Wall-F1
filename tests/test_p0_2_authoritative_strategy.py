@@ -20,10 +20,10 @@ def test_a_templates_cannot_bypass_optimization():
             mock_rec.confidence_pct = 90.0
             mock_rec.alternative = "STAY_OUT"
             mock_gen.return_value = mock_rec
-            
+
             api = TelemetryAPIService()
             res = api.evaluate_authoritative_strategy()
-            
+
             mock_gen.assert_called_once()
             assert res["recommended_action"] == "PIT_NOW"
             assert res["win_probability_pct"] == 45.0
@@ -54,9 +54,9 @@ def test_c_baseline_safety():
     target.tyre_state.compound = "MEDIUM"
     target.tyre_state.age_laps = 10
     target.base_pace_s = 80.0
-    
+
     opponents = []
-    
+
     with patch.object(engine, "simulate_strategy_vectorized") as mock_sim:
         mock_sim.side_effect = [
             MagicMock(win_probability=5, podium_probability=10),
@@ -84,7 +84,7 @@ def test_e_end_to_end_trace():
         mock_build.return_value = MagicMock(telemetry_availability=False)
         res = ProbabilisticService.evaluate_authoritative_strategy()
         assert res["recommended_action"] != "STAY_OUT (2 Laps)"
-    
+
 def test_f_no_fabricated_fallback():
     # FormalDecisionEngine._fallback_decision does not invent data
     fallback = FormalDecisionEngine._fallback_decision(race_lap=10, objective="MAX_WIN")

@@ -23,7 +23,7 @@ def test_get_meetings_success(mock_get, openf1_client):
 def test_timeout_handling(mock_get, openf1_client):
     # Simulate timeout on all retries
     mock_get.side_effect = requests.exceptions.Timeout("Connection timed out")
-    
+
     result = openf1_client.get_meetings(year=2024)
     assert result == []
     # Should retry max_retries times
@@ -34,14 +34,14 @@ def test_rate_limit_handling(mock_get, openf1_client):
     # Simulate a 429 Too Many Requests response
     mock_response_429 = MagicMock()
     mock_response_429.raise_for_status.side_effect = requests.exceptions.HTTPError(response=MagicMock(status_code=429))
-    
+
     # Simulate a successful response after one failure
     mock_response_200 = MagicMock()
     mock_response_200.json.return_value = [{"meeting_key": 1}]
     mock_response_200.raise_for_status.return_value = None
-    
+
     mock_get.side_effect = [mock_response_429.raise_for_status.side_effect, mock_response_200]
-    
+
     result = openf1_client.get_meetings(year=2024)
     assert len(result) == 1
     assert mock_get.call_count == 2

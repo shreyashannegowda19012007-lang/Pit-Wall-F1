@@ -118,13 +118,13 @@ def get_driver_telemetry(session, driver_code):
 
             driver_laps = session.laps[session.laps['Driver'] == driver_code]
 
-            
+
 
         if driver_laps.empty:
 
             return pd.DataFrame()
 
-            
+
 
         fastest_lap = driver_laps.pick_fastest()
 
@@ -158,7 +158,7 @@ def get_auto_live_session():
 
     import requests
 
-    
+
 
     try:
 
@@ -168,7 +168,7 @@ def get_auto_live_session():
 
         resp = requests.get(url, timeout=config.DEFAULT_HTTP_TIMEOUT)
 
-        
+
 
         if resp.status_code == 200:
 
@@ -180,7 +180,7 @@ def get_auto_live_session():
 
                 latest = sessions[0]
 
-                
+
 
                 now = datetime.now(timezone.utc)
 
@@ -188,7 +188,7 @@ def get_auto_live_session():
 
                 date_end = datetime.fromisoformat(latest['date_end'].replace('Z', '+00:00'))
 
-                
+
 
                 if date_start <= now <= date_end:
 
@@ -196,15 +196,14 @@ def get_auto_live_session():
 
                     return latest['year'], latest['country_name'], sess_map.get(latest['session_name'], 'R')
 
-                    
+
 
         return None, None, None
 
-        
+
 
     except Exception as e:
 
         logger.error(f"OpenF1 live session query failed: {e}")
 
         return None, None, None
-

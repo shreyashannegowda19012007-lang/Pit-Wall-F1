@@ -67,7 +67,7 @@ class TestEvidenceEngine(unittest.TestCase):
     def test_context_relevance_scoring(self):
         candidate = {"session_id": "SPAIN_2024", "driver_id": "VER", "compound": "SOFT", "tyre_age": 12}
         reference = {"session_id": "SPAIN_2024", "driver_id": "VER", "compound": "SOFT", "tyre_age": 14}
-        
+
         score_obj = HistoricalRetrievalEngine.score_context_relevance(candidate, reference)
         self.assertTrue(score_obj.relevance_score >= 90.0)
         self.assertIn("Same Session", score_obj.matching_factors)
@@ -93,7 +93,7 @@ class TestEvidenceEngine(unittest.TestCase):
     def test_ai_tools_registry(self):
         cur_lap = AIToolRegistry.get_current_lap(self.mock_laps, "VER")
         self.assertTrue(cur_lap['found'])
-        
+
         tm = AIToolRegistry.get_teammate_context(self.mock_laps, "VER", self.mock_results)
         self.assertEqual(tm['driver_id'], "HAM")
 

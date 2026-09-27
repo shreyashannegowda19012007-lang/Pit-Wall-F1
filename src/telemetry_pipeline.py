@@ -213,4 +213,3 @@ class TelemetryPipeline:
                 sync_meta={}, alignment_meta={}, feature_summary={}, lineage={},
                 error=str(e)
             )
-

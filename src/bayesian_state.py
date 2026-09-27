@@ -79,4 +79,3 @@ class BayesianRaceState:
             "parameters": {k: v.to_dict() for k, v in self.parameters.items()},
             "available_snapshots": list(self.state_snapshots.keys())
         }
-

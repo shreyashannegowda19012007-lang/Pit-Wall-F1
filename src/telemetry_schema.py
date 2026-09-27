@@ -116,4 +116,3 @@ def validate_schema_compliance(df: pd.DataFrame) -> Tuple[bool, List[str], List[
 
     is_compliant = len(errors) == 0
     return is_compliant, errors, warnings
-

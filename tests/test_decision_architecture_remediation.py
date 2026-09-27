@@ -21,10 +21,10 @@ class TestDecisionArchitectureRemediation:
     def test_rl_has_zero_influence_when_flag_disabled(self, monkeypatch):
         monkeypatch.delenv("EXPERIMENTAL_RL_ENABLED", raising=False)
         context = get_test_race_context()
-        
+
         # Act
         recommendation = DecisionEngine.generate_recommendation(context, "VER", "HAM")
-        
+
         # Assert
         assert "EXPERIMENTAL RL OVERRIDE" not in recommendation.primary_reason
         assert "Monte Carlo" in recommendation.primary_reason or "Simulator" in recommendation.evidence_refs[1]
@@ -35,27 +35,26 @@ class TestDecisionArchitectureRemediation:
     def test_rl_can_influence_when_flag_enabled(self, monkeypatch):
         monkeypatch.setenv("EXPERIMENTAL_RL_ENABLED", "true")
         context = get_test_race_context()
-        
+
         # Act
         recommendation = DecisionEngine.generate_recommendation(context, "VER", "HAM")
-        
+
         # Assert
         assert "EXPERIMENTAL RL OVERRIDE" in recommendation.primary_reason
         assert "RL_PPO" in recommendation.model_versions
-        
+
     def test_jarvis_recommendations_without_rl(self, monkeypatch):
         monkeypatch.delenv("EXPERIMENTAL_RL_ENABLED", raising=False)
-        
+
         # Mock the build_race_context so we don't need real FastF1 session
         monkeypatch.setattr(DecisionArchitectureOrchestrator, "build_race_context", get_test_race_context)
-        
+
         laps_df = pd.DataFrame()
         results_df = pd.DataFrame()
-        
+
         insights = JarvisEngineeringInsightsEngine.generate_session_insights(laps_df, results_df, {}, raw_session=None, active_driver="VER")
-        
+
         decision_insight = next((i for i in insights if i["id"] == "INS-DECISION-01"), None)
         assert decision_insight is not None
         assert "EXPERIMENTAL RL OVERRIDE" not in decision_insight["why"]
         assert "Ranks highest under" in decision_insight["why"]
-

@@ -61,4 +61,3 @@ class PanelRegistry:
         else:
             # Default Pit-Wall Layout
             return ["top_bar", "timing_tower", "track_view", "driver_telemetry", "strategy_panel", "bayesian_panel", "race_control", "ai_engineer", "evaluation_dashboard"]
-

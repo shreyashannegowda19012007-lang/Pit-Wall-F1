@@ -14,12 +14,12 @@ logger = logging.getLogger(__name__)
 class OpenF1Client:
     def __init__(self, base_url: str = "https://api.openf1.org/v1", cache_name: str = "f1_cache/openf1_cache", expire_after: int = 3600):
         self.base_url = os.environ.get('OPENF1_BASE_URL', base_url).rstrip("/")
-        
+
         # Ensure cache directory exists if a path is provided
         cache_dir = os.path.dirname(cache_name)
         if cache_dir:
             os.makedirs(cache_dir, exist_ok=True)
-            
+
         # Initialize a requests-cache session
         self.session = requests_cache.CachedSession(
             cache_name,
@@ -32,22 +32,22 @@ class OpenF1Client:
 
     def _make_request(self, endpoint: str, params: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
         url = f"{self.base_url}/{endpoint.lstrip('/')}"
-        
+
         for attempt in range(self.max_retries):
             try:
                 response = self.session.get(url, params=params, timeout=self.timeout)
                 response.raise_for_status()
-                
+
                 if not getattr(response, 'from_cache', False):
                     logger.debug(f"OpenF1 API Hit: {url} {params}")
                 else:
                     logger.debug(f"OpenF1 Cache Hit: {url} {params}")
-                    
+
                 data = response.json()
                 if not isinstance(data, list):
                     return [data] if data else []
                 return data
-                
+
             except requests.exceptions.HTTPError as e:
                 if e.response.status_code == 429:
                     logger.warning(f"Rate limited by OpenF1. Retrying... (Attempt {attempt + 1}/{self.max_retries})")
@@ -62,7 +62,7 @@ class OpenF1Client:
             except requests.exceptions.RequestException as e:
                 logger.error(f"Request Error querying OpenF1 {endpoint}: {e}")
                 return []
-                
+
         logger.error(f"Max retries exceeded for OpenF1 {endpoint}")
         return []
 

@@ -87,7 +87,7 @@ class RateLimiter:
         now = time.time()
         if client_id not in self._tokens:
             self._tokens[client_id] = []
-        
+
         # Remove expired timestamps
         self._tokens[client_id] = [t for t in self._tokens[client_id] if now - t < self.window_s]
 
@@ -169,4 +169,3 @@ class SystemHealthService:
             },
             checked_at=time.time()
         )
-

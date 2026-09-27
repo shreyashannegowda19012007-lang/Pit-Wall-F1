@@ -248,4 +248,3 @@ def _build_empty_corner_analysis(corner: CornerWindow, driver_a: str, driver_b: 
         available_metrics={"speed": False, "throttle": False, "brake": False, "steering": False, "tire_temp": False},
         explanation=f"Insufficient telemetry data available for {corner.corner_name} comparison between {driver_a} and {driver_b}."
     )
-

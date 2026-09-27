@@ -79,18 +79,18 @@ class SpatialIntelligenceEngine:
     def get_spatial_field_positions(cls, session_id: str = "S-2024-SPAIN", lap: int = 22) -> List[SpatialCarPosition]:
         """Calculates 3D spatial coordinates (X, Y, Z) and heading for all 20 drivers using real telemetry."""
         from src.data_ingestion import fetch_session_data
-        
+
         parts = session_id.split('-')
         year = int(parts[1]) if len(parts) > 1 else 2024
-        
+
         event_map = {
             "SPAIN": "Spanish Grand Prix",
-            "MONACO": "Monaco Grand Prix", 
+            "MONACO": "Monaco Grand Prix",
             "SILVERSTONE": "British Grand Prix",
             "BAHRAIN": "Bahrain Grand Prix"
         }
         event = event_map.get(parts[2], "Spanish Grand Prix") if len(parts) > 2 else "Spanish Grand Prix"
-        
+
         try:
             data = fetch_session_data(year, event, 'R')
             session = data.get('raw_session')
@@ -98,40 +98,40 @@ class SpatialIntelligenceEngine:
             weather = data.get('weather')
             if session is None or laps is None or laps.empty:
                 return []
-                
+
             positions: List[SpatialCarPosition] = []
-            
+
             for drv in laps['Driver'].unique():
                 drv_laps = laps[laps['Driver'] == drv]
                 lap_data = drv_laps[drv_laps['LapNumber'] == lap]
                 if lap_data.empty:
                     continue
-                    
+
                 # Extract authentic telemetry
                 try:
                     telemetry = lap_data.get_telemetry()
                 except Exception:
                     continue
-                    
+
                 if telemetry.empty:
                     continue
-                    
+
                 # For replay purposes, we'll take the car's state at the midpoint of the lap to show them spread out,
                 # or just the last point. Let's take the midpoint of the telemetry array for visualization variety.
                 mid_idx = len(telemetry) // 2
                 t_point = telemetry.iloc[mid_idx]
-                
+
                 # FastF1 X/Y/Z are in decimeters, converting to meters
                 x = float(t_point['X']) / 10.0
                 y = float(t_point['Y']) / 10.0
                 z = float(t_point['Z']) / 10.0
-                
+
                 speed = float(t_point['Speed'])
                 gear = int(t_point['nGear'])
                 drs = bool(t_point['DRS'] >= 10)
-                
+
                 pos_val = lap_data['Position'].iloc[0]
-                
+
                 # Calculate heading using derivative of X/Y if available
                 heading = 0.0
                 if mid_idx > 0:
@@ -139,12 +139,12 @@ class SpatialIntelligenceEngine:
                     dx = float(t_point['X']) - float(prev_t['X'])
                     dy = float(t_point['Y']) - float(prev_t['Y'])
                     heading = math.degrees(math.atan2(dy, dx)) % 360.0
-                
+
                 throttle = float(t_point.get('Throttle', 100.0))
                 brake_val = t_point.get('Brake', 0.0)
                 brake = 100.0 if isinstance(brake_val, bool) and brake_val else float(brake_val)
                 rpm = float(t_point.get('RPM', 11000.0))
-                
+
                 positions.append(SpatialCarPosition(
                     driver_id=drv,
                     position=int(pos_val) if pd.notna(pos_val) else 0,
@@ -161,12 +161,12 @@ class SpatialIntelligenceEngine:
                     distance_m=round(float(t_point.get('Distance', 0.0)), 1),
                     gap_to_leader_m=0.0
                 ))
-                
+
             leader = next((p for p in positions if p.position == 1), None)
             if leader:
                 for p in positions:
                     p.gap_to_leader_m = round(leader.distance_m - p.distance_m, 1)
-                
+
             return positions
         except Exception as e:
             print(f"[SpatialIntelligence] Telemetry extraction failed: {e}")
@@ -178,7 +178,7 @@ class SpatialIntelligenceEngine:
         field = cls.get_spatial_field_positions(lap=lap)
         if not field:
             return CockpitPOVCamera(driver_id, "UNAVAILABLE", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "OFF")
-            
+
         car = next((c for c in field if c.driver_id == driver_id), field[0])
 
         heading_rad = math.radians(car.heading_deg)
@@ -201,4 +201,3 @@ class SpatialIntelligenceEngine:
             gear=car.gear,
             drs_status="AVAILABLE" if car.drs_active else "OFF"
         )
-

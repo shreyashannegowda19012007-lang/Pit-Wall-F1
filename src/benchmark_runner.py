@@ -148,4 +148,3 @@ if __name__ == '__main__':
     print("Executing BenchmarkRunner CLI...")
     rep = BenchmarkRunner.run_full_system_benchmark()
     print(json.dumps(rep, indent=2))
-

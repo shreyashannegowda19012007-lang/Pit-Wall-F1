@@ -502,6 +502,9 @@ class ProbabilisticService:
         cur_lap = 22
         total_laps = 66
 
+        if rival_base_pace_s is None:
+            return {"success": False, "error": "rival_base_pace_s must be provided from real telemetry data"}
+
         # We construct a synthetic scenario where rival is ahead by gap_s
         d_state = DriverState(
             driver_id=driver_id,
@@ -511,7 +514,7 @@ class ProbabilisticService:
             tyre_state=TyreState(compound="MEDIUM", age_laps=15, remaining_grip_pct=90.0, thermal_deg_rate=0.08),
             fuel_state=FuelState(fuel_remaining_kg=100.0)
         )
-        r_pace = rival_base_pace_s if rival_base_pace_s is not None else base_pace_s - 0.2
+        r_pace = rival_base_pace_s
         r_state = DriverState(
             driver_id=rival_driver_id,
             position=1,
@@ -724,5 +727,3 @@ class ProbabilisticService:
         from system_integration_validator import SystemIntegrationValidator
         from dataclasses import asdict
         return asdict(SystemIntegrationValidator.validate_all_subsystems())
-
-

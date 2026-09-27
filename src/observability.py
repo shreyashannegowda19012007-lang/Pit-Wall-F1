@@ -72,4 +72,3 @@ class ObservabilityManager:
 
 # Global Observability Manager Singleton
 obs_manager = ObservabilityManager()
-

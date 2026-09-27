@@ -11,7 +11,7 @@ class IntentParser:
     @staticmethod
     def extract_intent(query: str) -> str:
         q = query.lower()
-        
+
         # Weighted regex patterns for structured intent routing
         patterns = {
             "STRATEGY": [
@@ -45,18 +45,18 @@ class IntentParser:
                 (r'\bhappened\b', 1.0)
             ]
         }
-        
+
         scores = {intent: 0.0 for intent in patterns.keys()}
-        
+
         for intent, rules in patterns.items():
             for pattern, weight in rules:
                 if re.search(pattern, q):
                     scores[intent] += weight
-                    
+
         max_intent = max(scores, key=scores.get)
         if scores[max_intent] >= 1.5:
             return max_intent
-            
+
         return "UNKNOWN"
 
 class AIEngineerService:
@@ -113,7 +113,7 @@ class AIEngineerService:
         if laps_df is None:
             laps_df = pd.DataFrame()
         q_lower = query.lower()
-        
+
         # 1. Temporal Guardrails (Future-Data Protection)
         if "lap " in q_lower:
             import re
@@ -149,12 +149,12 @@ class AIEngineerService:
                     "data_status": "MODEL_UNAVAILABLE",
                     "evidence_citations": []
                 }
-            
+
             # Decision Engine integration
             try:
                 dec = AIToolRegistry.get_current_decision(race_state, mc_outcomes)
                 action = dec.get("recommended_action")
-                
+
                 # Fetch Evidence
                 bundle = EvidenceEngine.resolve_evidence(
                     question=query,
@@ -168,17 +168,17 @@ class AIEngineerService:
                 )
 
                 ans_parts = [f"**ANSWER**\n{action} (Compound: {dec.get('recommended_compound')}, Lap: {dec.get('recommended_pit_lap')})"]
-                
+
                 ans_parts.append("\n**EVIDENCE**")
                 for ev in bundle.evidence_items:
                     unc_str = f" ± {ev.uncertainty}" if ev.uncertainty is not None else ""
                     ans_parts.append(f"- {ev.metric}: {ev.value}{unc_str} (Source: {ev.source} / {ev.provenance})")
-                
+
                 ans_parts.append(f"\n**WHY**\n{dec.get('primary_reason', 'Decision based on Monte Carlo simulations.')}")
-                
+
                 if "what if" in q_lower or "earlier" in q_lower:
                     ans_parts.append("\n**WHAT-IF SIMULATION**\nBased on Monte Carlo variations.")
-                
+
                 ans_parts.append(f"\n**SESSION CONTEXT**\nSession: {bundle.session}")
 
                 return {
@@ -231,7 +231,7 @@ class AIEngineerService:
                 ans_parts.append(f"- {ev.metric}: {ev.value}{unc}{driver_meta}{comp_meta} (Source: {ev.source} / Provenance: {ev.provenance})")
 
             ans_parts.append("\n**WHY**\nObserved in kinematic telemetry integration.")
-            
+
             source = t_loss.source if t_loss else "TELEMETRY_DERIVED"
             ans_parts.append(f"\n**SESSION CONTEXT**\nSession: {bundle.session}")
 
@@ -251,7 +251,7 @@ class AIEngineerService:
                     "data_status": "MODEL_UNAVAILABLE",
                     "evidence_citations": []
                 }
-            
+
             try:
                 from src.trend_analysis import TimeSeriesTrendEngine
                 deg = TimeSeriesTrendEngine.calculate_stint_pace_degradation(laps_df, primary_driver)
@@ -336,5 +336,3 @@ class AIEngineerService:
 
     # Alias for backward compatibility
     handle_query = process_query
-
-

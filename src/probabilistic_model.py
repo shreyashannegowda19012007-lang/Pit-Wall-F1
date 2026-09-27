@@ -98,4 +98,3 @@ def validate_probability_vector(probs_map: Dict[str, float], tolerance: float = 
     total_sum = float(np.sum(vals))
     is_valid = abs(total_sum - 1.0) <= tolerance
     return is_valid, total_sum
-

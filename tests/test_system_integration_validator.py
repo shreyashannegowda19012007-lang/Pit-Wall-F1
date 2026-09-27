@@ -27,7 +27,7 @@ class TestSystemIntegrationValidator(unittest.TestCase):
         # The execution paths must not spawn subprocess pytest
         subprocess_pytest_pattern = 'subprocess.run('
         self.assertNotIn(
-            subprocess_pytest_pattern, 
+            subprocess_pytest_pattern,
             source_validate,
             "validate_all_subsystems must not use subprocess.run"
         )

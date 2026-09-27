@@ -107,12 +107,12 @@ class ReplayCacheEngine:
         """
         from spatial_intelligence_engine import SpatialIntelligenceEngine
         spatial_positions = SpatialIntelligenceEngine.get_spatial_field_positions(session_id, lap_number)
-        
+
         car_states = []
         for p in spatial_positions:
             is_p = (p.driver_id == primary_driver)
             is_c = (p.driver_id == comparison_driver)
-            
+
             # Identify tyre compound from laps_df if possible
             compound = "UNKNOWN"
             tyre_age = 0
@@ -121,7 +121,7 @@ class ReplayCacheEngine:
                 if not drv_laps.empty:
                     compound = str(drv_laps['Compound'].iloc[0])
                     tyre_age = int(drv_laps['TyreLife'].iloc[0])
-            
+
             car_states.append(Car3DState(
                 driver_id=p.driver_id,
                 team_name="Red Bull Racing" if p.driver_id in ["VER", "PER"] else ("Mercedes" if p.driver_id in ["HAM", "RUS"] else "F1 Team"),
@@ -142,7 +142,7 @@ class ReplayCacheEngine:
                 is_primary=is_p,
                 is_comparison=is_c
             ))
-            
+
         return car_states
 
 
@@ -268,4 +268,3 @@ class ThreeDSceneGenerator:
         )
 
         return fig
-

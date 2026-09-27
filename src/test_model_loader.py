@@ -6,9 +6,9 @@ from model_loader import ModelLoader
 def test_all_models():
     loader = ModelLoader()
     print(f"Registry: {loader.registry}")
-    
+
     trained_models = loader.registry.get('trained_models', {})
-    
+
     for model_name, status in trained_models.items():
         if status == "ACTIVE":
             print(f"\n--- Testing ACTIVE model: {model_name} ---")
@@ -25,5 +25,3 @@ def test_all_models():
 
 if __name__ == '__main__':
     test_all_models()
-
-
