@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { usePitwall } from '../contexts/PitwallContext';
+import { Gauge, GitBranch, Disc, Info, Sparkles, AlertCircle } from 'lucide-react';
 import './JarvisPage.css';
 
 interface JarvisInsight {
@@ -25,13 +26,13 @@ export const JarvisPage: React.FC = () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(`http://localhost:8000/api/jarvis/insights?session_id=${session}&primary_driver=${primaryDriver}&ref_driver=${referenceDriver}`);
-        if (!response.ok) throw new Error('Failed to fetch insights');
+        const response = await fetch(`/api/jarvis/insights?session_id=${session}&primary_driver=${primaryDriver}&ref_driver=${referenceDriver}`);
+        if (!response.ok) throw new Error('Failed to fetch tactical insights');
         const data: JarvisResponse = await response.json();
         if (data.success) {
           setInsights(data.insights);
         } else {
-          setError('Failed to generate insights');
+          setError('Failed to generate insights for current telemetry frame');
         }
       } catch (err: any) {
         setError(err.message);
@@ -43,12 +44,12 @@ export const JarvisPage: React.FC = () => {
     fetchInsights();
   }, [session, primaryDriver, referenceDriver]);
 
-  const getIconForCategory = (cat: string) => {
+  const renderIconForCategory = (cat: string) => {
     switch (cat) {
-      case 'pace': return 'speed';
-      case 'strategy': return 'route';
-      case 'tyres': return 'radio_button_unchecked';
-      default: return 'info';
+      case 'pace': return <Gauge size={18} />;
+      case 'strategy': return <GitBranch size={18} />;
+      case 'tyres': return <Disc size={18} />;
+      default: return <Info size={18} />;
     }
   };
 
@@ -56,21 +57,38 @@ export const JarvisPage: React.FC = () => {
     <div className="jarvis-container">
       <header className="jarvis-header">
         <div className="title-section">
-          <h2><span className="material-icons">psychology</span> JARVIS Tactical Engine</h2>
+          <h2><Sparkles size={24} style={{ color: '#E10600', marginRight: '8px', verticalAlign: 'middle' }} /> JARVIS Tactical Engine</h2>
         </div>
-        <p className="subtitle">Automated strategy and performance insights.</p>
+        <p className="subtitle">Automated telemetry intelligence, delta calculations, and strategy advisories.</p>
       </header>
 
       <div className="jarvis-content">
-        {loading && <div className="jarvis-loading">Analyzing telemetry data...</div>}
-        {error && <div className="jarvis-error">{error}</div>}
+        {loading && (
+          <div className="insights-feed">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="insight-card" style={{ opacity: 0.7 }}>
+                <div className="skeleton" style={{ width: '38px', height: '38px', borderRadius: '6px' }}></div>
+                <div className="insight-body flex-1 flex-col gap-xs">
+                  <div className="skeleton" style={{ width: '80px', height: '12px', marginBottom: '4px' }}></div>
+                  <div className="skeleton" style={{ width: '100%', height: '16px' }}></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+        {error && (
+          <div className="jarvis-error">
+            <AlertCircle size={18} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+            {error}
+          </div>
+        )}
 
         {!loading && !error && insights.length > 0 && (
           <div className="insights-feed">
             {insights.map((insight, idx) => (
               <div key={idx} className={`insight-card ${insight.category}`}>
                 <div className="insight-icon">
-                  <span className="material-icons">{getIconForCategory(insight.category)}</span>
+                  {renderIconForCategory(insight.category)}
                 </div>
                 <div className="insight-body">
                   <span className="insight-category">{insight.category.toUpperCase()}</span>
@@ -82,9 +100,11 @@ export const JarvisPage: React.FC = () => {
         )}
 
         {!loading && !error && insights.length === 0 && (
-          <div className="jarvis-loading">No insights generated for this combination.</div>
+          <div className="jarvis-loading">No active tactical warnings for {primaryDriver} vs {referenceDriver}. Telemetry normal.</div>
         )}
       </div>
     </div>
   );
 };
+
+export default JarvisPage;

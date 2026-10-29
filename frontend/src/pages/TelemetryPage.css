@@ -1,67 +1,139 @@
+/* ==========================================================================
+   PITWALL F1 - TELEMETRY STACK STYLING
+   ========================================================================== */
+
 .telemetry-container {
-  padding: 1.5rem;
-  height: 100%;
   display: flex;
   flex-direction: column;
+  gap: 14px;
+  max-width: 1600px;
+  margin: 0 auto;
 }
 
+/* Header */
 .telemetry-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--bg-surface-1);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 12px 18px;
+  gap: 16px;
 }
 
-.telemetry-header h1 {
-  margin: 0;
-  font-size: 1.5rem;
-  color: var(--text-primary);
-  font-family: 'Share Tech Mono', monospace;
+.header-icon.text-cyan {
+  color: var(--f1-cyan);
 }
 
 .header-stats {
   display: flex;
-  gap: 1rem;
+  gap: 10px;
 }
 
 .stat-pill {
-  background-color: var(--bg-card);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 14px;
-  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border-default);
+  padding: 4px 10px;
+  border-radius: var(--radius-xs);
+  font-family: var(--font-mono);
+  font-size: 11px;
 }
 
+.pill-label {
+  color: var(--text-muted);
+  font-weight: 700;
+  font-size: 9px;
+  letter-spacing: 0.6px;
+}
+
+.pill-val {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.pill-val.faster {
+  color: var(--f1-green);
+}
+
+.pill-val.slower {
+  color: var(--f1-red);
+}
+
+/* Charts Wrapper */
 .charts-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  flex: 1;
-  min-height: 0;
+  gap: 12px;
 }
 
 .chart-panel {
-  background-color: var(--bg-card);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 6px;
-  padding: 1rem;
+  background: var(--bg-surface-1);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 12px 16px 8px 16px;
   display: flex;
   flex-direction: column;
-  flex: 1;
-  min-height: 200px;
+  height: 230px;
+  min-height: 230px;
+  transition: border-color 0.15s ease;
+}
+
+.chart-panel:hover {
+  border-color: var(--border-highlight);
 }
 
 .chart-title {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
   color: var(--text-secondary);
-  margin-bottom: 0.5rem;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.8px;
+  margin-bottom: 6px;
+}
+
+.chart-legend-tag {
+  color: var(--f1-cyan);
+  font-size: 10px;
+}
+
+.driver-legend-pills {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legend-pill {
+  font-size: 9px;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: var(--radius-xs);
+  letter-spacing: 0.5px;
+}
+
+.legend-pill.primary {
+  background: var(--f1-cyan-dim);
+  color: var(--f1-cyan);
+  border: 1px solid rgba(0, 245, 212, 0.35);
+}
+
+.legend-pill.reference {
+  background: var(--f1-gold-dim);
+  color: var(--f1-gold);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+}
+
+.legend-pill.brake {
+  background: var(--f1-red-dim);
+  color: var(--f1-red);
+  border: 1px solid rgba(225, 6, 0, 0.4);
 }
 
 .chart-container {
@@ -70,28 +142,38 @@
   position: relative;
 }
 
-.telemetry-loading {
+/* Loading & Error */
+.telemetry-loading, .telemetry-error {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100%;
-  color: var(--accent-blue);
-  font-family: 'Share Tech Mono', monospace;
-  gap: 1rem;
-}
-
-.telemetry-error {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  color: var(--error);
+  min-height: 400px;
   text-align: center;
-  gap: 1rem;
+  gap: 12px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-secondary);
 }
 
 .telemetry-error .error-icon {
-  color: var(--error);
+  color: var(--f1-red);
+}
+
+.btn-retry {
+  background: var(--bg-surface-2);
+  color: var(--f1-cyan);
+  border: 1px solid rgba(0, 245, 212, 0.3);
+  padding: 6px 14px;
+  border-radius: var(--radius-xs);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.btn-retry:hover {
+  background: var(--f1-cyan-dim);
+  border-color: var(--f1-cyan);
 }

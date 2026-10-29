@@ -13,15 +13,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy source code
+# Copy source code and platform assets
 COPY src/ ./src/
 COPY models/ ./models/
 COPY data/ ./data/
 COPY track_cache/ ./track_cache/
+COPY frontend/dist/ ./frontend/dist/
+COPY run_app.py ./run_app.py
 COPY .env.example .env
 
-# Expose port for Streamlit UI (8501)
-EXPOSE 8501
+# Expose port for unified FastAPI + SPA (8000)
+EXPOSE 8000
 
 # Create non-root user for security
 RUN useradd -m appuser && chown -R appuser:appuser /app
@@ -29,7 +31,7 @@ USER appuser
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:8501/_stcore/health || exit 1
+  CMD curl -f http://localhost:8000/api/health || exit 1
 
-# Default command launches Streamlit
-CMD ["streamlit", "run", "src/app.py", "--server.port", "8501", "--server.address", "0.0.0.0"]
+# Default command launches unified production server
+CMD ["python", "run_app.py", "--prod", "--host", "0.0.0.0", "--port", "8000"]

@@ -1,55 +1,142 @@
+/* ==========================================================================
+   PITWALL F1 - TYRE DEGRADATION INTELLIGENCE STYLING
+   ========================================================================== */
+
 .tyres-container {
-  padding: 1.5rem;
-  height: 100%;
   display: flex;
   flex-direction: column;
+  gap: 16px;
+  max-width: 1600px;
+  margin: 0 auto;
 }
 
+/* Header */
 .tyres-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--bg-surface-1);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  gap: 16px;
 }
 
-.tyres-header h1 {
-  margin: 0;
-  font-size: 1.5rem;
-  color: var(--text-primary);
-  font-family: 'Share Tech Mono', monospace;
+.stat-pill.primary {
+  border-color: rgba(0, 245, 212, 0.3);
 }
 
-.tyres-loading {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  color: var(--accent-blue);
-  font-family: 'Share Tech Mono', monospace;
-  gap: 1rem;
+.stat-pill.primary .pill-val {
+  color: var(--f1-cyan);
 }
 
-.tyres-error {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  color: var(--error);
-  text-align: center;
-  gap: 1rem;
+.stat-pill.comparison {
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+.stat-pill.comparison .pill-val {
+  color: var(--f1-gold);
+}
+
+/* Charts Grid */
+.tyre-charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
 }
 
 .chart-panel {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: 480px;
+  min-height: 480px;
+}
+
+.chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: 10px;
+}
+
+.driver-stint-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.driver-tag {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: var(--radius-xs);
+}
+
+.driver-tag.primary {
+  background: var(--f1-cyan-dim);
+  color: var(--f1-cyan);
+  border: 1px solid rgba(0, 245, 212, 0.4);
+}
+
+.driver-tag.reference {
+  background: var(--f1-gold-dim);
+  color: var(--f1-gold);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+}
+
+.compound-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: var(--radius-xs);
+  border: 1px solid;
+  letter-spacing: 0.5px;
+}
+
+.stint-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+.slope-tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-secondary);
 }
 
 .chart-container {
   flex: 1;
   min-height: 0;
+  position: relative;
+}
+
+/* Loading & Error */
+.tyres-loading, .tyres-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+  gap: 12px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.tyres-error .error-icon {
+  color: var(--f1-red);
+}
+
+@media (max-width: 1100px) {
+  .tyre-charts-grid {
+    grid-template-columns: 1fr;
+  }
 }

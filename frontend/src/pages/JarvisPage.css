@@ -1,121 +1,140 @@
+/* ==========================================================================
+   PITWALL F1 - JARVIS TACTICAL ENGINE STYLING
+   ========================================================================== */
+
 .jarvis-container {
-  padding: var(--spacing-lg);
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-lg);
-  height: 100%;
+  gap: 16px;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
+/* Header */
 .jarvis-header {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-xs);
+  gap: 4px;
+  background: var(--bg-surface-1);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
 }
 
 .title-section h2 {
   margin: 0;
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
   color: var(--text-primary);
-  font-size: 1.5rem;
-}
-
-.title-section h2 .material-icons {
-  color: var(--accent);
+  font-size: 16px;
+  font-weight: 700;
 }
 
 .subtitle {
-  color: var(--text-secondary);
+  color: var(--text-muted);
   margin: 0;
-  font-size: 0.9rem;
+  font-size: 12px;
 }
 
 .jarvis-content {
-  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-md);
+  gap: 12px;
 }
 
 .insights-feed {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-md);
-  max-width: 800px;
+  gap: 12px;
+  max-width: 900px;
 }
 
 .insight-card {
   display: flex;
-  gap: var(--spacing-md);
-  background: var(--surface);
-  border: 1px solid var(--surface-light);
-  padding: var(--spacing-md);
-  border-radius: 8px;
+  gap: 14px;
+  background: var(--bg-surface-1);
+  border: 1px solid var(--border-default);
+  padding: 16px;
+  border-radius: var(--radius-md);
   align-items: flex-start;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .insight-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  border-color: var(--border-highlight);
+  background: var(--bg-surface-2);
+  box-shadow: var(--shadow-sm);
 }
 
 .insight-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--surface-light);
+  background: var(--bg-surface-2);
   color: var(--text-secondary);
   flex-shrink: 0;
+  border: 1px solid var(--border-subtle);
 }
 
 .insight-card.pace .insight-icon {
-  background: rgba(39, 244, 210, 0.1);
-  color: var(--accent);
+  background: var(--f1-cyan-dim);
+  color: var(--f1-cyan);
+  border-color: rgba(0, 245, 212, 0.3);
 }
 
 .insight-card.strategy .insight-icon {
-  background: rgba(255, 128, 0, 0.1);
-  color: #ff8000;
+  background: var(--f1-gold-dim);
+  color: var(--f1-gold);
+  border-color: rgba(245, 158, 11, 0.3);
 }
 
 .insight-card.tyres .insight-icon {
-  background: rgba(220, 53, 69, 0.1);
-  color: #dc3545;
+  background: var(--f1-red-dim);
+  color: var(--f1-red);
+  border-color: rgba(225, 6, 0, 0.3);
 }
 
 .insight-body {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-xs);
+  gap: 4px;
 }
 
 .insight-category {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-  letter-spacing: 0.05em;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  color: var(--text-muted);
 }
 
 .insight-body p {
   margin: 0;
-  font-size: 1rem;
-  line-height: 1.5;
+  font-size: 13px;
   color: var(--text-primary);
+  line-height: 1.5;
 }
 
+/* Loading & Error */
 .jarvis-loading, .jarvis-error {
-  padding: var(--spacing-xl);
-  text-align: center;
-  background: var(--surface);
-  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  border-radius: var(--radius-md);
+  background: var(--bg-surface-1);
+  border: 1px solid var(--border-default);
+  font-family: var(--font-mono);
+  font-size: 12px;
   color: var(--text-secondary);
 }
 
 .jarvis-error {
-  color: var(--error);
+  border-color: rgba(225, 6, 0, 0.4);
+  color: var(--f1-red);
+  background: var(--f1-red-dim);
 }

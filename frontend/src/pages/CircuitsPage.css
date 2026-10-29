@@ -1,76 +1,311 @@
+/* ==========================================================================
+   PITWALL F1 - CHAMPIONSHIP CALENDAR STYLING
+   ========================================================================== */
+
 .circuits-container {
-  padding: var(--spacing-lg);
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-lg);
+  gap: 16px;
+  max-width: 1600px;
+  margin: 0 auto;
 }
 
-.circuits-header h2 {
-  margin: 0;
+/* Header */
+.circuits-header {
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
+  justify-content: space-between;
+  background: var(--bg-surface-1);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.circuits-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Search Box */
+.circuits-header .search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-surface-0);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-xs);
+  padding: 6px 12px;
+  width: 260px;
+  transition: all 0.15s ease;
+}
+
+.circuits-header .search-box:focus-within {
+  border-color: var(--f1-cyan);
+  box-shadow: 0 0 10px rgba(0, 245, 212, 0.15);
+  background: var(--bg-surface-2);
+}
+
+.circuits-header .search-icon {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.circuits-header .search-input {
+  background: transparent;
+  border: none;
+  outline: none;
   color: var(--text-primary);
-  font-size: 1.5rem;
+  font-size: 12px;
+  width: 100%;
+  padding: 0;
 }
 
-.circuits-header h2 .material-icons {
-  color: var(--accent);
+.circuits-header .search-input::placeholder {
+  color: var(--text-muted);
 }
 
+.season-filter-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.8px;
+}
+
+.season-select {
+  background: var(--bg-surface-0);
+  border: 1px solid var(--border-default);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: var(--radius-xs);
+  outline: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.season-select:hover, .season-select:focus {
+  border-color: var(--f1-cyan);
+  background: var(--bg-surface-2);
+}
+
+/* Calendar Grid - Responsive multi-column */
 .circuits-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: var(--spacing-md);
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
 }
 
+/* Circuit Card */
 .circuit-card {
-  background: var(--surface);
-  border: 1px solid var(--surface-light);
-  border-radius: 8px;
-  padding: var(--spacing-md);
+  position: relative;
+  background: var(--bg-surface-1);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-sm);
-  transition: transform 0.2s;
+  gap: 12px;
+  overflow: hidden;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .circuit-card:hover {
   transform: translateY(-2px);
-  border-color: var(--accent);
+  border-color: var(--border-highlight);
+  background: var(--bg-surface-2);
+  box-shadow: var(--shadow-md);
 }
 
-.circuit-round {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--accent);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+.circuit-card.active-event {
+  border-color: var(--f1-cyan);
+  background: linear-gradient(180deg, rgba(0, 245, 212, 0.08) 0%, var(--bg-surface-1) 100%);
+  box-shadow: 0 0 16px rgba(0, 245, 212, 0.15);
 }
 
-.circuit-name {
-  font-size: 1.2rem;
-  font-weight: bold;
+/* Watermark */
+.round-watermark {
+  position: absolute;
+  right: 12px;
+  bottom: 50px;
+  font-family: var(--font-mono);
+  font-size: 56px;
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.03);
+  pointer-events: none;
+  user-select: none;
+  line-height: 1;
 }
 
-.circuit-details, .circuit-date {
+/* Card Top Badges */
+.card-top {
   display: flex;
   align-items: center;
-  gap: var(--spacing-xs);
-  color: var(--text-secondary);
-  font-size: 0.9rem;
+  gap: 8px;
+  z-index: 1;
 }
 
-.circuit-details .material-icons, .circuit-date .material-icons {
-  font-size: 1rem;
+.round-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--f1-red);
+  background: var(--f1-red-dim);
+  border: 1px solid rgba(225, 6, 0, 0.3);
+  padding: 2px 7px;
+  border-radius: var(--radius-xs);
+  letter-spacing: 0.8px;
 }
 
 .sprint-badge {
-  background: rgba(255, 128, 0, 0.2);
-  color: #ff8000;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 0.8rem;
-  align-self: flex-start;
-  margin-top: var(--spacing-sm);
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 800;
+  color: var(--f1-purple);
+  background: var(--f1-purple-dim);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  padding: 2px 6px;
+  border-radius: var(--radius-xs);
+  letter-spacing: 0.5px;
+}
+
+.active-uplink-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 800;
+  color: var(--f1-cyan);
+  background: var(--f1-cyan-dim);
+  border: 1px solid rgba(0, 245, 212, 0.4);
+  padding: 2px 6px;
+  border-radius: var(--radius-xs);
+  letter-spacing: 0.5px;
+  margin-left: auto;
+}
+
+.event-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.3;
+  z-index: 1;
+}
+
+.event-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 1;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.meta-icon {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+/* Card Footer */
+.card-footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-subtle);
+  z-index: 2;
+}
+
+.session-type-select {
+  flex: 1;
+  background: var(--bg-surface-0);
+  border: 1px solid var(--border-default);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 6px 8px;
+  border-radius: var(--radius-xs);
+  outline: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.session-type-select:hover, .session-type-select:focus {
+  border-color: var(--border-highlight);
+  background: var(--bg-surface-2);
+}
+
+.btn-load-session {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-surface-2);
+  color: var(--f1-cyan);
+  border: 1px solid rgba(0, 245, 212, 0.3);
+  padding: 6px 12px;
+  border-radius: var(--radius-xs);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+}
+
+.btn-load-session:hover:not(:disabled) {
+  background: var(--f1-cyan-dim);
+  border-color: var(--f1-cyan);
+  box-shadow: 0 0 10px rgba(0, 245, 212, 0.25);
+}
+
+.btn-load-session:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Skeleton */
+.circuit-card-skeleton {
+  background: var(--bg-surface-1);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 180px;
+}
+
+/* Empty State */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: var(--text-muted);
+  gap: 12px;
+  text-align: center;
 }

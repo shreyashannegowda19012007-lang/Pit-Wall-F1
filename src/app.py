@@ -105,13 +105,19 @@ def _main_execution_loop():
         else:
             stop_live_worker()
 
+        current_session_key = f"{app_mode}_{selected_year}_{selected_gp}_{selected_session}"
         if trigger_fetch:
             # Clear caches and reset session state for new session
             st.cache_data.clear()
             st.session_state['sync_active'] = True
+            st.session_state['active_session_key'] = current_session_key
             st.session_state['primary_drv'] = None
             st.session_state['comp_drv'] = None
             st.session_state['current_lap'] = 1
+        elif st.session_state.get('active_session_key') and st.session_state.get('active_session_key') != current_session_key:
+            st.session_state['sync_active'] = False
+            st.session_state['primary_drv'] = None
+            st.session_state['comp_drv'] = None
 
     main_viewport = st.empty()
     if not st.session_state.get('sync_active', False):
@@ -121,15 +127,33 @@ def _main_execution_loop():
 
     main_viewport.empty()
 
-    # --- FETCH DATA ---
-    with st.spinner("Preparing session... (Downloading, Parsing, Validating, Processing, Caching)"):
+    # --- FETCH DATA WITH STAGED STATUS INDICATOR ---
+    status_placeholder = st.empty()
+    with status_placeholder.status("INITIALIZING PIT-WALL TELEMETRY UPLINK...", expanded=True) as status_box:
+        st.write(f"📡 Resolving session identity: {selected_gp} ({selected_year}) - {selected_session}...")
+        st.write("🔍 Initializing data pipeline and checking local telemetry cache...")
         if is_live:
+            st.write("🌐 Connecting to live telemetry ingestion channel...")
             data_bundle = data_ingestion.fetch_live_session_data(selected_year, selected_gp, selected_session)
         else:
+            st.write("⚡ Fetching timing matrices, telemetry traces & weather feeds...")
             data_bundle = data_ingestion.fetch_session_data(selected_year, selected_gp, selected_session)
 
+        if data_bundle.get("success", False):
+            st.write("✅ Validating telemetry integrity, driver records, and timing...")
+            status_box.update(label="UPLINK SYNCHRONIZED", state="complete", expanded=False)
+        else:
+            status_box.update(label="UPLINK NOTICE", state="error", expanded=True)
+    status_placeholder.empty()
+
     if not data_bundle.get("success", False):
-        st.error(f"UPLINK FAILURE: {data_bundle.get('error', 'Unknown Error')}")
+        err_msg = data_bundle.get('error', 'Unknown Error')
+        if is_live:
+            st.error(f"LIVE TELEMETRY UPLINK NOTICE: {err_msg}")
+            st.info("💡 **Pitwall Guidance**: If no live official session is currently taking place on track, select **REPLAY** or **POST-RACE** mode from the sidebar to inspect full historical telemetry, laps, and tyres.")
+        else:
+            st.error(f"UPLINK NOTICE: {err_msg}")
+            st.info("💡 **Pitwall Guidance**: Select another completed Grand Prix session (such as **2024 Bahrain Grand Prix - RACE** or **Spanish Grand Prix - QUALIFYING**).")
         return
 
     raw_session = data_bundle["raw_session"]
@@ -142,8 +166,12 @@ def _main_execution_loop():
 
     # 1. Driver Selection in Sidebar (Resolved before header to guarantee valid CAR #)
     drivers_list = results['Abbreviation'].tolist() if 'Abbreviation' in results.columns else []
+    if not drivers_list and 'Driver' in laps.columns:
+        drivers_list = [str(d) for d in laps['Driver'].dropna().unique().tolist() if str(d).strip()]
+    if not drivers_list and 'DriverNumber' in laps.columns:
+        drivers_list = [str(d) for d in laps['DriverNumber'].dropna().unique().tolist() if str(d).strip()]
     if not drivers_list:
-        st.warning("No drivers found in session.")
+        st.warning("No driver records found in loaded session data.")
         return
 
     with st.sidebar:

@@ -58,12 +58,20 @@ class TelemetryAnalysisService:
                 return pd.DataFrame(), {"error": "Telemetry trace is empty."}
 
             lap_time_s = lap['LapTime'].total_seconds() if pd.notna(lap.get('LapTime')) else 0.0
+            
+            s1_s = lap['Sector1Time'].total_seconds() if pd.notna(lap.get('Sector1Time')) and hasattr(lap.get('Sector1Time'), 'total_seconds') else None
+            s2_s = lap['Sector2Time'].total_seconds() if pd.notna(lap.get('Sector2Time')) and hasattr(lap.get('Sector2Time'), 'total_seconds') else None
+            s3_s = lap['Sector3Time'].total_seconds() if pd.notna(lap.get('Sector3Time')) and hasattr(lap.get('Sector3Time'), 'total_seconds') else None
+
             meta = {
                 "driver": driver_code,
                 "lap_number": int(lap.get('LapNumber', 0)),
                 "lap_time_s": lap_time_s,
                 "compound": str(lap.get('Compound', 'UNKNOWN')),
-                "tyre_age": int(lap.get('TyreLife', 0)) if pd.notna(lap.get('TyreLife')) else 0
+                "tyre_age": int(lap.get('TyreLife', 0)) if pd.notna(lap.get('TyreLife')) else 0,
+                "sector1_s": s1_s,
+                "sector2_s": s2_s,
+                "sector3_s": s3_s
             }
             return raw_tel, meta
 
@@ -135,9 +143,20 @@ class TelemetryAnalysisService:
                 return 0.0
             return float(sub['DeltaTime'].iloc[-1] - sub['DeltaTime'].iloc[0])
 
-        s1_loss = get_segment_time_loss(0.0, s1_end)
-        s2_loss = get_segment_time_loss(s1_end, s2_end)
-        s3_loss = get_segment_time_loss(s2_end, track_len)
+        if meta_a.get("sector1_s") is not None and meta_b.get("sector1_s") is not None:
+            s1_loss = meta_a["sector1_s"] - meta_b["sector1_s"]
+        else:
+            s1_loss = get_segment_time_loss(0.0, s1_end)
+
+        if meta_a.get("sector2_s") is not None and meta_b.get("sector2_s") is not None:
+            s2_loss = meta_a["sector2_s"] - meta_b["sector2_s"]
+        else:
+            s2_loss = get_segment_time_loss(s1_end, s2_end)
+
+        if meta_a.get("sector3_s") is not None and meta_b.get("sector3_s") is not None:
+            s3_loss = meta_a["sector3_s"] - meta_b["sector3_s"]
+        else:
+            s3_loss = get_segment_time_loss(s2_end, track_len)
 
         # 7. Sort Top Opportunities by Time Loss (where target_driver loses most time)
         opportunities = [c for c in corner_analyses if c.time_loss_seconds > 0.01]

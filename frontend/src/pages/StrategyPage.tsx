@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { usePitwall } from '../contexts/PitwallContext';
-import { Target, GitMerge, AlertTriangle, ChevronRight } from 'lucide-react';
+import { Target, GitMerge, AlertTriangle, RefreshCw, Radio, Download, Settings, Sparkles } from 'lucide-react';
+import { PageHeader } from '../components/PageHeader';
 import './StrategyPage.css';
 
 export default function StrategyPage() {
@@ -13,7 +14,7 @@ export default function StrategyPage() {
     let mounted = true;
     setLoading(true);
 
-    fetch(`http://localhost:8000/api/strategy/simulation?session_id=${session}&primary_driver=${primaryDriver}&ref_driver=${referenceDriver}`)
+    fetch(`/api/strategy/simulation?session_id=${session}&primary_driver=${primaryDriver}&ref_driver=${referenceDriver}`)
       .then(r => r.json())
       .then(res => {
         if (!mounted) return;
@@ -38,9 +39,43 @@ export default function StrategyPage() {
 
   if (loading && !data) {
     return (
-      <div className="strategy-loading">
-        <div className="spinner"></div>
-        <p>Running 10,000 Monte Carlo Simulations...</p>
+      <div className="strategy-container">
+        <header className="strategy-header">
+          <div className="header-titles">
+            <div className="title-row">
+              <GitMerge size={20} className="header-icon text-cyan" />
+              <h2>Stint & Undercut Strategy Optimizer</h2>
+              <span className="session-tag">{session}</span>
+            </div>
+            <p className="subtitle">
+              Evaluating pit-stop delta windows and tire warm-up models for {primaryDriver} vs {referenceDriver}...
+            </p>
+          </div>
+          <div className="badge badge-cyan">
+            <RefreshCw size={11} className="spin" />
+            <span>CALCULATING DELTA WINDOWS</span>
+          </div>
+        </header>
+
+        <div className="strat-panels-grid">
+          <div className="card-engineering strat-card" style={{ height: '220px' }}>
+            <div className="skeleton" style={{ width: '220px', height: '16px', marginBottom: '16px' }}></div>
+            <div className="skeleton" style={{ width: '80px', height: '36px', marginBottom: '14px' }}></div>
+            <div className="skeleton" style={{ width: '100%', height: '8px', marginBottom: '16px' }}></div>
+            <div className="skeleton" style={{ width: '100%', height: '30px' }}></div>
+          </div>
+          <div className="card-engineering strat-card" style={{ height: '220px' }}>
+            <div className="skeleton" style={{ width: '220px', height: '16px', marginBottom: '16px' }}></div>
+            <div className="skeleton" style={{ width: '80px', height: '36px', marginBottom: '14px' }}></div>
+            <div className="skeleton" style={{ width: '100%', height: '8px', marginBottom: '16px' }}></div>
+            <div className="skeleton" style={{ width: '100%', height: '30px' }}></div>
+          </div>
+        </div>
+
+        <div className="card-engineering directive-card directive-box" style={{ height: '120px', marginTop: '16px' }}>
+          <div className="skeleton" style={{ width: '240px', height: '16px', marginBottom: '12px' }}></div>
+          <div className="skeleton" style={{ width: '100%', height: '40px' }}></div>
+        </div>
       </div>
     );
   }
@@ -48,96 +83,146 @@ export default function StrategyPage() {
   if (error) {
     return (
       <div className="strategy-error">
-        <Target size={48} className="error-icon" />
+        <Target size={44} className="error-icon" />
         <h2>Strategy Simulation Failed</h2>
         <p>{error}</p>
-        <button className="btn btn-primary" onClick={() => window.location.reload()}>Retry Connection</button>
+        <button className="btn-retry" onClick={() => window.location.reload()}>Retry Connection</button>
       </div>
     );
   }
 
   if (!data) return null;
 
-  const sim = data.synthetic_scenario; // we reused the synthetic key, but it's now real data!
-  const undercutProb = data.undercut_success_probability * 100;
-  const overcutProb = data.overcut_success_probability * 100;
+  const sim = data.synthetic_scenario || {};
+  const undercutProb = Number(data.undercut_success_probability || 0) * 100;
+  const overcutProb = Number(data.overcut_success_probability || 0) * 100;
+  const isUndercutFavorable = undercutProb > overcutProb;
 
   return (
     <div className="strategy-container">
-      <header className="strategy-header">
-        <h1 className="flex items-center gap-sm">
-          <GitMerge size={24} style={{ color: 'var(--accent-blue)' }} />
-          Monte Carlo Strategy Simulation
-        </h1>
-        <div className="header-stats flex gap-md">
+      <PageHeader
+        hub="Strategy"
+        title="Strategy Optimizer & Undercut Planner"
+        subtitle="1-stop vs 2-stop stint evaluation, pit loss windows, undercut calculations, and tyre crossover."
+        badge={`${primaryDriver} vs ${referenceDriver}`}
+        badgeType="prob"
+        crossLinks={[
+          { label: 'Monte Carlo Simulator', path: '/app/monte-carlo', icon: Radio },
+          { label: 'Tyre Degradation', path: '/app/tyres', icon: Settings },
+          { label: 'Ask JARVIS', path: '/app/jarvis', icon: Sparkles }
+        ]}
+      />
+
+      {/* Header */}
+      <header className="strategy-header" style={{ marginBottom: '16px' }}>
+
+        <div className="header-stats">
           <div className="stat-pill">
-            Live Track Gap: <span style={{ color: 'var(--error)' }}>{sim.current_gap_s}s</span>
+            <span className="pill-label">LIVE TRACK GAP:</span>
+            <span className="pill-val text-red">{sim.current_gap_s || '0.00'}s</span>
           </div>
+          <div className="stat-pill">
+            <span className="pill-label">HEAD-TO-HEAD:</span>
+            <span className="pill-val">{primaryDriver} vs {referenceDriver}</span>
+          </div>
+          <a
+            href={`/api/reports/strategy/export?session_id=${session}&primary_driver=${primaryDriver}&ref_driver=${referenceDriver}`}
+            download={`strategy_brief_${session}_${primaryDriver}_vs_${referenceDriver}.json`}
+            className="stat-pill"
+            style={{ textDecoration: 'none', cursor: 'pointer', background: 'rgba(0, 240, 255, 0.1)', border: '1px solid rgba(0, 240, 255, 0.3)' }}
+            title="Download strategic engineering advisory JSON"
+          >
+            <Download size={13} className="text-cyan" style={{ marginRight: '6px' }} />
+            <span className="pill-val text-cyan">EXPORT BRIEF</span>
+          </a>
         </div>
       </header>
 
-      <div className="grid grid-cols-2 gap-lg">
-        {/* Undercut Panel */}
-        <div className="card">
-          <h3 className="flex items-center justify-between" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.5rem', marginBottom: '1rem', color: 'var(--text-primary)' }}>
-            <span>Undercut Threat ({primaryDriver} pits first)</span>
-            {undercutProb > 50 && <AlertTriangle size={18} style={{ color: 'var(--error)' }} />}
-          </h3>
+      {/* Undercut vs Overcut Probability Panels */}
+      <div className="strat-panels-grid">
+        {/* Undercut Card */}
+        <div className="card-engineering strat-card">
+          <div className="strat-card-header">
+            <h3>Undercut Viability ({primaryDriver} Pits First)</h3>
+            {undercutProb > 50 && <AlertTriangle size={16} className="text-gold" />}
+          </div>
+
           <div className="prob-display">
-            <div className="prob-label">Success Probability</div>
-            <div className="prob-value" style={{ color: undercutProb > 50 ? 'var(--accent-green)' : 'var(--error)' }}>
+            <span className="prob-label">Success Probability</span>
+            <span className={`prob-value ${undercutProb > 50 ? 'favorable' : 'unfavorable'}`}>
               {undercutProb.toFixed(1)}%
+            </span>
+          </div>
+
+          <div className="progress-bar-wrap">
+            <div
+              className={`progress-fill ${undercutProb > 50 ? 'green' : 'red'}`}
+              style={{ width: `${Math.min(undercutProb, 100)}%` }}
+            ></div>
+          </div>
+
+          <div className="strat-metrics">
+            <div className="metric-row">
+              <span className="row-label">Expected Time Gain / Lap</span>
+              <span className="row-val">+{Number(data.expected_undercut_time_gain_s || 0).toFixed(2)}s</span>
             </div>
-          </div>
-          <div className="progress-bar">
-            <div className="progress-fill" style={{ width: `${undercutProb}%`, backgroundColor: undercutProb > 50 ? 'var(--accent-green)' : 'var(--error)' }}></div>
-          </div>
-          <div className="strat-details mt-md">
-            <div className="strat-row">
-              <span className="strat-key">Expected Time Gain</span>
-              <span className="strat-val">{data.expected_undercut_time_gain_s.toFixed(2)}s</span>
+            <div className="metric-row">
+              <span className="row-label">Delta Target</span>
+              <span className="row-val">{Number(data.expected_undercut_time_gain_s || 0) > 1.2 ? 'Critical Opportunity' : 'Marginal Gain'}</span>
             </div>
           </div>
         </div>
 
-        {/* Overcut Panel */}
-        <div className="card">
-          <h3 className="flex items-center justify-between" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.5rem', marginBottom: '1rem', color: 'var(--text-primary)' }}>
-            <span>Overcut Viability ({primaryDriver} stays out)</span>
-          </h3>
+        {/* Overcut Card */}
+        <div className="card-engineering strat-card">
+          <div className="strat-card-header">
+            <h3>Overcut Viability ({primaryDriver} Extends Stint)</h3>
+          </div>
+
           <div className="prob-display">
-            <div className="prob-label">Success Probability</div>
-            <div className="prob-value" style={{ color: overcutProb > 50 ? 'var(--accent-green)' : 'var(--error)' }}>
+            <span className="prob-label">Success Probability</span>
+            <span className={`prob-value ${overcutProb > 50 ? 'favorable' : 'unfavorable'}`}>
               {overcutProb.toFixed(1)}%
+            </span>
+          </div>
+
+          <div className="progress-bar-wrap">
+            <div
+              className={`progress-fill ${overcutProb > 50 ? 'green' : 'red'}`}
+              style={{ width: `${Math.min(overcutProb, 100)}%` }}
+            ></div>
+          </div>
+
+          <div className="strat-metrics">
+            <div className="metric-row">
+              <span className="row-label">Expected Overcut Gain</span>
+              <span className="row-val">+{Number(data.expected_overcut_time_gain_s || 0).toFixed(2)}s</span>
             </div>
-          </div>
-          <div className="progress-bar">
-            <div className="progress-fill" style={{ width: `${overcutProb}%`, backgroundColor: overcutProb > 50 ? 'var(--accent-green)' : 'var(--error)' }}></div>
-          </div>
-          <div className="strat-details mt-md">
-            <div className="strat-row">
-              <span className="strat-key">Expected Time Gain</span>
-              <span className="strat-val">{data.expected_overcut_time_gain_s.toFixed(2)}s</span>
+            <div className="metric-row">
+              <span className="row-label">Delta Target</span>
+              <span className="row-val">{Number(data.expected_overcut_time_gain_s || 0) > 1.0 ? 'High Out-lap Value' : 'Standard Deg'}</span>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="card mt-lg">
-        <h3 style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.5rem', marginBottom: '1rem', color: 'var(--text-primary)' }}>
-          Tactical Directive
-        </h3>
-        <div className="directive-box flex items-start gap-md">
-          <ChevronRight size={24} style={{ color: 'var(--accent-blue)', marginTop: '2px' }} />
-          <div>
-            <h4 style={{ margin: '0 0 0.5rem 0', color: 'var(--text-primary)' }}>
-              {undercutProb > overcutProb ? `Prioritize Undercut` : `Extend Stint (Overcut Potential)`}
-            </h4>
-            <p style={{ margin: 0, color: 'var(--text-secondary)', lineHeight: '1.5' }}>
-              Based on 10,000 Monte Carlo simulations utilizing real FastF1 track gaps ({sim.current_gap_s}s),
-              the optimal strategy against {referenceDriver} is to {undercutProb > overcutProb ? 'box immediately to leverage fresh rubber pace advantage.' : 'maintain track position. The tyre delta is not sufficient to overcome the pit loss.'}
-            </p>
+      {/* Tactical Engineering Directive Box */}
+      <div className="card-engineering directive-card directive-box">
+        <div className="directive-header">
+          <Radio size={16} className="text-cyan" />
+          <h3>Tactical Race Engineer Advisory</h3>
+        </div>
+
+        <div className="directive-body">
+          <div className="directive-action-tag">
+            RECOMMENDATION: {isUndercutFavorable ? `TRIGGER UNDERCUT WINDOW` : `EXTEND STINT FOR OVERCUT`}
           </div>
+          <p className="directive-narrative">
+            Based on stochastic track gap evaluation ({sim.current_gap_s || '0.00'}s) and fuel-corrected tyre life curves,
+            {isUndercutFavorable
+              ? ` box ${primaryDriver} to undercut ${referenceDriver}. The fresh tire delta yields an estimated net gain of +${Number(data.expected_undercut_time_gain_s || 0).toFixed(2)}s over the reference car out-lap.`
+              : ` preserve tire temperature and extend current stint. The undercut delta is insufficient to overcome pit loss penalty.`}
+          </p>
         </div>
       </div>
     </div>

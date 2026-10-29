@@ -36,7 +36,7 @@ class UniversalSessionEngine:
     Generic Data Discovery Engine for Seasons, Rounds, and Sessions.
     """
 
-    SUPPORTED_SEASONS = [2021, 2022, 2023, 2024, 2025, 2026]
+    SUPPORTED_SEASONS = [2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026]
 
     @classmethod
     def get_available_seasons(cls) -> List[int]:
@@ -90,7 +90,41 @@ class UniversalSessionEngine:
 
             return rounds
         except Exception as e:
-            logger.error(f"FastF1 schedule lookup failed for season {season}: {str(e)}")
+            logger.warning(f"FastF1 schedule lookup failed for season {season}: {str(e)}. Attempting Jolpica fallback.")
+            try:
+                try:
+                    from jolpica_client import JolpicaF1Client
+                except ImportError:
+                    from src.jolpica_client import JolpicaF1Client
+                jclient = JolpicaF1Client()
+                races = jclient.get_race_schedule(season)
+                if races:
+                    rounds = []
+                    for r in races:
+                        round_num = int(r.get('round', 1))
+                        event_name = r.get('raceName', f'Round {round_num}')
+                        country = r.get('Circuit', {}).get('Location', {}).get('country', 'Global')
+                        location = r.get('Circuit', {}).get('Location', {}).get('locality', event_name)
+                        circuit = r.get('Circuit', {}).get('circuitName', event_name)
+                        event_date = r.get('date', f'{season}-01-01')
+                        sessions = ["FP1", "FP2", "FP3", "QUALIFYING", "RACE"]
+                        if 'Sprint' in r:
+                            sessions = ["FP1", "SPRINT_QUALIFYING", "SPRINT", "QUALIFYING", "RACE"]
+                        rounds.append(EventSessionInfo(
+                            season=season,
+                            round_number=round_num,
+                            event_name=event_name,
+                            official_name=event_name,
+                            country=country,
+                            location=location,
+                            circuit_name=circuit,
+                            event_date=event_date,
+                            available_sessions=sessions,
+                            cache_status="NOT_PREPARED"
+                        ))
+                    return rounds
+            except Exception as je:
+                logger.error(f"Jolpica schedule fallback also failed: {je}")
             raise e
 
 

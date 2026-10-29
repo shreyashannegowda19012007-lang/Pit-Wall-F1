@@ -64,7 +64,11 @@ def on_connect(client, userdata, flags, rc, properties=None):
             filepath = userdata.get("filepath", config.LIVE_STREAM_TXT) if isinstance(userdata, dict) else config.LIVE_STREAM_TXT
             err_path = filepath + ".err"
             with open(err_path, 'w', encoding='utf-8') as err_file:
-                err_file.write(f"OpenF1 Authentication Failed (RC {rc}). Please verify OPENF1_CLIENT_ID and OPENF1_CLIENT_SECRET environment variables.")
+                err_file.write(f"OpenF1 Authentication Notice (RC {rc}): Real-time live MQTT stream requires valid OPENF1_CLIENT_ID and OPENF1_CLIENT_SECRET credentials. Alternatively, switch to REPLAY or HISTORICAL mode for complete telemetry analysis.")
+            try:
+                client.disconnect()
+            except Exception:
+                pass
 
 import tempfile
 
@@ -110,7 +114,10 @@ def on_message(client, userdata, msg):
         logger.error(f"Message parsing error: {e}")
 
 def on_disconnect(client, userdata, rc, properties=None):
-    logger.warning(f"Disconnected from MQTT stream (rc={rc}). Attempting auto-reconnect...")
+    if rc in [0, 4, 5]:
+        logger.info(f"Disconnected cleanly from MQTT stream (rc={rc}).")
+    else:
+        logger.warning(f"Disconnected from MQTT stream (rc={rc}). Attempting auto-reconnect...")
 
 def start_worker(filepath=None):
     if not filepath:

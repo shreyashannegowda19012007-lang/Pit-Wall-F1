@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { usePitwall } from '../contexts/PitwallContext';
+import { Cpu, FlaskConical, RefreshCw, AlertCircle } from 'lucide-react';
 import './MLLabPage.css';
 
 interface MLPrediction {
@@ -12,6 +14,7 @@ interface MLPrediction {
 }
 
 export const MLLabPage: React.FC = () => {
+  const { session } = usePitwall();
   const [compound, setCompound] = useState('MEDIUM');
   const [fuelKg, setFuelKg] = useState(100);
   const [trackTemp, setTrackTemp] = useState(35);
@@ -24,14 +27,15 @@ export const MLLabPage: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const url = `http://localhost:8000/api/ml/predict?session_id=S-2024-SPAIN&compound=${compound}&fuel_kg=${fuelKg}&track_temp=${trackTemp}`;
+      const activeSession = session || 'S-2024-SPAIN';
+      const url = `/api/ml/predict?session_id=${activeSession}&compound=${compound}&fuel_kg=${fuelKg}&track_temp=${trackTemp}`;
       const response = await fetch(url);
       if (!response.ok) throw new Error('Prediction failed');
       const data: MLPrediction = await response.json();
       if (data.success) {
         setResult(data);
       } else {
-        setError('Model error');
+        setError('Model error executing Random Forest regressor');
       }
     } catch (err: any) {
       setError(err.message);
@@ -40,12 +44,16 @@ export const MLLabPage: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    runPrediction();
+  }, [session]);
+
   return (
     <div className="ml-container">
       <header className="ml-header">
         <div className="title-section">
-          <h2><span className="material-icons">model_training</span> ML Model Lab</h2>
-          <span className="session-badge">S-2024-SPAIN</span>
+          <h2><Cpu size={24} style={{ color: '#E10600', marginRight: '8px', verticalAlign: 'middle' }} /> ML Model Lab</h2>
+          <span className="session-badge">{session || 'S-2024-SPAIN'}</span>
         </div>
         <p className="subtitle">Predict tyre degradation using Random Forest Regression</p>
       </header>
@@ -74,7 +82,7 @@ export const MLLabPage: React.FC = () => {
           </div>
 
           <div className="form-group">
-            <label>Track Temp (Â°C): {trackTemp}</label>
+            <label>Track Temp (°C): {trackTemp}</label>
             <input
               type="range"
               min="25" max="50" step="1"
@@ -84,15 +92,25 @@ export const MLLabPage: React.FC = () => {
           </div>
 
           <button className="predict-btn" onClick={runPrediction} disabled={loading}>
-            {loading ? 'Running Inference...' : 'Run Prediction'}
+            {loading ? (
+              <>
+                <RefreshCw size={16} className="spin-icon" style={{ marginRight: '6px' }} />
+                Running Inference...
+              </>
+            ) : 'Run Prediction'}
           </button>
         </div>
 
         <div className="result-panel">
-          {error && <div className="error-message">{error}</div>}
+          {error && (
+            <div className="error-message">
+              <AlertCircle size={18} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+              {error}
+            </div>
+          )}
           {!result && !error && !loading && (
             <div className="empty-state">
-              <span className="material-icons">science</span>
+              <FlaskConical size={48} style={{ color: 'var(--text-muted, #71717a)', marginBottom: '12px' }} />
               <p>Configure parameters and run prediction to see results.</p>
             </div>
           )}
@@ -139,3 +157,6 @@ export const MLLabPage: React.FC = () => {
     </div>
   );
 };
+
+export default MLLabPage;
+

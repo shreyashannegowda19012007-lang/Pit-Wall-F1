@@ -1,0 +1,286 @@
+/* ==========================================================================
+   PITWALL F1 - TACTICAL COMMAND CENTER STYLING
+   ========================================================================== */
+
+.command-center {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+/* Header */
+.cc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-surface-1);
+  padding: 14px 18px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default);
+  gap: 16px;
+}
+
+.cc-header-info h1 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.cc-header-info p {
+  margin: 2px 0 0 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.cc-status-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: var(--radius-xs);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cc-status-badge.live {
+  background: var(--f1-red-dim);
+  color: var(--f1-red);
+  border: 1px solid rgba(225, 6, 0, 0.4);
+}
+
+.cc-status-badge.offline {
+  background: var(--bg-surface-2);
+  color: var(--text-muted);
+  border: 1px solid var(--border-subtle);
+}
+
+/* Main Grid */
+.cc-main-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 16px;
+}
+
+@media (max-width: 1200px) {
+  .cc-main-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cc-col-left {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cc-col-right {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Panels */
+.cc-panel {
+  background: var(--bg-surface-1);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cc-panel:hover {
+  border-color: var(--border-highlight);
+}
+
+.cc-panel-header {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.cc-driver-primary {
+  border-left: 3px solid var(--f1-cyan);
+}
+
+.cc-driver-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.cc-driver-name {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cc-position-badge {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 800;
+  background: var(--f1-cyan-dim);
+  color: var(--f1-cyan);
+  border: 1px solid rgba(0, 245, 212, 0.4);
+  padding: 2px 7px;
+  border-radius: var(--radius-xs);
+}
+
+.cc-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 10px;
+}
+
+.cc-metric-box {
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xs);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cc-metric-box .metric-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+.cc-metric-box .metric-value {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.cc-metric-box .metric-value.highlight-green {
+  color: var(--f1-green);
+}
+
+.cc-metric-box .metric-value.highlight-cyan {
+  color: var(--f1-cyan);
+}
+
+/* Sectors Row */
+.cc-sectors-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.cc-sector-item {
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xs);
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cc-sector-item .sector-title {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.cc-sector-item .sector-time {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+/* Strategy Advisory Box */
+.cc-strategy-card {
+  border-left: 3px solid var(--f1-gold);
+}
+
+.cc-recommendation-text {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.cc-strategy-pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cc-strat-pill {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: var(--radius-xs);
+  letter-spacing: 0.5px;
+}
+
+.cc-strat-pill.active {
+  background: var(--f1-green-dim);
+  color: var(--f1-green);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+}
+
+/* JARVIS Insights List */
+.cc-jarvis-panel {
+  border-left: 3px solid var(--f1-purple);
+}
+
+.cc-insights-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cc-insight-item {
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xs);
+  padding: 10px 12px;
+  font-size: 12px;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+/* Loading & Error */
+.cc-loading, .cc-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+  gap: 12px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.cc-error .error-icon {
+  color: var(--f1-red);
+}

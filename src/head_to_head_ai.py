@@ -6,7 +6,8 @@ def compute_pace_delta(laps_df, driver_a, driver_b):
     """Calculates the mean lap time difference on valid green flag laps."""
     try:
         valid_laps = laps_df.dropna(subset=['LapTime']).copy()
-        valid_laps = valid_laps[valid_laps['IsAccurate'] == True]
+        if 'IsAccurate' in valid_laps.columns:
+            valid_laps = valid_laps[valid_laps['IsAccurate'] == True]
 
         laps_a = valid_laps[valid_laps['Driver'] == driver_a]['LapTime'].dt.total_seconds()
         laps_b = valid_laps[valid_laps['Driver'] == driver_b]['LapTime'].dt.total_seconds()
@@ -29,7 +30,8 @@ def compute_tyre_degradation(laps_df, driver_a, driver_b):
     """Calculates tyre degradation slope for the longest shared compound."""
     try:
         valid_laps = laps_df.dropna(subset=['LapTime']).copy()
-        valid_laps = valid_laps[valid_laps['IsAccurate'] == True]
+        if 'IsAccurate' in valid_laps.columns:
+            valid_laps = valid_laps[valid_laps['IsAccurate'] == True]
 
         compounds_a = valid_laps[valid_laps['Driver'] == driver_a]['Compound'].unique()
         compounds_b = valid_laps[valid_laps['Driver'] == driver_b]['Compound'].unique()

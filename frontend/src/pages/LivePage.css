@@ -1,0 +1,353 @@
+.live-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.live-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.header-titles .title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header-icon.text-red {
+  color: #EF4444;
+}
+
+.pulse-fast {
+  animation: pulse-red 1.5s infinite;
+}
+
+.header-titles h2 {
+  font-family: 'Inter', sans-serif;
+  font-weight: 800;
+  font-size: 22px;
+  color: #F8FAFC;
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+.live-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.live-status-pill.active {
+  background: rgba(239, 68, 68, 0.2);
+  color: #F87171;
+  border: 1px solid rgba(239, 68, 68, 0.5);
+}
+
+.live-status-pill.standby {
+  background: rgba(245, 158, 11, 0.15);
+  color: #FBBF24;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+}
+
+.live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.subtitle {
+  color: #94A3B8;
+  font-size: 12px;
+  margin: 4px 0 0 0;
+}
+
+.live-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.poll-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: #64748B;
+}
+
+.btn-toggle-auto {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #141A23;
+  color: #94A3B8;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+  padding: 5px 10px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-toggle-auto.active {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34D399;
+  border-color: rgba(16, 185, 129, 0.35);
+}
+
+/* Status Banner */
+.status-banner {
+  display: flex;
+  gap: 16px;
+  padding: 16px 20px;
+  border-radius: 8px;
+  background: #101622;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.status-banner.offline-notice {
+  border-left: 4px solid #F59E0B;
+}
+
+.status-banner.auth-notice {
+  border-left: 4px solid #EF4444;
+}
+
+.banner-icon-wrap {
+  color: #F59E0B;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.banner-text h4 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.banner-text p {
+  margin: 4px 0 12px 0;
+  font-size: 12px;
+  color: #94A3B8;
+  line-height: 1.5;
+}
+
+.banner-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-banner-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #38BDF8;
+  color: #07090E;
+  text-decoration: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 4px;
+  transition: all 0.15s;
+}
+
+.btn-banner-action:hover {
+  background: #0284C7;
+  color: #FFFFFF;
+}
+
+.btn-banner-action.secondary {
+  background: #1E293B;
+  color: #E2E8F0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-banner-action.secondary:hover {
+  background: #334155;
+}
+
+/* Metrics Row */
+.live-metrics-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+@media (max-width: 900px) {
+  .live-metrics-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.metric-card {
+  background: #0E131B;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.m-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #64748B;
+  text-transform: uppercase;
+}
+
+.m-value {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 20px;
+  font-weight: 800;
+  color: #F8FAFC;
+  margin: 6px 0 2px 0;
+}
+
+.m-sub {
+  font-size: 11px;
+  color: #94A3B8;
+}
+
+.text-cyan { color: #38BDF8; }
+.text-blue { color: #60A5FA; }
+.text-green { color: #34D399; }
+.text-amber { color: #FBBF24; }
+
+/* Table Card */
+.live-table-card {
+  background: #0E131B;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.table-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.th-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  color: #94A3B8;
+  text-transform: uppercase;
+}
+
+.th-badge {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px;
+  color: #64748B;
+  background: #141A23;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.timing-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.timing-table th {
+  text-align: left;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: #64748B;
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  letter-spacing: 0.5px;
+}
+
+.timing-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  font-family: 'Share Tech Mono', monospace;
+  color: #CBD5E1;
+}
+
+.timing-table tr:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.timing-table tr.leader-row {
+  background: rgba(234, 179, 8, 0.05);
+}
+
+.col-pos {
+  font-weight: 800;
+  color: #38BDF8;
+}
+
+.col-drv {
+  font-weight: 800;
+  color: #FFFFFF;
+}
+
+.col-team {
+  font-family: 'Inter', sans-serif;
+  color: #94A3B8;
+}
+
+.col-time {
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.col-sector {
+  color: #94A3B8;
+}
+
+.tyre-tag {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+  text-align: center;
+  border-radius: 50%;
+  font-weight: 800;
+  font-size: 10px;
+}
+
+.tyre-tag.soft { background: #EF4444; color: #FFFFFF; }
+.tyre-tag.medium { background: #EAB308; color: #000000; }
+.tyre-tag.hard { background: #FFFFFF; color: #000000; }
+.tyre-tag.intermediate { background: #10B981; color: #FFFFFF; }
+.tyre-tag.wet { background: #3B82F6; color: #FFFFFF; }
+
+.col-stint {
+  color: #64748B;
+}

@@ -1,0 +1,165 @@
+/* ==========================================================================
+   PITWALL F1 — PAGE HEADER & BREADCRUMB STYLES
+   ========================================================================== */
+
+.page-header-container {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 20px;
+  background: var(--bg-surface-0);
+  border-bottom: 1px solid var(--border-default);
+  margin-bottom: 20px;
+  border-radius: var(--radius-sm);
+  flex-wrap: wrap;
+}
+
+.page-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.page-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.crumb-hub {
+  color: var(--text-muted);
+}
+
+.crumb-sep {
+  color: var(--border-highlight);
+}
+
+.crumb-current {
+  color: var(--f1-cyan);
+}
+
+.page-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 2px;
+}
+
+.page-main-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.page-title-badge {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: var(--radius-xs);
+  letter-spacing: 0.8px;
+}
+
+.page-title-badge.live {
+  background: var(--f1-red-dim);
+  color: var(--f1-red);
+  border: 1px solid rgba(225, 6, 0, 0.4);
+}
+
+.page-title-badge.ai {
+  background: var(--f1-purple-dim);
+  color: var(--f1-purple);
+  border: 1px solid rgba(168, 85, 247, 0.4);
+}
+
+.page-title-badge.prob {
+  background: var(--f1-cyan-dim);
+  color: var(--f1-cyan);
+  border: 1px solid rgba(0, 245, 212, 0.4);
+}
+
+.page-title-badge.cyan {
+  background: var(--f1-cyan-dim);
+  color: var(--f1-cyan);
+  border: 1px solid rgba(0, 245, 212, 0.35);
+}
+
+.page-title-badge.green {
+  background: var(--f1-green-dim);
+  color: var(--f1-green);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+}
+
+.page-title-badge.gold {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--f1-gold);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+}
+
+.page-subtitle {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin: 0;
+  max-width: 720px;
+  line-height: 1.4;
+}
+
+.page-header-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.actions-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 800;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+}
+
+.cross-links-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cross-link-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-surface-1);
+  border: 1px solid var(--border-default);
+  padding: 5px 10px;
+  border-radius: var(--radius-xs);
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 600;
+  text-decoration: none;
+  font-family: var(--font-mono);
+  transition: all 0.15s ease;
+}
+
+.cross-link-btn:hover {
+  background: var(--bg-surface-2);
+  border-color: var(--f1-cyan);
+  color: var(--f1-cyan);
+  box-shadow: 0 0 10px rgba(0, 245, 212, 0.15);
+}
+
+.cross-link-btn .link-icon {
+  color: var(--f1-cyan);
+}

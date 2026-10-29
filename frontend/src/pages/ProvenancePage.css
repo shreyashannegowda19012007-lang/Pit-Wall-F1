@@ -1,0 +1,238 @@
+.provenance-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 24px;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.provenance-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
+  border-bottom: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
+  padding-bottom: 20px;
+}
+
+.provenance-header h2 {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #F8FAFC;
+  margin: 0;
+}
+
+.tiers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+}
+
+.tier-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tier-top {
+  display: flex;
+  justify-content: space-between;
+}
+
+.tier-badge {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.badge-measured {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10B981;
+  border: 1px solid rgba(16, 185, 129, 0.35);
+}
+
+.badge-derived {
+  background: rgba(0, 245, 212, 0.15);
+  color: #00F5D4;
+  border: 1px solid rgba(0, 245, 212, 0.35);
+}
+
+.badge-estimated {
+  background: rgba(245, 158, 11, 0.15);
+  color: #F59E0B;
+  border: 1px solid rgba(245, 158, 11, 0.35);
+}
+
+.badge-hypothetical {
+  background: rgba(168, 85, 247, 0.15);
+  color: #C084FC;
+  border: 1px solid rgba(168, 85, 247, 0.35);
+}
+
+.badge-unavailable {
+  background: rgba(239, 68, 68, 0.15);
+  color: #EF4444;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+}
+
+.tier-desc {
+  font-size: 12px;
+  color: #CBD5E1;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.tier-examples {
+  margin-top: auto;
+  font-size: 11px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.08);
+  padding-top: 6px;
+}
+
+.ex-label {
+  font-weight: 700;
+  color: #64748B;
+  margin-right: 4px;
+}
+
+.ex-val {
+  color: #94A3B8;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.providers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.provider-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.p-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.p-id {
+  font-size: 12px;
+  font-weight: 800;
+  color: #00F5D4;
+  background: rgba(0, 245, 212, 0.1);
+  padding: 2px 6px;
+  border-radius: 3px;
+  margin-right: 8px;
+}
+
+.p-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #F8FAFC;
+}
+
+.doc-link {
+  font-size: 10px;
+  font-weight: 700;
+  color: #64748B;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  text-decoration: none;
+}
+
+.doc-link:hover {
+  color: #00F5D4;
+}
+
+.p-desc {
+  font-size: 12px;
+  color: #94A3B8;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.p-specs {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11px;
+  font-family: 'JetBrains Mono', monospace;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 8px;
+  border-radius: 4px;
+}
+
+.spec-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.p-domains {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: auto;
+}
+
+.domain-tag {
+  font-size: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #CBD5E1;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.confidential-card {
+  border-color: rgba(239, 68, 68, 0.3);
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.05), rgba(0, 0, 0, 0.4));
+}
+
+.confidential-lead {
+  font-size: 12px;
+  color: #CBD5E1;
+  margin-bottom: 12px;
+}
+
+.boundaries-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: 10px;
+}
+
+.boundary-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12px;
+  color: #E2E8F0;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  padding: 8px 12px;
+  border-radius: 4px;
+}
+
+.boundary-item .b-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.text-red { color: #EF4444; }
+.text-cyan { color: #00F5D4; }
+.text-green { color: #10B981; }

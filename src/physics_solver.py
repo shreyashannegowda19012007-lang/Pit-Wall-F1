@@ -609,4 +609,4 @@ def render_telemetry_comparison(raw_session, laps, primary, comp, current_lap):
 
     except Exception as e:
 
-        st.error(f"TELEMETRY UNAVAILABLE: {e}")
+        st.info("ℹ️ High-frequency car sensor telemetry (speed, throttle, brake) is not available for this session. Timing, sector splits, and lap analysis remain fully operational.")

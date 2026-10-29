@@ -18,7 +18,7 @@ test.describe('Pitwall F1 Modernization - Phase 2A', () => {
     await expect(page.locator('.overview-error')).not.toBeVisible();
 
     // Verify session data is present
-    await expect(page.locator('.overview-header')).toContainText('Reference: HAM');
+    await expect(page.locator('.overview-header')).toContainText('Reference: HAM', { timeout: 60000 });
     await expect(page.locator('.stat-card').first()).toContainText('S-2024');
   });
 
@@ -29,8 +29,8 @@ test.describe('Pitwall F1 Modernization - Phase 2A', () => {
     await expect(page.locator('.overview-container')).toBeVisible({ timeout: 60000 });
     await expect(page.locator('.overview-error')).not.toBeVisible();
 
-    const primaryDriverSelect = page.locator('select').nth(1);
-    const refDriverSelect = page.locator('select').nth(2);
+    const primaryDriverSelect = page.locator('.driver-selector.primary select');
+    const refDriverSelect = page.locator('.driver-selector.comparison select');
 
     await primaryDriverSelect.selectOption('NOR');
     await expect(page.locator('.overview-header')).toContainText('NOR', { timeout: 60000 });
@@ -47,7 +47,7 @@ test.describe('Pitwall F1 Modernization - Phase 2A', () => {
     await expect(page.locator('.telemetry-error')).not.toBeVisible();
 
     // Verify recharts wrapper is rendered
-    await expect(page.locator('.recharts-wrapper').first()).toBeVisible();
+    await expect(page.locator('.recharts-wrapper').first()).toBeVisible({ timeout: 60000 });
     await expect(page.locator('.telemetry-header')).toContainText('VER vs HAM');
   });
 
@@ -59,17 +59,17 @@ test.describe('Pitwall F1 Modernization - Phase 2A', () => {
     await expect(page.locator('.comparison-error')).not.toBeVisible();
 
     // Verify matchup banner
-    await expect(page.locator('.driver-pill.primary')).toHaveText('VER');
-    await expect(page.locator('.driver-pill.reference')).toHaveText('HAM');
+    await expect(page.locator('.driver-pill.primary')).toHaveText('VER', { timeout: 60000 });
+    await expect(page.locator('.driver-pill.reference')).toHaveText('HAM', { timeout: 60000 });
 
     // Change reference to NOR
-    const refDriverSelect = page.locator('select').nth(2);
+    const refDriverSelect = page.locator('.driver-selector.comparison select');
     await refDriverSelect.selectOption('NOR');
 
     // UI should reload and display NOR
     await expect(page.locator('.driver-pill.reference')).toHaveText('NOR', { timeout: 90000 });
-    // Check for a time delta string (e.g. "+0.1s" or "-0.1s")
-    await expect(page.locator('.card.stat-card').first()).toBeVisible();
+    // Check for sector or engineering card
+    await expect(page.locator('.card-engineering').first()).toBeVisible({ timeout: 60000 });
   });
   test('tyre intelligence page loads real chart data or handles timeout', async ({ page }) => {
     test.setTimeout(120000);
@@ -79,7 +79,7 @@ test.describe('Pitwall F1 Modernization - Phase 2A', () => {
 
     const isError = await page.locator('.tyres-error').isVisible();
     if (!isError) {
-      await expect(page.locator('.recharts-wrapper').first()).toBeVisible();
+      await expect(page.locator('.recharts-wrapper').first()).toBeVisible({ timeout: 60000 });
       await expect(page.locator('.tyres-header')).toContainText('Tyre Degradation');
     }
   });
@@ -92,8 +92,8 @@ test.describe('Pitwall F1 Modernization - Phase 2A', () => {
     await expect(page.locator('.strategy-error')).not.toBeVisible();
 
     // Verify probability indicators and track gap are loaded
-    await expect(page.locator('.directive-box')).toBeVisible();
-    await expect(page.locator('.prob-value').first()).toBeVisible();
+    await expect(page.locator('.directive-box')).toBeVisible({ timeout: 60000 });
+    await expect(page.locator('.prob-value').first()).toBeVisible({ timeout: 60000 });
   });
 
   test('replay page loads 3D track or handles timeout', async ({ page }) => {

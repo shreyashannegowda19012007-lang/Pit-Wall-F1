@@ -1,110 +1,213 @@
+/* ==========================================================================
+   PITWALL F1 - DRIVER COMPARISON ATTRIBUTION STYLING
+   ========================================================================== */
+
 .comparison-container {
-  padding: 1.5rem;
-  height: 100%;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 1600px;
+  margin: 0 auto;
 }
 
+/* Header */
 .comparison-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.comparison-header h1 {
-  margin: 0;
-  font-size: 1.5rem;
-  color: var(--text-primary);
-  font-family: 'Share Tech Mono', monospace;
+  background: var(--bg-surface-1);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  gap: 16px;
 }
 
 .matchup-banner {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  background: var(--bg-card);
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  gap: 8px;
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border-default);
+  padding: 5px 12px;
+  border-radius: var(--radius-xs);
 }
 
 .driver-pill {
-  font-family: 'Share Tech Mono', monospace;
-  font-weight: bold;
-  padding: 0.25rem 0.75rem;
-  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: var(--radius-xs);
 }
 
 .driver-pill.primary {
-  background: rgba(59, 130, 246, 0.1);
-  color: var(--accent-blue);
-  border: 1px solid rgba(59, 130, 246, 0.2);
+  background: var(--f1-cyan-dim);
+  color: var(--f1-cyan);
+  border: 1px solid rgba(0, 245, 212, 0.4);
 }
 
 .driver-pill.reference {
-  background: rgba(168, 85, 247, 0.1);
-  color: var(--neon-purple);
-  border: 1px solid rgba(168, 85, 247, 0.2);
+  background: var(--f1-gold-dim);
+  color: var(--f1-gold);
+  border: 1px solid rgba(245, 158, 11, 0.4);
 }
 
 .vs {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 12px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+/* Sector Deltas */
+.sector-deltas-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.sector-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sector-card .metric-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.8px;
+}
+
+.sector-card .metric-value {
+  font-family: var(--font-mono);
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.sector-card .metric-value.faster {
+  color: var(--f1-green);
+}
+
+.sector-card .metric-value.slower {
+  color: var(--f1-red);
+}
+
+.sector-detail {
+  font-size: 11px;
   color: var(--text-secondary);
+}
+
+/* Table Panel */
+.table-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.panel-header h3 {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.panel-icon.text-gold {
+  color: var(--f1-gold);
+}
+
+.table-responsive {
+  overflow-x: auto;
 }
 
 .comparison-table {
   width: 100%;
   border-collapse: collapse;
-}
-
-.comparison-table th, .comparison-table td {
-  padding: 1rem;
   text-align: left;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .comparison-table th {
-  font-family: 'Share Tech Mono', monospace;
-  color: var(--text-secondary);
+  padding: 10px 14px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-muted);
   text-transform: uppercase;
+  letter-spacing: 0.8px;
+  border-bottom: 1px solid var(--border-default);
+  background: var(--bg-surface-2);
+}
+
+.comparison-table td {
+  padding: 10px 14px;
   font-size: 12px;
-  font-weight: 400;
-  letter-spacing: 1px;
+  border-bottom: 1px solid var(--border-subtle);
 }
 
-.comparison-table tr:last-child td {
-  border-bottom: none;
+.comparison-table tr:hover td {
+  background: var(--bg-surface-hover);
 }
 
-.comparison-table tbody tr:hover {
-  background-color: rgba(255, 255, 255, 0.02);
+.corner-tag {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
-.comparison-loading {
+.loss-val {
+  font-family: var(--font-mono);
+  font-weight: 800;
+  color: var(--f1-red);
+}
+
+.loss-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: var(--radius-xs);
+  display: inline-block;
+}
+
+.loss-badge.red {
+  background: var(--f1-red-dim);
+  color: var(--f1-red);
+  border: 1px solid rgba(225, 6, 0, 0.35);
+}
+
+.loss-badge.neutral {
+  background: var(--bg-surface-0);
+  color: var(--text-muted);
+}
+
+.weakness-tag {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* Loading & Error */
+.comparison-loading, .comparison-error {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100%;
-  color: var(--accent-blue);
-  font-family: 'Share Tech Mono', monospace;
-  gap: 1rem;
-}
-
-.comparison-error {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  color: var(--error);
+  min-height: 400px;
   text-align: center;
-  gap: 1rem;
+  gap: 12px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-secondary);
 }
 
 .comparison-error .error-icon {
-  color: var(--error);
+  color: var(--f1-red);
 }

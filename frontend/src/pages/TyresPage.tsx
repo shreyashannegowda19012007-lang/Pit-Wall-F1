@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { usePitwall } from '../contexts/PitwallContext';
-import { Target, CircleDashed } from 'lucide-react';
+import { Target, CircleDashed, RefreshCw, GitMerge, Radio, BarChart2 } from 'lucide-react';
+import { PageHeader } from '../components/PageHeader';
 import {
   Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Line, ComposedChart
 } from 'recharts';
@@ -16,20 +17,20 @@ export default function TyresPage() {
   useEffect(() => {
     let mounted = true;
     setLoading(true);
-    setProgressMsg('Connecting...');
+    setProgressMsg('Connecting to Telemetry Ingestion Pipeline...');
 
     const progressInterval = setInterval(() => {
       setProgressMsg(prev => {
-        if (prev === 'Connecting...') return 'Fetching Telemetry Data (This may take up to 2 minutes on cold start)...';
-        if (prev === 'Fetching Telemetry Data (This may take up to 2 minutes on cold start)...') return 'Applying Regression Model...';
+        if (prev.includes('Connecting')) return 'Fetching Tyre Stint Arrays (Applying Bayesian Cache)...';
+        if (prev.includes('Fetching')) return 'Executing Ordinary Least Squares Degradation Regression...';
         return prev;
       });
-    }, 10000);
+    }, 8000);
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 60000);
 
-    fetch(`http://localhost:8000/api/tyres/degradation?session_id=${session}&primary_driver=${primaryDriver}&ref_driver=${referenceDriver}`, { signal: controller.signal })
+    fetch(`/api/tyres/degradation?session_id=${session}&primary_driver=${primaryDriver}&ref_driver=${referenceDriver}`, { signal: controller.signal })
       .then(async r => {
         const json = await r.json();
         if (!r.ok) {
@@ -50,7 +51,7 @@ export default function TyresPage() {
         if (!mounted) return;
         console.error(err);
         if (err.name === 'AbortError') {
-          setError('Request Timed Out. The server is taking too long to load FastF1 data.');
+          setError('Request Timed Out. Server is loading telemetry cache.');
         } else {
           setError('Network error fetching tyre intelligence');
         }
@@ -71,9 +72,32 @@ export default function TyresPage() {
 
   if (loading && !data) {
     return (
-      <div className="tyres-loading">
-        <div className="spinner"></div>
-        <p>{progressMsg}</p>
+      <div className="tyres-container">
+        <header className="tyres-header">
+          <div className="header-titles">
+            <div className="title-row">
+              <CircleDashed size={20} className="header-icon text-cyan" />
+              <h2>Tyre Degradation Modeling</h2>
+              <span className="session-tag">{session}</span>
+            </div>
+            <p className="subtitle">{progressMsg}</p>
+          </div>
+          <div className="badge badge-cyan">
+            <RefreshCw size={11} className="spin" />
+            <span>SOLVING REGRESSION</span>
+          </div>
+        </header>
+
+        <div className="tyres-grid">
+          <div className="card-engineering tyre-chart-card" style={{ height: '340px' }}>
+            <div className="skeleton" style={{ width: '220px', height: '16px', marginBottom: '14px' }}></div>
+            <div className="skeleton" style={{ width: '100%', height: '260px' }}></div>
+          </div>
+          <div className="card-engineering tyre-chart-card" style={{ height: '340px' }}>
+            <div className="skeleton" style={{ width: '220px', height: '16px', marginBottom: '14px' }}></div>
+            <div className="skeleton" style={{ width: '100%', height: '260px' }}></div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -81,133 +105,178 @@ export default function TyresPage() {
   if (error) {
     return (
       <div className="tyres-error">
-        <Target size={48} className="error-icon" />
-        <h2>Degradation Modeling Failed</h2>
+        <Target size={44} className="error-icon" />
+        <h2>Degradation Modeling Unavailable</h2>
         <p>{error}</p>
-        <button className="btn btn-primary" onClick={() => window.location.reload()}>Retry Connection</button>
+        <button className="btn-retry" onClick={() => window.location.reload()}>Retry Connection</button>
       </div>
     );
   }
 
   if (!data) return null;
 
-  const pData = data.primary_driver;
-  const rData = data.reference_driver;
+  const pData = data.primary_driver || {};
+  const rData = data.reference_driver || {};
 
   const primaryPlotData = pData.success ? pData.data_points : [];
   const refPlotData = rData.success ? rData.data_points : [];
 
+  const getCompoundColor = (compound?: string) => {
+    switch (compound?.toUpperCase()) {
+      case 'SOFT': return '#EF4444';
+      case 'MEDIUM': return '#F59E0B';
+      case 'HARD': return '#F8FAFC';
+      case 'INTERMEDIATE': return '#10B981';
+      case 'WET': return '#38BDF8';
+      default: return '#94A3B8';
+    }
+  };
+
   return (
     <div className="tyres-container">
-      <header className="tyres-header">
-        <h1 className="flex items-center gap-sm">
-          <CircleDashed size={24} style={{ color: 'var(--accent-blue)' }} />
-          Tyre Degradation Intelligence
-        </h1>
-        <div className="header-stats flex gap-md">
-          <div className="stat-pill">
-            {primaryDriver} Deg: <span style={{ color: 'var(--accent-blue)' }}>+{pData.degradation_slope_s_per_lap} s/lap</span>
+      <PageHeader
+        hub="Strategy"
+        title="Tyre Degradation & Thermal Physics"
+        subtitle="Fuel-corrected lap time degradation curves, wear slopes, and 3-layer thermal stint models."
+        badge={`${primaryDriver} vs ${referenceDriver}`}
+        badgeType="gold"
+        crossLinks={[
+          { label: 'Strategy Optimizer', path: '/app/strategy', icon: GitMerge },
+          { label: 'Monte Carlo Simulator', path: '/app/monte-carlo', icon: Radio },
+          { label: 'Telemetry Stack', path: '/app/telemetry', icon: BarChart2 }
+        ]}
+      />
+
+      {/* Header */}
+      <header className="tyres-header" style={{ marginBottom: '16px' }}>
+
+        <div className="header-stats">
+          <div className="stat-pill primary">
+            <span className="pill-label">{primaryDriver} DEG:</span>
+            <span className="pill-val">+{pData.degradation_slope_s_per_lap || '0.000'} s/lap</span>
           </div>
-          <div className="stat-pill">
-            {referenceDriver} Deg: <span style={{ color: 'var(--neon-purple)' }}>+{rData.degradation_slope_s_per_lap} s/lap</span>
+          <div className="stat-pill comparison">
+            <span className="pill-label">{referenceDriver} DEG:</span>
+            <span className="pill-val">+{rData.degradation_slope_s_per_lap || '0.000'} s/lap</span>
           </div>
         </div>
       </header>
 
-      <div className="grid grid-cols-2 gap-lg" style={{ flex: 1, minHeight: 0 }}>
+      {/* Degradation Chart Panels */}
+      <div className="tyre-charts-grid">
         {/* Primary Driver */}
-        <div className="card chart-panel">
-          <div className="chart-title">{primaryDriver} - {pData.compound} (Stint {pData.stint_number})</div>
-          {pData.success ? (
+        <div className="card-engineering chart-panel">
+          <div className="chart-header">
+            <div className="driver-stint-meta">
+              <span className="driver-tag primary">{primaryDriver}</span>
+              <span className="compound-badge" style={{ borderColor: getCompoundColor(pData.compound), color: getCompoundColor(pData.compound) }}>
+                {pData.compound || 'MEDIUM'}
+              </span>
+              <span className="stint-tag">STINT {pData.stint_number || 1}</span>
+            </div>
+            <span className="slope-tag">Slope: +{pData.degradation_slope_s_per_lap || '0.00'}s / lap</span>
+          </div>
+
+          {pData.success && primaryPlotData.length > 0 ? (
             <div className="chart-container">
               <ResponsiveContainer width="100%" height="100%">
-                <ComposedChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                <ComposedChart data={primaryPlotData} margin={{ top: 15, right: 15, bottom: 20, left: 10 }}>
+                  <CartesianGrid strokeDasharray="2 2" stroke="rgba(255,255,255,0.06)" />
                   <XAxis
                     dataKey="tyre_age"
                     type="number"
-                    name="Tyre Age"
                     stroke="#64748B"
-                    label={{ value: 'Tyre Age (Laps)', position: 'insideBottom', offset: -10, fill: '#64748B' }}
+                    fontSize={10}
+                    label={{ value: 'Tyre Age (Laps)', position: 'insideBottom', offset: -10, fill: '#64748B', fontSize: 10, fontFamily: 'JetBrains Mono' }}
                   />
                   <YAxis
-                    yAxisId="left"
                     dataKey="fuel_corrected_lap_time_s"
                     type="number"
-                    name="Lap Time (s)"
                     stroke="#64748B"
-                    domain={['dataMin - 1', 'dataMax + 1']}
-                    label={{ value: 'Fuel-Corrected Pace (s)', angle: -90, position: 'insideLeft', fill: '#64748B' }}
+                    fontSize={10}
+                    domain={['dataMin - 0.5', 'dataMax + 0.5']}
+                    tickFormatter={(val) => `${val.toFixed(1)}s`}
                   />
                   <Tooltip
-                    cursor={{ strokeDasharray: '3 3' }}
-                    contentStyle={{ backgroundColor: '#0d0e12', borderColor: '#1e293b', color: '#fff' }}
+                    contentStyle={{ backgroundColor: '#0B0E14', borderColor: 'rgba(255,255,255,0.15)', color: '#F8FAFC', borderRadius: '4px', fontSize: '11px', fontFamily: 'JetBrains Mono' }}
+                    labelFormatter={(val) => `Lap Age: ${val} Laps`}
                   />
-                  <Legend verticalAlign="top" height={36}/>
-                  <Scatter yAxisId="left" name="Actual Laps" data={primaryPlotData} fill="var(--accent-blue)" />
+                  <Legend verticalAlign="top" height={30} wrapperStyle={{ fontSize: '11px', fontFamily: 'JetBrains Mono' }} />
+                  <Scatter name="Observed Laps" dataKey="fuel_corrected_lap_time_s" fill="#00F5D4" />
                   <Line
-                    yAxisId="left"
-                    data={primaryPlotData}
                     type="linear"
                     dataKey="trend_lap_time_s"
-                    stroke="var(--accent-green)"
-                    name="OLS Trend"
+                    stroke="#10B981"
+                    name="OLS Wear Slope"
                     dot={false}
                     strokeWidth={2}
+                    isAnimationActive={false}
                   />
                 </ComposedChart>
               </ResponsiveContainer>
             </div>
           ) : (
-            <div className="empty-state">No valid stint data for {primaryDriver}</div>
+            <div className="empty-state">
+              <p>No valid single-compound stint data available for {primaryDriver} in this session.</p>
+            </div>
           )}
         </div>
 
         {/* Reference Driver */}
-        <div className="card chart-panel">
-          <div className="chart-title">{referenceDriver} - {rData.compound} (Stint {rData.stint_number})</div>
-          {rData.success ? (
+        <div className="card-engineering chart-panel">
+          <div className="chart-header">
+            <div className="driver-stint-meta">
+              <span className="driver-tag reference">{referenceDriver}</span>
+              <span className="compound-badge" style={{ borderColor: getCompoundColor(rData.compound), color: getCompoundColor(rData.compound) }}>
+                {rData.compound || 'MEDIUM'}
+              </span>
+              <span className="stint-tag">STINT {rData.stint_number || 1}</span>
+            </div>
+            <span className="slope-tag">Slope: +{rData.degradation_slope_s_per_lap || '0.00'}s / lap</span>
+          </div>
+
+          {rData.success && refPlotData.length > 0 ? (
             <div className="chart-container">
               <ResponsiveContainer width="100%" height="100%">
-                <ComposedChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                <ComposedChart data={refPlotData} margin={{ top: 15, right: 15, bottom: 20, left: 10 }}>
+                  <CartesianGrid strokeDasharray="2 2" stroke="rgba(255,255,255,0.06)" />
                   <XAxis
                     dataKey="tyre_age"
                     type="number"
-                    name="Tyre Age"
                     stroke="#64748B"
-                    label={{ value: 'Tyre Age (Laps)', position: 'insideBottom', offset: -10, fill: '#64748B' }}
+                    fontSize={10}
+                    label={{ value: 'Tyre Age (Laps)', position: 'insideBottom', offset: -10, fill: '#64748B', fontSize: 10, fontFamily: 'JetBrains Mono' }}
                   />
                   <YAxis
-                    yAxisId="left"
                     dataKey="fuel_corrected_lap_time_s"
                     type="number"
-                    name="Lap Time (s)"
                     stroke="#64748B"
-                    domain={['dataMin - 1', 'dataMax + 1']}
-                    label={{ value: 'Fuel-Corrected Pace (s)', angle: -90, position: 'insideLeft', fill: '#64748B' }}
+                    fontSize={10}
+                    domain={['dataMin - 0.5', 'dataMax + 0.5']}
+                    tickFormatter={(val) => `${val.toFixed(1)}s`}
                   />
                   <Tooltip
-                    cursor={{ strokeDasharray: '3 3' }}
-                    contentStyle={{ backgroundColor: '#0d0e12', borderColor: '#1e293b', color: '#fff' }}
+                    contentStyle={{ backgroundColor: '#0B0E14', borderColor: 'rgba(255,255,255,0.15)', color: '#F8FAFC', borderRadius: '4px', fontSize: '11px', fontFamily: 'JetBrains Mono' }}
+                    labelFormatter={(val) => `Lap Age: ${val} Laps`}
                   />
-                  <Legend verticalAlign="top" height={36}/>
-                  <Scatter yAxisId="left" name="Actual Laps" data={refPlotData} fill="var(--neon-purple)" />
+                  <Legend verticalAlign="top" height={30} wrapperStyle={{ fontSize: '11px', fontFamily: 'JetBrains Mono' }} />
+                  <Scatter name="Observed Laps" dataKey="fuel_corrected_lap_time_s" fill="#F59E0B" />
                   <Line
-                    yAxisId="left"
-                    data={refPlotData}
                     type="linear"
                     dataKey="trend_lap_time_s"
-                    stroke="var(--error)"
-                    name="OLS Trend"
+                    stroke="#EF4444"
+                    name="OLS Wear Slope"
                     dot={false}
                     strokeWidth={2}
+                    isAnimationActive={false}
                   />
                 </ComposedChart>
               </ResponsiveContainer>
             </div>
           ) : (
-            <div className="empty-state">No valid stint data for {referenceDriver}</div>
+            <div className="empty-state">
+              <p>No valid single-compound stint data available for {referenceDriver} in this session.</p>
+            </div>
           )}
         </div>
       </div>

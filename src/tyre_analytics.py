@@ -3,6 +3,8 @@ import numpy as np
 from scipy import stats
 from typing import Dict, Any, List
 
+from src.session_utils import pick_driver_laps
+
 class TyreAnalyticsEngine:
     @staticmethod
     def analyze_stint_degradation(session, driver_id: str) -> Dict[str, Any]:
@@ -11,7 +13,7 @@ class TyreAnalyticsEngine:
         applies fuel correction (-0.065s per lap), and computes linear regression
         for tyre degradation.
         """
-        laps = session.laps.pick_driver(driver_id)
+        laps = pick_driver_laps(session.laps, driver_id)
         if laps.empty:
             return {"success": False, "error": "No laps found for driver"}
 

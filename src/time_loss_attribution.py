@@ -33,15 +33,25 @@ class CornerPerformanceAnalysis:
     confidence_score: int                     # 0 - 100
     available_metrics: Dict[str, bool] = field(default_factory=dict)
     explanation: str = ""
+    corner_number: int = 1
+    measured_time_loss_s: float = 0.0
+    braking_loss_s: float = 0.0
+    apex_loss_s: float = 0.0
+    exit_loss_s: float = 0.0
 
     def to_dict(self) -> Dict[str, Any]:
         return {
             "corner_id": self.corner_id,
             "corner_name": self.corner_name,
+            "corner_number": self.corner_number,
             "entry_m": round(self.entry_m, 1),
             "apex_m": round(self.apex_m, 1),
             "exit_m": round(self.exit_m, 1),
             "time_loss_seconds": round(self.time_loss_seconds, 3),
+            "measured_time_loss_s": round(self.measured_time_loss_s, 3),
+            "braking_loss_s": round(self.braking_loss_s, 3),
+            "apex_loss_s": round(self.apex_loss_s, 3),
+            "exit_loss_s": round(self.exit_loss_s, 3),
             "braking_point_delta_m": round(self.braking_point_delta_m, 1) if self.braking_point_delta_m is not None else None,
             "peak_brake_delta_pct": round(self.peak_brake_delta_pct, 1) if self.peak_brake_delta_pct is not None else None,
             "minimum_speed_delta_kmh": round(self.minimum_speed_delta_kmh, 1),
@@ -203,6 +213,38 @@ def analyze_corner_performance(
 
     explanation = " ".join(explanation_parts)
 
+    # Three-phase corner time loss decomposition:
+    # Phase 1: Braking / Entry (entry_m to apex deceleration boundary)
+    # Phase 2: Apex Minimum Velocity (apex region)
+    # Phase 3: Exit Traction (acceleration phase out to exit_m)
+    digits = ''.join(filter(str.isdigit, corner.corner_id))
+    if not digits:
+        digits = ''.join(filter(str.isdigit, corner.corner_name))
+    corner_num = int(digits) if digits else 1
+
+    entry_m = corner.entry_m
+    apex_m = corner.apex_m
+    exit_m = corner.exit_m
+
+    pre_span = max(5.0, (apex_m - entry_m) * 0.3)
+    post_span = max(5.0, (exit_m - apex_m) * 0.3)
+
+    apex_start_m = max(entry_m, apex_m - pre_span)
+    apex_end_m = min(exit_m, apex_m + post_span)
+
+    dt_entry = float(c_df['DeltaTime'].iloc[0])
+    dt_exit = float(c_df['DeltaTime'].iloc[-1])
+
+    idx_apex_start = (c_df['Distance'] - apex_start_m).abs().idxmin()
+    dt_apex_start = float(c_df.loc[idx_apex_start, 'DeltaTime'])
+
+    idx_apex_end = (c_df['Distance'] - apex_end_m).abs().idxmin()
+    dt_apex_end = float(c_df.loc[idx_apex_end, 'DeltaTime'])
+
+    brk_loss = max(0.0, float(dt_apex_start - dt_entry))
+    apx_loss = max(0.0, float(dt_apex_end - dt_apex_start))
+    ext_loss = max(0.0, float(dt_exit - dt_apex_end))
+
     return CornerPerformanceAnalysis(
         corner_id=corner.corner_id,
         corner_name=corner.corner_name,
@@ -222,11 +264,21 @@ def analyze_corner_performance(
         confidence_level=conf_level,
         confidence_score=conf_score,
         available_metrics=avail,
-        explanation=explanation
+        explanation=explanation,
+        corner_number=corner_num,
+        measured_time_loss_s=float(time_loss),
+        braking_loss_s=round(brk_loss, 3),
+        apex_loss_s=round(apx_loss, 3),
+        exit_loss_s=round(ext_loss, 3)
     )
 
 
 def _build_empty_corner_analysis(corner: CornerWindow, driver_a: str, driver_b: str) -> CornerPerformanceAnalysis:
+    digits = ''.join(filter(str.isdigit, corner.corner_id))
+    if not digits:
+        digits = ''.join(filter(str.isdigit, corner.corner_name))
+    corner_num = int(digits) if digits else 1
+
     return CornerPerformanceAnalysis(
         corner_id=corner.corner_id,
         corner_name=corner.corner_name,
@@ -246,5 +298,10 @@ def _build_empty_corner_analysis(corner: CornerWindow, driver_a: str, driver_b: 
         confidence_level="LOW",
         confidence_score=30,
         available_metrics={"speed": False, "throttle": False, "brake": False, "steering": False, "tire_temp": False},
-        explanation=f"Insufficient telemetry data available for {corner.corner_name} comparison between {driver_a} and {driver_b}."
+        explanation=f"Insufficient telemetry data available for {corner.corner_name} comparison between {driver_a} and {driver_b}.",
+        corner_number=corner_num,
+        measured_time_loss_s=0.0,
+        braking_loss_s=0.0,
+        apex_loss_s=0.0,
+        exit_loss_s=0.0
     )

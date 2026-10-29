@@ -1,4 +1,6 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
+import { usePitwall } from '../contexts/PitwallContext';
+import { PlayCircle, Play, Pause, RefreshCw, AlertCircle } from 'lucide-react';
 import './ReplayPage.css';
 
 interface DriverData {
@@ -17,6 +19,7 @@ interface ReplayResponse {
 }
 
 export const ReplayPage: React.FC = () => {
+  const { session } = usePitwall();
   const [data, setData] = useState<ReplayResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -27,10 +30,9 @@ export const ReplayPage: React.FC = () => {
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-
   useEffect(() => {
     fetchReplayData();
-  }, []);
+  }, [session]);
 
   const fetchReplayData = async () => {
     setLoading(true);
@@ -49,7 +51,8 @@ export const ReplayPage: React.FC = () => {
     const timeoutId = setTimeout(() => controller.abort(), 60000);
 
     try {
-      const response = await fetch('http://localhost:8000/api/replay/track?session_id=S-2024-SPAIN&frequency_hz=2', { signal: controller.signal });
+      const activeSession = session || 'S-2024-SPAIN';
+      const response = await fetch(`/api/replay/track?session_id=${activeSession}&frequency_hz=2`, { signal: controller.signal });
       if (!response.ok) throw new Error('Failed to fetch replay data');
       const json: ReplayResponse = await response.json();
       if (json.success) {
@@ -187,13 +190,23 @@ export const ReplayPage: React.FC = () => {
     <div className="replay-container">
       <header className="replay-header">
         <div className="title-section">
-          <h2><span className="material-icons">play_circle</span> 3D Track Replay</h2>
-          <span className="session-badge">S-2024-SPAIN</span>
+          <h2><PlayCircle size={24} style={{ color: '#E10600', marginRight: '8px', verticalAlign: 'middle' }} /> 3D Track Replay</h2>
+          <span className="session-badge">{session || 'S-2024-SPAIN'}</span>
         </div>
       </header>
 
-      {loading && <div className="replay-loading">{progressMsg}</div>}
-      {error && <div className="replay-error">{error}</div>}
+      {loading && (
+        <div className="replay-loading">
+          <RefreshCw size={18} className="spin-icon" style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+          {progressMsg}
+        </div>
+      )}
+      {error && (
+        <div className="replay-error">
+          <AlertCircle size={18} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+          {error}
+        </div>
+      )}
 
       {!loading && !error && data && (
         <div className="replay-content">
@@ -207,8 +220,8 @@ export const ReplayPage: React.FC = () => {
           </div>
 
           <div className="replay-controls">
-            <button className="play-btn" onClick={() => setPlaying(!playing)}>
-              <span className="material-icons">{playing ? 'pause' : 'play_arrow'}</span>
+            <button className="play-btn" onClick={() => setPlaying(!playing)} aria-label={playing ? 'Pause' : 'Play'}>
+              {playing ? <Pause size={20} /> : <Play size={20} />}
             </button>
             <input
               type="range"
@@ -228,3 +241,6 @@ export const ReplayPage: React.FC = () => {
     </div>
   );
 };
+
+export default ReplayPage;
+

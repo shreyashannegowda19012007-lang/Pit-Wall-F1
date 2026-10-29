@@ -252,10 +252,10 @@ class TelemetryAPIService:
         from probabilistic_service import ProbabilisticService
         return ProbabilisticService.run_full_field_monte_carlo(circuit_id, total_laps, num_sims)
 
-    def run_advanced_strategy_monte_carlo(self, target_driver: str = "VER", circuit_id: str = "SPAIN", total_laps: int = 57, num_sims: int = 30) -> Dict[str, Any]:
+    def run_advanced_strategy_monte_carlo(self, target_driver: str = "VER", circuit_id: str = "SPAIN", total_laps: int = 66, num_sims: int = 100, objective: str = "BALANCED") -> Dict[str, Any]:
         """POST /simulations/strategy_monte_carlo"""
         from probabilistic_service import ProbabilisticService
-        return ProbabilisticService.run_advanced_strategy_monte_carlo(target_driver, circuit_id, total_laps, num_sims)
+        return ProbabilisticService.run_advanced_strategy_monte_carlo(target_driver, circuit_id, total_laps, num_sims, objective)
 
     def run_historical_backtest(self, session_id: str = "S-2024-SPAIN", driver_id: str = "VER", decision_lap: int = 20) -> Dict[str, Any]:
         """POST /backtest/run"""
@@ -308,10 +308,10 @@ class TelemetryAPIService:
         from probabilistic_service import ProbabilisticService
         return ProbabilisticService.get_performance_opportunities(driver_id)
 
-    def get_driver_performance_profile(self, driver_id: str = "VER") -> Dict[str, Any]:
+    def get_driver_performance_profile(self, driver_id: str = "VER", session_id: str = "S-2024-SPAIN") -> Dict[str, Any]:
         """GET /telemetry/driver-profile"""
         from probabilistic_service import ProbabilisticService
-        return ProbabilisticService.get_driver_performance_profile(driver_id)
+        return ProbabilisticService.get_driver_performance_profile(driver_id, session_id)
 
     def get_canonical_tyre_state(self, driver_id: str = "VER", compound: str = "MEDIUM", stint_lap: int = 15) -> Dict[str, Any]:
         """GET /tyres/canonical-state"""
