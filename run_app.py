@@ -2,8 +2,8 @@
 Pitwall F1 - Unified Application Launcher
 ==========================================
 Launches the consolidated Formula One Pit-Wall Race Engineering Platform.
-- Development mode (default): Launches FastAPI backend on port 8000 and Vite frontend on port 5173 with proxy.
-- Production mode (--prod): Launches single-origin FastAPI server on port 8000 serving built React SPA and API.
+- Development mode (default): Launches FastAPI backend on port 8001 and Vite frontend on port 5173 with proxy.
+- Production mode (--prod): Launches single-origin FastAPI server on port 8001 serving built React SPA and API.
 """
 
 import sys
@@ -16,7 +16,7 @@ import time
 def main():
     parser = argparse.ArgumentParser(description="Pitwall F1 Unified Application Launcher")
     parser.add_argument("--prod", action="store_true", help="Run in production mode (FastAPI serving built React SPA)")
-    parser.add_argument("--port", type=int, default=8000, help="Backend port (default: 8000)")
+    parser.add_argument("--port", type=int, default=8001, help="Backend port (default: 8001)")
     parser.add_argument("--host", type=str, default="127.0.0.1", help="Backend host (default: 127.0.0.1)")
     args = parser.parse_args()
 

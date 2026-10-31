@@ -7,7 +7,7 @@ import urllib.request
 import json
 import os
 
-BASE_URL = "http://127.0.0.1:8000"
+BASE_URL = "http://127.0.0.1:8001"
 FRONTEND_URL = "http://localhost:5173"
 
 # All 14 original and newly structured routes
