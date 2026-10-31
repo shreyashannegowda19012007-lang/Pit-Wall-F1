@@ -1224,17 +1224,14 @@ async def websocket_live_telemetry(websocket: WebSocket, session_key: int, drive
                     step += 1
                     await websocket.send_json({"type": "TELEMETRY_UPDATE", "data": sample})
                 else:
-                    new_points = await asyncio.to_thread(
-                        live_telemetry_service.get_telemetry_history,
+                    sample = await asyncio.to_thread(
+                        live_telemetry_service.get_latest_telemetry,
                         session_key=session_key,
-                        driver_number=driver_number,
-                        limit=10,
-                        since_timestamp=last_ts
+                        driver_number=driver_number
                     )
-                    if new_points:
-                        last_ts = new_points[-1]["timestamp"]
-                        for pt in new_points:
-                            await websocket.send_json({"type": "TELEMETRY_UPDATE", "data": pt})
+                    if sample and sample.get("car_telemetry_available"):
+                        last_ts = sample.get("timestamp")
+                        await websocket.send_json({"type": "TELEMETRY_UPDATE", "data": sample})
                     else:
                         heartbeat_status = status.get("session_status", "BETWEEN_SESSIONS")
                         await websocket.send_json({

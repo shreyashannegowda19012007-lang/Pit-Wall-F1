@@ -278,6 +278,16 @@ export const LiveTelemetrySection: React.FC = () => {
       .catch(err => console.error('Failed to fetch session drivers:', err));
   }, [pipelineMode, selectedSessionKey]);
 
+  // Synchronize primaryDriver context changes into selectedDriverNum
+  useEffect(() => {
+    if (pipelineMode !== 'REPLAY' && drivers.length > 0 && primaryDriver) {
+      const matched = drivers.find(d => d.driver_code === primaryDriver);
+      if (matched && matched.driver_number !== selectedDriverNum) {
+        setSelectedDriverNum(matched.driver_number);
+      }
+    }
+  }, [primaryDriver, drivers, pipelineMode, selectedDriverNum]);
+
   // ---------------------------------------------------------------------------
   // 4. Timing Tower Polling (routes based on mode)
   // ---------------------------------------------------------------------------
@@ -904,7 +914,12 @@ export const LiveTelemetrySection: React.FC = () => {
             </label>
             <select
               value={selectedDriverNum}
-              onChange={(e) => setSelectedDriverNum(Number(e.target.value))}
+              onChange={(e) => {
+                const num = Number(e.target.value);
+                setSelectedDriverNum(num);
+                const found = drivers.find(d => d.driver_number === num);
+                if (found) setPrimaryDriver(found.driver_code);
+              }}
               className="driver-select"
             >
               {drivers.map((d) => (
@@ -1443,6 +1458,15 @@ export const LiveTelemetrySection: React.FC = () => {
                 {timingTower.map((row) => (
                   <tr
                     key={row.position}
+                    onClick={() => {
+                      const num = parseInt(String(row.driver_number));
+                      if (!isNaN(num)) {
+                        setSelectedDriverNum(num);
+                        setPrimaryDriver(row.driver_code);
+                      }
+                    }}
+                    style={{ cursor: 'pointer' }}
+                    title={`Click to view telemetry for #${row.driver_number} ${row.driver_code}`}
                     className={`timing-row ${
                       (pipelineMode === 'REPLAY' ? row.driver_code === replayDriverCode : row.driver_code === activeDriver.driver_code)
                         ? 'active-row'
