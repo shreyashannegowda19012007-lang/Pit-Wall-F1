@@ -470,6 +470,9 @@ export const LiveTelemetrySection: React.FC = () => {
                   setConnectionState('STREAMING');
                 } else {
                   setConnectionState('CONNECTED');
+                  setTelemetryHistory([]);
+                  setCurrentSample(null);
+                  setRecordsCount(0);
                 }
               } else if (msg.type === 'TELEMETRY_UPDATE' && msg.data) {
                 const sample: TelemetrySample = msg.data;
@@ -482,7 +485,11 @@ export const LiveTelemetrySection: React.FC = () => {
                   return next.length > 35 ? next.slice(-35) : next;
                 });
               } else if (msg.type === 'HEARTBEAT') {
-                if (connectionState !== 'STREAMING') {
+                if (msg.status === 'BETWEEN_SESSIONS' || !liveStatus?.is_session_live) {
+                  setConnectionState('CONNECTED');
+                  setTelemetryHistory([]);
+                  setCurrentSample(null);
+                } else if (connectionState !== 'STREAMING') {
                   setConnectionState('CONNECTED');
                 }
               }
@@ -503,7 +510,7 @@ export const LiveTelemetrySection: React.FC = () => {
           fetch(`/api/live/telemetry/latest?session_key=${selectedSessionKey}&driver_number=${selectedDriverNum}`)
             .then(r => r.json())
             .then(res => {
-              if (res.data) {
+              if (res.data && res.data.car_telemetry_available && res.data.speed_kmh !== null) {
                 setCurrentSample(res.data);
                 setLastUpdateEpoch(Date.now());
                 setRecordsCount(prev => prev + 1);
@@ -512,6 +519,9 @@ export const LiveTelemetrySection: React.FC = () => {
                   const next = [...prev, res.data];
                   return next.length > 35 ? next.slice(-35) : next;
                 });
+              } else {
+                setCurrentSample(res.data || null);
+                setConnectionState('CONNECTED');
               }
             })
             .catch(() => setConnectionState('ERROR'));

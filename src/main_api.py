@@ -1203,6 +1203,8 @@ async def websocket_live_telemetry(websocket: WebSocket, session_key: int, drive
 
             if mode_upper == "SIMULATOR":
                 recent = await asyncio.to_thread(live_telemetry_service.get_moving_telemetry_history, session_key, driver_number, 30)
+            elif not status.get("is_session_live", False):
+                recent = []
             else:
                 recent = await asyncio.to_thread(live_telemetry_service.get_telemetry_history, session_key, driver_number, 30)
 
@@ -1224,21 +1226,30 @@ async def websocket_live_telemetry(websocket: WebSocket, session_key: int, drive
                     step += 1
                     await websocket.send_json({"type": "TELEMETRY_UPDATE", "data": sample})
                 else:
-                    sample = await asyncio.to_thread(
-                        live_telemetry_service.get_latest_telemetry,
-                        session_key=session_key,
-                        driver_number=driver_number
-                    )
-                    if sample and sample.get("car_telemetry_available"):
-                        last_ts = sample.get("timestamp")
-                        await websocket.send_json({"type": "TELEMETRY_UPDATE", "data": sample})
-                    else:
+                    is_live = status.get("is_session_live", False)
+                    if not is_live:
                         heartbeat_status = status.get("session_status", "BETWEEN_SESSIONS")
                         await websocket.send_json({
                             "type": "HEARTBEAT",
                             "status": heartbeat_status,
                             "provider": status.get("provider", "F1 Live Timing SignalR")
                         })
+                    else:
+                        sample = await asyncio.to_thread(
+                            live_telemetry_service.get_latest_telemetry,
+                            session_key=session_key,
+                            driver_number=driver_number
+                        )
+                        if sample and sample.get("car_telemetry_available"):
+                            last_ts = sample.get("timestamp")
+                            await websocket.send_json({"type": "TELEMETRY_UPDATE", "data": sample})
+                        else:
+                            heartbeat_status = status.get("session_status", "LIVE_SESSION_WAITING_FOR_CARS")
+                            await websocket.send_json({
+                                "type": "HEARTBEAT",
+                                "status": heartbeat_status,
+                                "provider": status.get("provider", "F1 Live Timing SignalR")
+                            })
 
                 step += 1
                 await asyncio.sleep(1.0)

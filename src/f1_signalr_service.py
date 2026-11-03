@@ -221,6 +221,12 @@ class F1SignalRProvider(BaseLiveProvider):
                     with self._lock:
                         self.session_info = data
                         self.last_successful_fetch = time.time()
+                        status_val = str(data.get("SessionStatus", ""))
+                        if status_val.lower() in ["finalised", "completed", "ended", "betweensessions"]:
+                            self.connection_status = "BETWEEN_SESSIONS"
+                            self.has_received_car_telemetry = False
+                            self.driver_latest_sample.clear()
+                            self.driver_telemetry.clear()
                     logger.debug(f"Static SessionInfo synced: {data.get('Name')} ({data.get('SessionStatus')})")
         except Exception as e:
             logger.debug(f"Failed to fetch static SessionInfo: {e}")
@@ -358,6 +364,9 @@ class F1SignalRProvider(BaseLiveProvider):
                     status_val = str(payload.get("SessionStatus", ""))
                     if status_val.lower() in ["finalised", "completed", "ended", "betweensessions"]:
                         self.connection_status = "BETWEEN_SESSIONS"
+                        self.has_received_car_telemetry = False
+                        self.driver_latest_sample.clear()
+                        self.driver_telemetry.clear()
                     elif status_val.lower() in ["started", "active", "in_progress", "live"]:
                         if self.connection_status != "RECEIVING_TELEMETRY":
                             self.connection_status = "RECEIVING"
@@ -508,7 +517,7 @@ class F1SignalRProvider(BaseLiveProvider):
                         channel_status = "AWAITING_ON_TRACK_SAMPLE"
 
                     norm_point = {
-                        "source": "F1_SignalR_Core",
+                        "source": "F1_SignalR_CarData",
                         "session_key": int(self.session_info.get("Key", 11392)),
                         "driver_number": drv_num,
                         "timestamp": entry_ts,
@@ -650,7 +659,7 @@ class F1SignalRProvider(BaseLiveProvider):
             "auth_type": "ANONYMOUS_PUBLIC_FEED",
             "has_live_credentials": False,
             "auth_notice": "Connected directly to official Formula 1 Live Timing SignalR public stream. No user credentials or API keys required or configured.",
-            "car_telemetry_available": has_telemetry,
+            "car_telemetry_available": (has_telemetry and is_live),
             "recent_error": err
         }
 
@@ -766,11 +775,38 @@ class F1SignalRProvider(BaseLiveProvider):
         with self._lock:
             sample = self.driver_latest_sample.get(driver_number)
             info = dict(self.session_info)
+            session_status = str(info.get("SessionStatus", "BetweenSessions")).lower()
+            is_live = session_status in ["started", "active", "in_progress", "live"]
             last_ts = self.last_source_timestamp
-            
-            # If we already have a raw CarData.z 100Hz sample, return it
-            if sample and sample.get("source") == "F1_SignalR_CarData":
+            now_epoch = time.time()
+
+            # If we already have a verified car telemetry sample, return it
+            if sample and sample.get("car_telemetry_available"):
                 return dict(sample)
+
+            # Strictly enforce between-sessions guardrail: Never fabricate on-track lap traces when session is concluded
+            if not is_live:
+                return {
+                    "source": "F1_SignalR_Core",
+                    "driver_number": driver_number,
+                    "session_key": session_key,
+                    "timestamp": None,
+                    "source_timestamp_epoch": None,
+                    "server_receipt_epoch": now_epoch,
+                    "processing_epoch": now_epoch,
+                    "speed_kmh": None,
+                    "engine_rpm": None,
+                    "gear": None,
+                    "throttle_pct": None,
+                    "brake_flag": None,
+                    "drs_active": None,
+                    "provenance": "WAITING_FOR_SOURCE_DATA",
+                    "data_classification": "UNAVAILABLE",
+                    "car_telemetry_available": False,
+                    "live_timing_available": True,
+                    "channel_status": "CHANNELS_UNAVAILABLE_BETWEEN_SESSIONS",
+                    "last_session_timestamp": last_ts
+                }
 
             line = self.timing_data.get("Lines", {}).get(str(driver_number), {})
             if line:
@@ -948,6 +984,11 @@ class F1SignalRProvider(BaseLiveProvider):
     ) -> List[Dict[str, Any]]:
         """Returns bounded telemetry points for a driver."""
         with self._lock:
+            info = dict(self.session_info)
+            session_status = str(info.get("SessionStatus", "BetweenSessions")).lower()
+            is_live = session_status in ["started", "active", "in_progress", "live"]
+            if not is_live:
+                return []
             q = self.driver_telemetry.get(driver_number)
             if not q:
                 return []
