@@ -93,6 +93,8 @@ def health_check():
 def get_seasons():
     try:
         return api_service.get_available_seasons()
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -100,6 +102,8 @@ def get_seasons():
 def get_rounds(season: int):
     try:
         return api_service.get_season_rounds(season)
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -143,6 +147,8 @@ def prepare_session(req: PrepareSessionRequest):
             "info": data_bundle.get("info", {}),
             "weather": data_bundle.get("weather", {})
         })
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -150,6 +156,8 @@ def prepare_session(req: PrepareSessionRequest):
 def get_driver_profile(driver_id: str, session_id: str = "S-2024-SPAIN"):
     try:
         return api_service.get_driver_performance_profile(driver_id, session_id)
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -157,6 +165,8 @@ def get_driver_profile(driver_id: str, session_id: str = "S-2024-SPAIN"):
 def get_strategy_summary(session_id: str = "S-2024-SPAIN", lap: int = 22, driver_id: str = "VER"):
     try:
         return api_service.get_canonical_strategy_state(session_id, lap, driver_id)
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -186,6 +196,8 @@ def get_timing_summary(session_id: str = "S-2024-SPAIN"):
                 "drivers": drivers
             }
         }
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -364,6 +376,8 @@ def get_replay_track(session_id: str = "S-2024-SPAIN", frequency_hz: int = 2):
         res = ReplayService.extract_track_map(session, frequency_hz=frequency_hz, session_id=session_id)
 
         return res
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -378,6 +392,8 @@ def predict_degradation(
         from src.ml_service import MLService
         res = MLService.predict_degradation(session_id, compound, fuel_kg, track_temp)
         return res
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -404,6 +420,8 @@ def get_circuits(year: int = 2024):
         from src.standings_service import StandingsService
         res = StandingsService.get_circuits(year)
         return res
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -413,6 +431,8 @@ def get_drivers(session_id: str = "S-2024-SPAIN"):
         from src.standings_service import StandingsService
         res = StandingsService.get_drivers(session_id)
         return res
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -494,6 +514,8 @@ def get_monte_carlo_simulation(
             "field_simulation": field_res,
             "invariants_verified": strategy_res.get("invariants_verified", {})
         })
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -503,6 +525,8 @@ def get_driver_standings(year: int = 2024, round_number: Optional[int] = None):
         from src.standings_service import StandingsService
         res = StandingsService.get_driver_standings(year, round_number)
         return sanitize_for_json(res)
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -512,6 +536,8 @@ def get_constructor_standings(year: int = 2024, round_number: Optional[int] = No
         from src.standings_service import StandingsService
         res = StandingsService.get_constructor_standings(year, round_number)
         return sanitize_for_json(res)
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -521,6 +547,8 @@ def get_live_status(mode: Optional[str] = None):
         from src.live_provider_factory import get_live_provider
         provider = get_live_provider(mode=mode)
         return sanitize_for_json(provider.get_live_status())
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -539,6 +567,8 @@ def export_telemetry_csv(
             media_type="text/csv",
             headers={"Content-Disposition": f"attachment; filename={filename}"}
         )
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -556,6 +586,8 @@ def export_comparison_csv(
             media_type="text/csv",
             headers={"Content-Disposition": f"attachment; filename={filename}"}
         )
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -569,6 +601,8 @@ def export_strategy_report(
         from src.report_service import ReportService
         report = ReportService.export_strategy_brief(session_id, primary_driver, ref_driver)
         return sanitize_for_json(report)
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -581,6 +615,8 @@ def get_provenance_summary():
     try:
         from src.data_provenance import DataProvenanceRegistry
         return sanitize_for_json(DataProvenanceRegistry.get_provenance_summary())
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -620,6 +656,8 @@ def get_driver_performance_corners(
             "ref_driver": ref_driver,
             "corners": [asdict(c) for c in corners]
         })
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -657,6 +695,8 @@ def get_driver_performance_micro_sectors(
             "ref_driver": ref_driver,
             "micro_sectors": [asdict(d) for d in deltas]
         })
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -683,6 +723,8 @@ def get_driver_performance_consistency(
             "primary_driver": primary_driver,
             "consistency": asdict(prof)
         })
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -709,6 +751,8 @@ def get_driver_performance_ideal_lap(
             "primary_driver": primary_driver,
             "ideal_lap": asdict(ideal)
         })
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -722,6 +766,8 @@ def get_race_operations_timing_tower(session_id: str = "S-2024-SPAIN"):
             "session_id": session_id,
             "timing_tower": tower
         })
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -735,6 +781,8 @@ def get_race_operations_pit_stops(session_id: str = "S-2024-SPAIN"):
             "session_id": session_id,
             "pit_stops": stops
         })
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -748,6 +796,8 @@ def get_race_operations_race_control(session_id: str = "S-2024-SPAIN"):
             "session_id": session_id,
             "race_control": events
         })
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -761,6 +811,8 @@ def get_race_operations_team_radio(session_id: str = "S-2024-SPAIN", driver_code
             "session_id": session_id,
             "team_radio": radio
         })
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -773,6 +825,8 @@ def get_race_operations_regulations():
             "success": True,
             "regulations": regs
         })
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -785,6 +839,8 @@ def get_historical_eras():
             "success": True,
             "eras": eras
         })
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -798,6 +854,8 @@ def get_historical_teammate_h2h(season: int = 2024):
             "season": season,
             "head_to_head": h2h
         })
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -811,6 +869,8 @@ def get_historical_championship_what_if(session_id: str = "S-2024-SPAIN"):
             "session_id": session_id,
             "what_if": what_if
         })
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -825,6 +885,8 @@ def get_model_validation_benchmarks():
             "benchmarks": benchmarks,
             "calibration_curve": calibration
         })
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -891,6 +953,8 @@ def get_live_sessions(year: Optional[int] = None, mode: Optional[str] = None):
         provider = get_live_provider(mode=mode)
         sessions = provider.get_sessions(year=year)
         return sanitize_for_json({"success": True, "sessions": sessions})
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -901,6 +965,8 @@ def get_live_drivers(session_key: int, mode: Optional[str] = None):
         provider = get_live_provider(mode=mode)
         drivers = provider.get_session_drivers(session_key=session_key)
         return sanitize_for_json({"success": True, "drivers": drivers})
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -913,6 +979,8 @@ def get_latest_live_telemetry(session_key: int, driver_number: int, mode: Option
         if not telemetry:
             return sanitize_for_json({"success": False, "message": "No telemetry found for driver/session", "data": None})
         return sanitize_for_json({"success": True, "data": telemetry})
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -934,6 +1002,8 @@ def get_live_telemetry_history(
             since_timestamp=since_timestamp
         )
         return sanitize_for_json({"success": True, "count": len(history), "history": history})
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -950,6 +1020,8 @@ def get_moving_live_telemetry(session_key: int, driver_number: int, limit: int =
         moving = [pt for pt in history if pt.get("speed_kmh") is not None and pt.get("speed_kmh", 0) >= 30.0]
         res = moving if moving else history
         return sanitize_for_json({"success": True, "count": len(res), "history": res})
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -963,6 +1035,8 @@ def get_test_stream_telemetry(session_key: int, driver_number: int, step: int = 
             index=step
         )
         return sanitize_for_json({"success": True, "data": sample})
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -973,6 +1047,8 @@ def get_live_timing_tower(session_key: Optional[int] = None, mode: Optional[str]
         provider = get_live_provider(mode=mode)
         tower = provider.get_timing_tower(session_key=session_key)
         return sanitize_for_json({"success": True, "count": len(tower), "tower": tower})
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -983,6 +1059,8 @@ def get_live_weather(session_key: Optional[int] = None, mode: Optional[str] = No
         provider = get_live_provider(mode=mode)
         weather = provider.get_weather(session_key=session_key)
         return sanitize_for_json({"success": True, "weather": weather})
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -993,6 +1071,8 @@ def get_live_race_control(session_key: Optional[int] = None, mode: Optional[str]
         provider = get_live_provider(mode=mode)
         messages = provider.get_race_control_messages(session_key=session_key)
         return sanitize_for_json({"success": True, "count": len(messages), "messages": messages})
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -1007,6 +1087,8 @@ def get_replay_available_sessions():
     try:
         sessions = historical_replay_service.get_available_sessions()
         return sanitize_for_json({"success": True, "sessions": sessions})
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -1021,6 +1103,8 @@ def get_replay_session_drivers(
     try:
         drivers = historical_replay_service.get_session_drivers(year=year, event=event, session_type=session_type)
         return sanitize_for_json({"success": True, "drivers": drivers})
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -1087,6 +1171,8 @@ def get_replay_status():
             "success": True,
             "status": historical_replay_service.get_replay_status()
         })
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -1105,6 +1191,8 @@ def get_replay_latest_telemetry():
             "sample": sample,
             "data": sample
         })
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -1120,6 +1208,8 @@ def get_replay_telemetry_history(limit: int = 50):
             "provenance": "HISTORICAL_REPLAY",
             "history": history
         })
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -1136,6 +1226,8 @@ def get_replay_timing_tower():
             "rows": tower,
             "tower": tower
         })
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

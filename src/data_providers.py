@@ -136,7 +136,15 @@ class FastF1Provider(BaseDataProvider):
 
         cache_key = f"{year}_{str(event).upper().replace(' ', '_')}_{clean_session_type}"
         if cache_key in self.in_memory_cache:
-            return self.in_memory_cache[cache_key]
+            cached_entry = self.in_memory_cache[cache_key]
+            if isinstance(cached_entry, dict) and "_cached_at" in cached_entry:
+                ttl = cached_entry.get("_ttl", 300)
+                if time.time() - cached_entry["_cached_at"] > ttl:
+                    del self.in_memory_cache[cache_key]
+                else:
+                    return cached_entry
+            else:
+                return cached_entry
 
         # Check if year is in the future beyond 2026
         current_year = max(2026, datetime.now(timezone.utc).year)
@@ -144,7 +152,9 @@ class FastF1Provider(BaseDataProvider):
             err_bundle = {
                 "success": False,
                 "error": f"Championship season {year} has not taken place yet. Please select a completed season (e.g. 2021-2026).",
-                "status": DataStatus.UNAVAILABLE
+                "status": DataStatus.UNAVAILABLE,
+                "_cached_at": time.time(),
+                "_ttl": 300
             }
             self.in_memory_cache[cache_key] = err_bundle
             return err_bundle
@@ -196,7 +206,9 @@ class FastF1Provider(BaseDataProvider):
                             "success": False,
                             "error": f"Live F1 session currently on track ({session.date.strftime('%Y-%m-%d %H:%M UTC')}). FastF1 static archives will become available after session concludes.",
                             "status": DataStatus.UNAVAILABLE,
-                            "is_live": True
+                            "is_live": True,
+                            "_cached_at": time.time(),
+                            "_ttl": 300
                         }
                         self.in_memory_cache[cache_key] = err_bundle
                         return err_bundle

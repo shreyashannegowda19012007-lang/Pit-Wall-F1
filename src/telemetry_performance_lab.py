@@ -103,7 +103,9 @@ class DriverPerformanceIntelligenceEngine:
         driver_id: str = "VER",
         ref_driver_id: str = "HAM",
         corner_number: int = 7,
-        session_id: str = "S-2024-SPAIN"
+        session_id: str = "S-2024-SPAIN",
+        drv_fastest = None,
+        ref_fastest = None
     ) -> CornerTimeLossAttribution:
         """
         Calculates 5-phase corner metrics and attributes time loss to specific driving inputs
@@ -112,22 +114,21 @@ class DriverPerformanceIntelligenceEngine:
         from src.data_ingestion import fetch_session_data
         from src.session_utils import parse_session_id
 
-        year, event, session_type = parse_session_id(session_id)
-
         try:
-            data = fetch_session_data(year, event, session_type)
-            session = data.get('raw_session')
-            laps = data.get('laps')
-            weather = data.get('weather')
+            if drv_fastest is None or ref_fastest is None:
+                year, event, session_type = parse_session_id(session_id)
+                data = fetch_session_data(year, event, session_type)
+                laps = data.get('laps')
+                if laps is None or laps.empty:
+                    raise ValueError("No laps found")
+                drv_laps = laps[laps['Driver'] == driver_id]
+                ref_laps = laps[laps['Driver'] == ref_driver_id]
 
-            drv_laps = laps[laps['Driver'] == driver_id]
-            ref_laps = laps[laps['Driver'] == ref_driver_id]
+                if drv_laps.empty or ref_laps.empty:
+                    raise ValueError("No laps found")
 
-            if drv_laps.empty or ref_laps.empty:
-                raise ValueError("No laps found")
-
-            drv_fastest = drv_laps.pick_fastest().get_telemetry()
-            ref_fastest = ref_laps.pick_fastest().get_telemetry()
+                drv_fastest = drv_laps.pick_fastest().get_telemetry()
+                ref_fastest = ref_laps.pick_fastest().get_telemetry()
 
             # Get corner bounds
             corner = next((c for c in cls.get_circuit_corner_database() if c.corner_number == corner_number), None)
@@ -200,9 +201,30 @@ class DriverPerformanceIntelligenceEngine:
         session_id: str = "S-2024-SPAIN"
     ) -> List[PerformanceOpportunity]:
         """Ranks corner performance opportunities by time loss, repeatability, and confidence."""
+        from src.data_ingestion import fetch_session_data
+        from src.session_utils import parse_session_id
+
+        drv_fastest = None
+        ref_fastest = None
+        try:
+            year, event, session_type = parse_session_id(session_id)
+            data = fetch_session_data(year, event, session_type)
+            laps = data.get('laps')
+            if laps is not None and not laps.empty:
+                drv_laps = laps[laps['Driver'] == driver_id]
+                ref_laps = laps[laps['Driver'] == ref_driver_id]
+                if not drv_laps.empty and not ref_laps.empty:
+                    drv_fastest = drv_laps.pick_fastest().get_telemetry()
+                    ref_fastest = ref_laps.pick_fastest().get_telemetry()
+        except Exception:
+            pass
+
         opportunities = []
         for corner in cls.get_circuit_corner_database():
-            loss = cls.attribute_corner_time_loss(driver_id, ref_driver_id, corner.corner_number, session_id)
+            loss = cls.attribute_corner_time_loss(
+                driver_id, ref_driver_id, corner.corner_number, session_id,
+                drv_fastest=drv_fastest, ref_fastest=ref_fastest
+            )
             if loss.total_loss_s > 0.05: # Only consider significant losses
                 cause = "Unknown"
                 if loss.braking_point_delta_m < -2.0:

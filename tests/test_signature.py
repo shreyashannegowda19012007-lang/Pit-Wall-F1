@@ -1,19 +1,15 @@
-#!/usr/bin/env python3
 import sys
+import os
 import inspect
 
-sys.path.insert(0, 'src')
-
+sys.path.insert(0, os.path.abspath('src'))
 from track_geometry import ensure_track_geometry
 
-sig = inspect.signature(ensure_track_geometry)
-print(f"Function signature: {sig}")
-print(f"Parameters: {list(sig.parameters.keys())}")
-print(f"Number of parameters: {len(sig.parameters)}")
+def test_ensure_track_geometry_signature():
+    sig = inspect.signature(ensure_track_geometry)
+    params = list(sig.parameters.keys())
+    assert len(params) >= 3, "ensure_track_geometry should accept at least 3 parameters"
 
-# Try calling it
-try:
+def test_ensure_track_geometry_execution():
     result = ensure_track_geometry({}, "Bahrain", 2024)
-    print(f"Function call succeeded")
-except TypeError as e:
-    print(f"ERROR: {e}")
+    assert isinstance(result, dict), "ensure_track_geometry should return a dictionary"

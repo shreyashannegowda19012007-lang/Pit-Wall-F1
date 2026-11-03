@@ -60,9 +60,20 @@ def main():
             api_proc.wait()
         except KeyboardInterrupt:
             print("\nShutting down Pitwall F1 Platform...")
-            api_proc.terminate()
-            if 'vite_proc' in locals():
-                vite_proc.terminate()
+            if os.name == 'nt':
+                try:
+                    subprocess.run(f"taskkill /F /T /PID {api_proc.pid}", shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                except Exception:
+                    api_proc.terminate()
+                if 'vite_proc' in locals() and vite_proc.poll() is None:
+                    try:
+                        subprocess.run(f"taskkill /F /T /PID {vite_proc.pid}", shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                    except Exception:
+                        vite_proc.terminate()
+            else:
+                api_proc.terminate()
+                if 'vite_proc' in locals():
+                    vite_proc.terminate()
 
 if __name__ == "__main__":
     main()
